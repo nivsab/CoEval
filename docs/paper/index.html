@@ -200,7 +200,7 @@
 <div class="wrap">
 
 <header class="titleblock">
-  <h1>CoEval: Composition Over Size &mdash; Cross-Family Judge Ensembles<br />for Self-Generating, Contamination-Resistant LLM Evaluation</h1>
+  <h1>CoEval: Ranking Language Models for Custom Tasks<br />Without Labeled Data or Trustworthy Benchmarks</h1>
   <div class="authors">
     <span class="name">Alexander Apartsin</span>
     <div class="affil">Holon Institute of Technology, Israel</div>
@@ -214,32 +214,44 @@
 <section class="abstract">
   <h2>Abstract</h2>
   <p>
-    The standard remedy for a biased LLM judge is to add more judges. We show this intuition is incomplete: judge-panel
+    Choosing or ranking language models for a specific application is hardest when it matters most: when
+    <em>no task-specific labeled data exists</em> to build an evaluation set, and when <em>standard public benchmarks
+    cannot be trusted</em> because their items have likely leaked into pretraining, so leaderboard numbers may reflect
+    memorization rather than fitness for the use case. We present <strong>CoEval</strong>, an open-source framework that
+    addresses both conditions: from only a description of a task or domain, teacher models synthesize a fresh,
+    attribute-controlled benchmark&mdash;<em>no human labels</em>, and contamination-free because items are generated
+    anew per run&mdash;and a cross-family judge ensemble ranks candidate models with no human raters. We validate the
+    tool where ground truth happens to exist, then trust it where it does not: CoEval recovers the true model ranking
+    with no labeled data and its label-free scores track ground-truth correctness at $\rho=0.86$. A complementary
+    technical finding makes the label-free judging reliable without human calibration: judge-panel
     <em>composition</em>&mdash;diversity across vendor families&mdash;rather than panel <em>size</em> determines
     reliability, and indiscriminately enlarging a panel can <em>reduce</em> it (inter-rater reliability peaks at two
     well-chosen judges and falls as low-agreement judges are added, exactly matching the Spearman&ndash;Brown relation).
-    We present <strong>CoEval</strong>, an open-source framework that turns this insight into a practical, fully general
-    evaluator: any set of models&mdash;across sixteen provider interfaces (OpenAI, Anthropic, Google, open-weight, and
-    local)&mdash;can be ranked on a target task or domain from a single declarative configuration file, with no human
-    annotation, and we show CoEval recovers the ground-truth model ranking exactly across the task families we study. CoEval separates evaluation into three interchangeable roles &mdash; <em>teacher</em>, <em>student</em>,
-    and <em>judge</em> &mdash; using the teacher to synthesize attribute-stratified, freshly generated <em>domain-focused</em>
-    benchmarks (we measure zero 13-gram overlap between generated items and five major public benchmarks, so items cannot
-    have leaked into a student's training), then scoring responses with a <em>cross-family judge ensemble</em> whose
-    vendor diversity cancels individual-judge biases. Across a four-task medium-scale
+    CoEval factors evaluation into three interchangeable roles &mdash; <em>teacher</em>, <em>student</em>, and <em>judge</em> &mdash; and runs any models across sixteen provider interfaces from one configuration file; generated items have $0.0000$ verbatim 13-gram overlap with five major public benchmarks. Across a four-task medium-scale
     study, CoEval produced 7,978 valid evaluations at a total cost of USD 5.89 with no human annotation. We show that the
     ensemble removes a verbosity bias that no single judge avoids (mean per-judge $|r| = 0.153$ collapses to an ensemble
     $r = +0.010$ with a bootstrap CI spanning zero, a 93% reduction) and structurally precludes same-family
     self-preference, while producing task-specialized rubrics that share a universal quality core. On objective
     exact-match QA the frontier cross-family ensemble tracks ground-truth correctness at $\rho = 0.86$
-    (datapoint-clustered 95% CI $[0.77, 0.94]$) with vendor-independent agreement. Our central finding is that for judge
-    ensembles, <em>composition</em> &mdash; cross-family vendor diversity, evidenced by a non-monotone reliability curve
-    in which adding low-agreement judges <em>reduces</em> inter-rater reliability &mdash; rather than panel size is the
-    decisive lever.
+    (datapoint-clustered 95% CI $[0.77, 0.94]$) with vendor-independent agreement. This non-monotone reliability result&mdash;adding low-agreement judges <em>reduces</em> reliability&mdash;is what lets a small, well-chosen cross-family panel serve as a trustworthy, label-free substitute for a contaminated leaderboard.
   </p>
 </section>
 
 <!-- ===================== 1. INTRODUCTION ===================== -->
 <h2>1. Introduction</h2>
+<p>
+  A practitioner choosing a language model for a specific application&mdash;summarizing clinical notes, answering
+  questions over an internal knowledge base, triaging support tickets for a particular product&mdash;faces a
+  deceptively simple question: <em>which model is best for my use case?</em> Answering it well requires an evaluation
+  set that reflects that use case, and two common conditions make this hard. First, there is often <em>no task-specific
+  labeled data</em>: building a representative benchmark by hand is slow and costly, and for a new or proprietary domain
+  it may not exist at all. Second, even where a related public benchmark exists, its numbers may not be trustworthy:
+  popular benchmarks are increasingly <em>contaminated</em>, their items having leaked into pretraining corpora, so a
+  high score can reflect memorization rather than capability <sup><a href="#r12">[12]</a><a href="#r13">[13]</a></sup>.
+  When both hold&mdash;no data <em>and</em> no benchmark one can trust&mdash;the practitioner is stuck. <strong>CoEval</strong>
+  is built for exactly this situation: it generates a fresh, domain-targeted evaluation from a task description and
+  ranks candidate models on it, with no labels and no contaminated items.
+</p>
 <p>
   The evaluation of large language models is dominated by static, human-curated benchmarks. While these have driven a
   decade of measurable progress, three structural weaknesses now limit their usefulness for real deployments. First,
@@ -291,6 +303,22 @@
 
 <!-- ===================== 2. RELATED WORK ===================== -->
 <h2>2. Related Work</h2>
+<p>
+  CoEval sits at the intersection of three lines of work, each motivated by one half of the practitioner's problem.
+  (i)&nbsp;A growing body of evidence shows that <em>public benchmarks cannot be taken at face value</em>: their items
+  leak into pretraining corpora and inflate scores through memorization (GSM1k <sup><a href="#r12">[12]</a></sup>,
+  contamination surveys <sup><a href="#r13">[13]</a></sup>), which has driven continuously-refreshed <em>live</em>
+  benchmarks (LiveBench <sup><a href="#r22">[22]</a></sup>, LiveCodeBench <sup><a href="#r23">[23]</a></sup>) and
+  exposed leakage on the judge side as well (Preference Leakage <sup><a href="#r15">[15]</a></sup>). (ii)&nbsp;When no
+  labeled data exists, <em>automated benchmark generation</em> synthesizes evaluation items directly (AutoBencher
+  <sup><a href="#r9">[9]</a></sup>, BenchAgents <sup><a href="#r10">[10]</a></sup>, YourBench
+  <sup><a href="#r11">[11]</a></sup>, domain-specific construction <sup><a href="#r25">[25]</a></sup>).
+  (iii)&nbsp;<em>LLM-as-judge</em> methods (G-Eval <sup><a href="#r2">[2]</a></sup>, Prometheus&nbsp;2
+  <sup><a href="#r3">[3]</a></sup>, panels <sup><a href="#r5">[5]</a></sup>) provide label-free scoring but inherit
+  individual-judge biases. CoEval is, to our knowledge, the first to combine all three&mdash;contamination-free,
+  label-free, domain-targeted generation with a reliability-controlled cross-family judge ensemble&mdash;into a single
+  tool aimed at the no-data, untrusted-benchmark regime. We detail each line below.
+</p>
 
 <h3>2.1 LLM-as-judge and judge panels</h3>
 <p>
@@ -454,6 +482,18 @@ $$ \kappa \;=\; \frac{p_o - p_e}{1 - p_e}, $$
 
 <!-- ===================== 5. RESULTS ===================== -->
 <h2>5. Results</h2>
+<p>
+  Our experiments answer one question: <em>does CoEval reliably rank models for a use case when one cannot use a
+  standard benchmark?</em> We organize the evidence accordingly. Section&nbsp;5.1 establishes that CoEval's label-free
+  scores are <em>trustworthy</em>&mdash;they track objective ground truth ($
+ho = 0.86$) and reproduce the true model
+  ranking (Table&nbsp;2)&mdash;benchmarked against a single-judge G-Eval baseline. Sections&nbsp;5.2&ndash;5.5 explain
+  <em>why</em> the judging is reliable with no human calibration: a cross-family ensemble whose composition (not size)
+  governs reliability (5.2), which cancels the verbosity bias every single judge carries (5.3), structurally avoids
+  self-preference (5.4), and produces task-appropriate rubrics (5.5). Section&nbsp;5.6 verifies the second condition
+  directly&mdash;that the generated items are <em>contamination-free</em>&mdash;and Section&nbsp;5.7 shows the process
+  is cheap enough to re-run per use case and per model release.
+</p>
 
 <h3>5.1 Ground-truth correlation</h3>
 <p>
