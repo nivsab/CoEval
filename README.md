@@ -1,5 +1,6 @@
 # CoEval: Ensemble-Based Self-Evaluation for LLMs
 
+[![Paper](https://img.shields.io/badge/%F0%9F%93%84%20paper-online-success)](https://apartsinprojects.github.io/CoEval/)
 [![Status WIP](https://img.shields.io/badge/status-WIP-yellow)](CHANGELOG.md)
 [![Python ≥3.10](https://img.shields.io/badge/python-%E2%89%A53.10-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Version 0.3.0](https://img.shields.io/badge/version-0.3.0-informational)](CHANGELOG.md)
@@ -9,6 +10,25 @@
 <p align="center">
   <img src="docs/coeval_banner.jpg" alt="CoEval — Teacher · Student · Judge evaluation ensemble" width="860"/>
 </p>
+
+---
+
+## 📄 Published Paper
+
+**[CoEval: Ranking Language Models for Custom Tasks Without Labeled Data or Trustworthy Benchmarks](https://apartsinprojects.github.io/CoEval/)** — read it online (HTML with rendered math) or download the [Word version](https://github.com/ApartsinProjects/CoEval/raw/master/docs/paper/CoEval.docx).
+
+*Alexander Apartsin (Holon Institute of Technology) · Yehudit Aperstein (Afeka Tel Aviv Academic College of Engineering)*
+
+CoEval ranks models for a custom task or domain in the hardest setting: when **no task-specific labeled data** exists and **public benchmarks cannot be trusted** because their items have likely leaked into pretraining. From only a task description, a teacher model synthesizes a fresh, contamination-free benchmark and a cross-family judge ensemble ranks the candidates, with no human labels or raters.
+
+| Result | Evidence |
+|--------|----------|
+| Recovers the **true model ranking** with no labeled data | Spearman ρ = 0.86 vs ground-truth correctness, 95% CI [0.77, 0.94] |
+| Cancels a **verbosity bias no single judge avoids** | ensemble *r* = +0.010 (CI spans zero), a 93% reduction |
+| **Composition over size**: panel diversity, not panel size, drives reliability | ICC(3,*k*) peaks at two well-chosen judges, falls as low-agreement judges are added |
+| Structurally precludes **same-family self-preference** | vendor-disjoint panel; aggregation shifts every score ≤ 0.015 |
+| **Contamination-free** generated items | 0.0000 verbatim 13-gram overlap with five major public benchmarks |
+| **Inexpensive** enough to re-run per model release | 7,978 evaluations for USD 5.89, fully automated |
 
 ---
 
