@@ -218,12 +218,13 @@
     <em>composition</em>&mdash;diversity across vendor families&mdash;rather than panel <em>size</em> determines
     reliability, and indiscriminately enlarging a panel can <em>reduce</em> it (inter-rater reliability peaks at two
     well-chosen judges and falls as low-agreement judges are added, exactly matching the Spearman&ndash;Brown relation).
-    We present <strong>CoEval</strong>, a declarative, open-source framework that turns this insight into a practical
-    evaluator and pairs it with self-generated, contamination-resistant benchmarks. CoEval separates evaluation into
-    three roles &mdash; <em>teacher</em>, <em>student</em>, and <em>judge</em> &mdash; using the teacher to synthesize
-    attribute-stratified, freshly generated domain benchmarks (so items cannot have leaked into a student's training),
-    then scoring responses with a <em>cross-family judge ensemble</em> whose vendor diversity cancels individual-judge
-    biases. Across a four-task medium-scale
+    We present <strong>CoEval</strong>, an open-source framework that turns this insight into a practical, fully general
+    evaluator: any set of models&mdash;across sixteen provider interfaces (OpenAI, Anthropic, Google, open-weight, and
+    local)&mdash;can be ranked on <em>any</em> task or domain from a single declarative configuration file, with no human
+    annotation. CoEval separates evaluation into three interchangeable roles &mdash; <em>teacher</em>, <em>student</em>,
+    and <em>judge</em> &mdash; using the teacher to synthesize attribute-stratified, freshly generated <em>domain-focused</em>
+    benchmarks (so items cannot have leaked into a student's training), then scoring responses with a <em>cross-family
+    judge ensemble</em> whose vendor diversity cancels individual-judge biases. Across a four-task medium-scale
     study, CoEval produced 7,978 valid evaluations at a total cost of USD 5.89 with no human annotation. We show that the
     ensemble removes a verbosity bias that no single judge avoids (mean per-judge $|r| = 0.153$ collapses to an ensemble
     $r = +0.010$ with a bootstrap CI spanning zero, a 93% reduction) and structurally precludes same-family
@@ -272,8 +273,11 @@
   <li><strong>(3) Bias-cancelling aggregation.</strong> Consensus aggregation across a vendor-diverse panel cancels
     verbosity bias that individual judges carry with mixed sign, and the vendor-disjoint design structurally precludes
     same-family self-preference.</li>
-  <li><strong>(4) An open-source, declarative system.</strong> The entire pipeline &mdash; generation, response
-    collection, judging, and analysis &mdash; is specified in a single YAML file and is fully reproducible.</li>
+  <li><strong>(4) An open, general, declarative system.</strong> CoEval is model-agnostic and task-agnostic: any model
+    reachable through one of sixteen provider interfaces (cloud, open-weight, or local) can serve as teacher, student,
+    or judge, and any task or domain is described declaratively. Ranking a family of candidate models on a custom
+    use case is a single command; the entire pipeline &mdash; generation, response collection, judging, and analysis
+    &mdash; is specified in one YAML file and is fully reproducible and open-source.</li>
 </ul>
 <p>
   CoEval requires no human annotation. In a four-task medium-scale study it produced 7,978 valid evaluations for
