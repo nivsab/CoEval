@@ -1,0 +1,343 @@
+# CoEval — EXP-001: Benchmark-Grounded Comparison Experiment
+# =============================================================================
+# Purpose : Compare CoEval ensemble scores against benchmark native metrics
+#           (BERTScore-F1 and BLEU) to produce real Spearman rho values that
+#           replace the simulated Table 8 / Fig 8 values in the paper.
+#
+# Design  : Phase 3 datapoints are pre-ingested from three public NLP benchmark
+#           datasets using the CoEval benchmark virtual-teacher interface.
+#           No LLM generation calls are made in Phase 3.
+#
+# Benchmarks:
+#   xsum            → text_summarization       (100 items, BERTScore-F1)
+#   cnn_dailymail   → news_summarization       (100 items, BERTScore-F1)
+#   codesearchnet   → code_explanation         (100 items, BLEU-4)
+#
+# Students : gpt-4o-mini, gpt-3.5-turbo, qwen2p5-1b5  (3 models)
+# Judges   : gpt-4o-mini, gpt-3.5-turbo                (2-judge ensemble)
+#
+# Call budget (phases 1–2 = 0 LLM calls, static rubrics):
+#   Phase 3  (data generation)    :   0 calls — pre-ingested benchmark data
+#   Phase 4  (response collection): 900 calls — 300 items × 3 students
+#   Phase 5  (evaluation)         : 1800 calls — 900 responses × 2 judges
+#   ───────────────────────────────────────────────────────────────────────
+#   TOTAL                         : 2700 calls (~$0.27 with batch at mini rates)
+#
+# Pre-run setup:
+#   python -m benchmark.setup_exp001 --sample-size 100
+#   # or use coeval ingest with xsum, cnn_dailymail, codesearchnet loaders
+#
+# Run:
+#   coeval run --config Runs/EXP001-benchmark-grounded-comparison/config.yaml
+#
+# Post-run analysis:
+#   python -m benchmark.compute_scores --run Runs/EXP001-benchmark-grounded-comparison
+#   coeval analyze all --run Runs/EXP001-benchmark-grounded-comparison \
+#       --out Runs/EXP001-benchmark-grounded-comparison/reports
+# =============================================================================
+
+
+# ─── MODELS ──────────────────────────────────────────────────────────────────
+
+models:
+
+  # --------------------------------------------------------------------------
+  # Virtual benchmark teachers — pre-ingested benchmark data.
+  # Phase 3 is automatically skipped for interface: benchmark.
+  # --------------------------------------------------------------------------
+  - name: xsum
+    interface: benchmark
+    parameters:
+      description: "XSum BBC news article summarisation benchmark (EdinburghNLP/xsum)"
+      homepage: "https://huggingface.co/datasets/EdinburghNLP/xsum"
+      task: text_summarization
+    roles: [teacher]
+
+  - name: cnn_dailymail
+    interface: benchmark
+    parameters:
+      description: "CNN/DailyMail multi-sentence news summarisation benchmark"
+      homepage: "https://huggingface.co/datasets/abisee/cnn_dailymail"
+      task: news_summarization
+    roles: [teacher]
+
+  - name: codesearchnet-python
+    interface: benchmark
+    parameters:
+      description: "CodeSearchNet Python function-to-docstring benchmark"
+      homepage: "https://huggingface.co/datasets/code-search-net/code_search_net"
+      task: code_explanation
+    roles: [teacher]
+
+  # --------------------------------------------------------------------------
+  # gpt-4o-mini: student + judge
+  # Pricing: $0.15/$0.60 per 1M tokens (batch: $0.075/$0.30)
+  # --------------------------------------------------------------------------
+  - name: gpt-4o-mini
+    interface: openrouter
+    parameters:
+      model: openai/gpt-4o-mini
+      temperature: 0.7
+      max_tokens: 512
+    roles: [student, judge]
+    role_parameters:
+      student:
+        temperature: 0.7
+        max_tokens: 256
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # gpt-3.5-turbo: student + judge
+  # Pricing: $0.50/$1.50 per 1M tokens (batch: $0.25/$0.75)
+  # --------------------------------------------------------------------------
+  - name: gpt-3.5-turbo
+    interface: openrouter
+    parameters:
+      model: openai/gpt-3.5-turbo
+      temperature: 0.7
+      max_tokens: 512
+    roles: [student, judge]
+    role_parameters:
+      student:
+        temperature: 0.7
+        max_tokens: 256
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # CROSS-FAMILY frontier judges via OpenRouter (Anthropic + Google).
+  # Rationale (reviewer fix): the original panel was OpenAI-only, so ensemble
+  # reliability was inflated by shared-family error correlation. Adding
+  # Anthropic + Google judges gives a genuinely cross-vendor ensemble — the
+  # configuration CoEval's own theory says you need.
+  # --------------------------------------------------------------------------
+  - name: claude-haiku
+    interface: openrouter
+    parameters:
+      model: anthropic/claude-3.5-haiku
+      temperature: 0.0
+      max_tokens: 256
+    roles: [judge]
+    role_parameters:
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  - name: gemini-flash
+    interface: openrouter
+    parameters:
+      model: google/gemini-2.5-flash
+      temperature: 0.0
+      max_tokens: 256
+    roles: [judge]
+    role_parameters:
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # qwen2p5-1b5: student only (1.5B local HuggingFace model)
+  # NOTE: 1.5B models can serve as judges but require max_new_tokens >= 256.
+  #       Excluded from judge role here to keep the judge ensemble clean
+  #       (two frontier-class API models for reliable scoring).
+  # --------------------------------------------------------------------------
+  # Weak student via OpenRouter (replaces local Qwen — no local GPU, faster).
+  # A small 3B model provides the low-capability end needed for score spread.
+  - name: llama-3.2-3b
+    interface: openrouter
+    parameters:
+      model: meta-llama/llama-3.2-3b-instruct
+      temperature: 0.7
+      max_tokens: 512
+    roles: [student]
+    role_parameters:
+      student:
+        temperature: 0.7
+        max_tokens: 256
+
+
+# ─── TASKS ───────────────────────────────────────────────────────────────────
+
+tasks:
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Task 1 — Text Summarization  (sourced from XSum)
+  # Benchmark native metric: BERTScore-F1 vs. gold XSum summary
+  # Rubric grounded in faithfulness / conciseness / coverage dimensions
+  # ══════════════════════════════════════════════════════════════════════════
+  - name: text_summarization
+    description: >
+      Summarise a BBC news article in one concise sentence. The summary must
+      be faithful to the article, cover the key information, and be appropriately
+      brief. Source benchmark: XSum (EdinburghNLP/xsum).
+    output_description: >
+      A single sentence (20-50 words) summarising the most important fact or
+      event described in the article. No bullet points. No preamble.
+
+    target_attributes:
+      complexity: [simple, moderate, complex, technical]
+      domain:     [science, business, politics, technology, health, other]
+
+    nuanced_attributes: {}
+
+    sampling:
+      target: [1]
+      nuance: [0]
+      total: 100    # 100 items from XSum test split
+
+    rubric:
+      faithfulness:         "The summary contains no hallucinated or incorrect facts relative to the source article."
+      information_coverage: "The summary captures the single most important fact or event from the article."
+      conciseness:          "The summary is appropriately brief (one sentence) with no redundancy or filler."
+      fluency:              "The summary is grammatically correct and reads naturally as a complete sentence."
+
+    evaluation_mode: single
+
+    prompt_library:
+      # test prompt used by students when responding to benchmark-sourced inputs
+      test: |
+        You are completing the following task: {task_description}
+        Output format: {output_description}
+
+        Here is the input you must respond to:
+        {input}
+
+        Respond with only the output. No preamble, no explanation.
+
+      # sample prompt used if teacher generation is ever needed (benchmark mode skips this)
+      sample: "{prompt}"
+
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Task 2 — News Summarization  (sourced from CNN/DailyMail)
+  # Benchmark native metric: BERTScore-F1 vs. gold highlight summary
+  # Rubric grounded in multi-sentence summary quality dimensions
+  # ══════════════════════════════════════════════════════════════════════════
+  - name: news_summarization
+    description: >
+      Summarise a news article into a concise multi-sentence summary covering
+      all key highlights. The summary must accurately capture the main points
+      in order of importance. Source benchmark: CNN/DailyMail.
+    output_description: >
+      A summary of 3-5 sentences (80-150 words) that covers the main facts,
+      key people or organisations involved, and significant outcomes or
+      implications. No bullet points. Written in third person.
+
+    target_attributes:
+      complexity: [simple, moderate, complex]
+      domain:     [politics, business, technology, health, crime, sport, other]
+
+    nuanced_attributes: {}
+
+    sampling:
+      target: [1]
+      nuance: [0]
+      total: 100    # 100 items from CNN/DailyMail test split
+
+    rubric:
+      faithfulness:         "The summary contains no hallucinated or incorrect facts relative to the source article."
+      key_point_coverage:   "All major highlights from the article are represented in the summary."
+      conciseness:          "The summary avoids redundancy and stays within the specified length range."
+      coherence:            "The summary is logically ordered and reads as a unified piece of text."
+      fluency:              "The summary is grammatically correct and uses appropriate journalistic register."
+
+    evaluation_mode: single
+
+    prompt_library:
+      test: |
+        You are completing the following task: {task_description}
+        Output format: {output_description}
+
+        Here is the input you must respond to:
+        {input}
+
+        Respond with only the output. No preamble, no explanation.
+
+      sample: "{prompt}"
+
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Task 3 — Code Explanation  (sourced from CodeSearchNet Python)
+  # Benchmark native metric: BLEU-4 vs. reference docstring
+  # Rubric grounded in docstring quality / code comprehension dimensions
+  # ══════════════════════════════════════════════════════════════════════════
+  - name: code_explanation
+    description: >
+      Explain what a given Python function does. The explanation should be
+      suitable as a docstring: accurate, clear, and at the appropriate level of
+      detail for the function's complexity. Source benchmark: CodeSearchNet.
+    output_description: >
+      A plain-English explanation (40-150 words) of what the function does,
+      its parameters, return value, and any notable edge cases or algorithmic
+      details. Written as if it were a docstring.
+
+    target_attributes:
+      complexity:   [beginner, intermediate, advanced]
+      snippet_type: [function, class_definition, algorithm, database_query]
+
+    nuanced_attributes: {}
+
+    sampling:
+      target: [1]
+      nuance: [0]
+      total: 100    # 100 items from CodeSearchNet Python test split
+
+    rubric:
+      technical_accuracy:  "All statements about what the code does are factually correct."
+      explanation_clarity: "The explanation is clearly written and avoids unnecessary jargon."
+      completeness:        "The explanation covers what the function does, its inputs, and its output."
+      appropriate_level:   "The depth and vocabulary match the function's actual complexity."
+      edge_case_handling:  "Non-obvious behaviour, error conditions, or edge cases are noted where relevant."
+
+    evaluation_mode: single
+
+    prompt_library:
+      test: |
+        You are completing the following task: {task_description}
+        Output format: {output_description}
+
+        Here is the input you must respond to:
+        {input}
+
+        Respond with only the output. No preamble, no explanation.
+
+      sample: "{prompt}"
+
+
+# ─── EXPERIMENT ──────────────────────────────────────────────────────────────
+
+experiment:
+  id: EXP001-benchmark-grounded-comparison
+  storage_folder: ./Runs
+  log_level: INFO
+  generation_retries: 2
+
+  phases:
+    # Phases 1-2: New — static rubrics defined above, 0 LLM calls
+    # Phase 3: Extend — benchmark data pre-ingested via setup script; skip if
+    #          item count >= sample_size (100 per task)
+    attribute_mapping:   New
+    rubric_mapping:      New
+    data_generation:     Extend    # benchmark data pre-ingested; skips if count >= 100
+    response_collection: New
+    evaluation:          New
+
+  # OpenRouter has no batch API — phases 4 and 5 use concurrent real-time calls.
+  # (OpenAI direct batch was removed after the OpenAI account hit its billing
+  # hard limit; OpenRouter credits are used instead.)
+
+  # Per-model call quota (safety ceiling)
+  quota:
+    gpt-4o-mini:
+      max_calls: 4000
+    gpt-3.5-turbo:
+      max_calls: 4000
+    claude-haiku:
+      max_calls: 4000
+    gemini-flash:
+      max_calls: 4000
+    llama-3.2-3b:
+      max_calls: 400

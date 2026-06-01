@@ -1,0 +1,169 @@
+{
+  "experiment": "EXP-001 benchmark-grounded correlation",
+  "run": "Runs\\EXP001b-exactmatch-qa",
+  "tasks": [
+    "science_qa",
+    "science_reasoning"
+  ],
+  "judges": [
+    "claude-haiku",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o-mini"
+  ],
+  "metric_by_task": {
+    "science_qa": "inclusion_match",
+    "science_reasoning": "inclusion_match"
+  },
+  "n_scored_responses": 573,
+  "ensemble": {
+    "method": "CoEval ensemble",
+    "n_judges": 4,
+    "science_qa": {
+      "rho": 0.2943855732372614,
+      "lo": 0.05355070153017433,
+      "hi": 0.49568789903739185,
+      "n": 285
+    },
+    "science_reasoning": {
+      "rho": 0.6412270127943427,
+      "lo": 0.5464836343939906,
+      "hi": 0.72117424969787,
+      "n": 288
+    },
+    "overall": {
+      "rho": 0.5650027974324693,
+      "lo": 0.47341223002635713,
+      "hi": 0.6449410466687442,
+      "n": 573
+    }
+  },
+  "per_judge": {
+    "claude-haiku": {
+      "method": "single judge: claude-haiku",
+      "science_qa": {
+        "rho": 0.6676207594522019,
+        "lo": 0.27548938361577946,
+        "hi": 0.9346442547740299,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.7884864196038192,
+        "lo": 0.6937277763179208,
+        "hi": 0.8684739722685838,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.769629372892673,
+        "lo": 0.6697400032921114,
+        "hi": 0.8476847805004006,
+        "n": 573
+      }
+    },
+    "gemini-flash": {
+      "method": "single judge: gemini-flash",
+      "science_qa": {
+        "rho": 0.3098187079484586,
+        "lo": 0.055875917845430945,
+        "hi": 0.5223078233689992,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8760548791585882,
+        "lo": 0.7949383647783327,
+        "hi": 0.9476508526409527,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.73281064630862,
+        "lo": 0.6315421780380567,
+        "hi": 0.8163860875534921,
+        "n": 573
+      }
+    },
+    "gpt-3.5-turbo": {
+      "method": "single judge: gpt-3.5-turbo",
+      "science_qa": {
+        "rho": 0.6718598609449881,
+        "lo": 0.2802241191180634,
+        "hi": 0.9378510619307102,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8688105271219397,
+        "lo": 0.7842388199585762,
+        "hi": 0.9381506330571003,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8491314305354516,
+        "lo": 0.7650635941436722,
+        "hi": 0.9194483838672158,
+        "n": 573
+      }
+    },
+    "gpt-4o-mini": {
+      "method": "single judge: gpt-4o-mini",
+      "science_qa": {
+        "rho": 0.5277314819095715,
+        "lo": 0.16143253278885308,
+        "hi": 0.8194021277922874,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.6642421878070445,
+        "lo": 0.5691358160892246,
+        "hi": 0.744508995639557,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.6240057206606586,
+        "lo": 0.5323294410953711,
+        "hi": 0.7077653684044098,
+        "n": 573
+      }
+    }
+  },
+  "best_single_judge": {
+    "method": "Best single judge",
+    "science_qa": {
+      "judge": "gpt-3.5-turbo",
+      "rho": 0.6718598609449881,
+      "lo": 0.2802241191180634,
+      "hi": 0.9378510619307102,
+      "n": 285
+    },
+    "science_reasoning": {
+      "judge": "gemini-flash",
+      "rho": 0.8760548791585882,
+      "lo": 0.7949383647783327,
+      "hi": 0.9476508526409527,
+      "n": 288
+    },
+    "overall": {
+      "judge": "gpt-3.5-turbo",
+      "rho": 0.8491314305354516,
+      "lo": 0.7650635941436722,
+      "hi": 0.9194483838672158,
+      "n": 573
+    }
+  },
+  "mean_single_judge": {
+    "method": "Mean single judge",
+    "judges": [
+      "claude-haiku",
+      "gemini-flash",
+      "gpt-3.5-turbo",
+      "gpt-4o-mini"
+    ],
+    "science_qa": {
+      "rho": 0.544257702563805
+    },
+    "science_reasoning": {
+      "rho": 0.7993985034228479
+    },
+    "overall": {
+      "rho": 0.7438942925993508
+    }
+  }
+}

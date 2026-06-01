@@ -4,6 +4,16 @@ For each datapoint produced by a benchmark loader, computes the benchmark's
 native evaluation metric against the reference_response and writes the result
 back into the JSONL record as the field ``benchmark_native_score`` (float 0-1).
 
+NOTE (response-level vs reference-level scoring)
+------------------------------------------------
+This module scores Phase 3 *datapoints* against their own reference, so it
+measures a property of the reference, not the quality of any model response
+(for exact-match this is a reference compared with itself and is always 1.0).
+For benchmark-grounded validation that correlates CoEval scores with the
+native metric *on the same student responses* (EXP-001, paper Table 8), use
+:mod:`benchmark.score_responses`, which scores Phase 4 responses against the
+gold reference and emits ``benchmark_response_scores.jsonl``.
+
 Supported metrics
 -----------------
   xsum              — BERTScore-F1 (hypothesis vs. gold summary)
@@ -106,6 +116,39 @@ def _exact_match(hypothesis: str, all_answers: list[str]) -> float:
     """1.0 if hypothesis (stripped/lowered) matches any answer string."""
     hyp = hypothesis.strip().lower()
     return 1.0 if any(hyp == a.strip().lower() for a in all_answers) else 0.0
+
+
+import re as _re
+import string as _string
+
+
+def _normalize_answer(s: str) -> str:
+    """Lowercase, strip a leading MCQ choice marker / answer preamble, drop
+    punctuation, and collapse whitespace.  Standard open-domain QA normalisation
+    so that ``"(C) fossilization"`` matches the gold ``"fossilization"``.
+    """
+    s = s.strip().lower()
+    s = _re.sub(r'^\s*[\(\[]?[a-e][\)\].:]\s*', '', s)          # "(C) ", "c.", "B)"
+    s = _re.sub(r'^(the\s+answer\s+is|answer|final answer)\s*[:\-]?\s*', '', s)
+    s = s.translate(str.maketrans('', '', _string.punctuation))
+    return ' '.join(s.split())
+
+
+def _inclusion_match(hypothesis: str, all_answers: list[str]) -> float:
+    """1.0 if a normalised gold answer is contained in the normalised response.
+
+    The standard correctness metric for free-form answers to multiple-choice or
+    short-answer questions, where the model emits the answer text (often with a
+    choice-letter prefix) rather than the bare gold string.
+    """
+    hyp = _normalize_answer(hypothesis)
+    if not hyp:
+        return 0.0
+    for a in all_answers:
+        gold = _normalize_answer(a)
+        if gold and (gold == hyp or gold in hyp):
+            return 1.0
+    return 0.0
 
 
 # ---------------------------------------------------------------------------

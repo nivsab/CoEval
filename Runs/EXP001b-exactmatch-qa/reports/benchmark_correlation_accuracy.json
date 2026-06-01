@@ -1,0 +1,218 @@
+{
+  "experiment": "benchmark-grounded correlation",
+  "aspect_filter": [
+    "accuracy"
+  ],
+  "run": "Runs\\EXP001b-exactmatch-qa",
+  "tasks": [
+    "science_qa",
+    "science_reasoning"
+  ],
+  "judges": [
+    "claude-haiku",
+    "claude-sonnet-4",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o",
+    "gpt-4o-mini"
+  ],
+  "metric_by_task": {
+    "science_qa": "inclusion_match",
+    "science_reasoning": "inclusion_match"
+  },
+  "n_scored_responses": 573,
+  "ensemble": {
+    "method": "CoEval ensemble",
+    "n_judges": 6,
+    "science_qa": {
+      "rho": 0.6676207594522019,
+      "lo": 0.27548938361577946,
+      "hi": 0.9346442547740299,
+      "n": 285
+    },
+    "science_reasoning": {
+      "rho": 0.882369009014048,
+      "lo": 0.8030485002361165,
+      "hi": 0.9513338885985395,
+      "n": 288
+    },
+    "overall": {
+      "rho": 0.8585401774037462,
+      "lo": 0.7769983109793807,
+      "hi": 0.9263503056503875,
+      "n": 573
+    }
+  },
+  "per_judge": {
+    "claude-haiku": {
+      "method": "single judge: claude-haiku",
+      "science_qa": {
+        "rho": 0.6676207594522019,
+        "lo": 0.27548938361577946,
+        "hi": 0.9346442547740299,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8788975837404864,
+        "lo": 0.7909391663271401,
+        "hi": 0.9487037711120243,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8553125375775249,
+        "lo": 0.7691519384327759,
+        "hi": 0.9265913087736655,
+        "n": 573
+      }
+    },
+    "claude-sonnet-4": {
+      "method": "single judge: claude-sonnet-4",
+      "science_qa": {
+        "rho": 0.6694634052116913,
+        "lo": 0.27837296075895324,
+        "hi": 0.9352054811877866,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8824127630380708,
+        "lo": 0.8012695043664452,
+        "hi": 0.9494688875102082,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8593149045073737,
+        "lo": 0.777618664993543,
+        "hi": 0.92790166108931,
+        "n": 573
+      }
+    },
+    "gemini-flash": {
+      "method": "single judge: gemini-flash",
+      "science_qa": {
+        "rho": 0.6694634052116913,
+        "lo": 0.27837296075895324,
+        "hi": 0.9352054811877866,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8824127630380708,
+        "lo": 0.8012695043664452,
+        "hi": 0.9494688875102082,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8593149045073737,
+        "lo": 0.777618664993543,
+        "hi": 0.92790166108931,
+        "n": 573
+      }
+    },
+    "gpt-3.5-turbo": {
+      "method": "single judge: gpt-3.5-turbo",
+      "science_qa": {
+        "rho": 0.6694634052116913,
+        "lo": 0.27837296075895324,
+        "hi": 0.9352054811877866,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8653182810473073,
+        "lo": 0.7786245081309934,
+        "hi": 0.9375482697479732,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8460742772225142,
+        "lo": 0.7611679509888588,
+        "hi": 0.9181483532077538,
+        "n": 573
+      }
+    },
+    "gpt-4o": {
+      "method": "single judge: gpt-4o",
+      "science_qa": {
+        "rho": 0.6694634052116913,
+        "lo": 0.27837296075895324,
+        "hi": 0.9352054811877866,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8824127630380708,
+        "lo": 0.8012695043664452,
+        "hi": 0.9494688875102082,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8593149045073737,
+        "lo": 0.777618664993543,
+        "hi": 0.92790166108931,
+        "n": 573
+      }
+    },
+    "gpt-4o-mini": {
+      "method": "single judge: gpt-4o-mini",
+      "science_qa": {
+        "rho": 0.6694634052116913,
+        "lo": 0.27837296075895324,
+        "hi": 0.9352054811877866,
+        "n": 285
+      },
+      "science_reasoning": {
+        "rho": 0.8824127630380708,
+        "lo": 0.8012695043664452,
+        "hi": 0.9494688875102082,
+        "n": 288
+      },
+      "overall": {
+        "rho": 0.8593149045073737,
+        "lo": 0.777618664993543,
+        "hi": 0.92790166108931,
+        "n": 573
+      }
+    }
+  },
+  "best_single_judge": {
+    "method": "Best single judge",
+    "science_qa": {
+      "judge": "claude-sonnet-4",
+      "rho": 0.6694634052116913,
+      "lo": 0.27837296075895324,
+      "hi": 0.9352054811877866,
+      "n": 285
+    },
+    "science_reasoning": {
+      "judge": "claude-sonnet-4",
+      "rho": 0.8824127630380708,
+      "lo": 0.8012695043664452,
+      "hi": 0.9494688875102082,
+      "n": 288
+    },
+    "overall": {
+      "judge": "claude-sonnet-4",
+      "rho": 0.8593149045073737,
+      "lo": 0.777618664993543,
+      "hi": 0.92790166108931,
+      "n": 573
+    }
+  },
+  "mean_single_judge": {
+    "method": "Mean single judge",
+    "judges": [
+      "claude-haiku",
+      "claude-sonnet-4",
+      "gemini-flash",
+      "gpt-3.5-turbo",
+      "gpt-4o",
+      "gpt-4o-mini"
+    ],
+    "science_qa": {
+      "rho": 0.6691562975851096
+    },
+    "science_reasoning": {
+      "rho": 0.8789778194900127
+    },
+    "overall": {
+      "rho": 0.8564410721382556
+    }
+  }
+}

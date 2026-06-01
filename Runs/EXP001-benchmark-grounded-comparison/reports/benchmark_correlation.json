@@ -1,0 +1,190 @@
+{
+  "experiment": "EXP-001 benchmark-grounded correlation",
+  "run": "Runs\\EXP001-benchmark-grounded-comparison",
+  "tasks": [
+    "code_explanation",
+    "news_summarization",
+    "text_summarization"
+  ],
+  "judges": [
+    "claude-haiku",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o-mini"
+  ],
+  "metric_by_task": {
+    "code_explanation": "bleu",
+    "news_summarization": "bertscore",
+    "text_summarization": "bertscore"
+  },
+  "n_scored_responses": 900,
+  "ensemble": {
+    "method": "CoEval ensemble",
+    "n_judges": 4,
+    "code_explanation": {
+      "rho": -0.030878074153157287,
+      "lo": -0.15960542908442488,
+      "hi": 0.08893789854512141,
+      "n": 300
+    },
+    "news_summarization": {
+      "rho": 0.17563550070979758,
+      "lo": 0.058403532873921964,
+      "hi": 0.28186674491067437,
+      "n": 300
+    },
+    "text_summarization": {
+      "rho": 0.12106419402284534,
+      "lo": 0.008658896598807883,
+      "hi": 0.23389237152360193,
+      "n": 300
+    },
+    "overall": {
+      "rho": 0.24426383776495955,
+      "lo": 0.17942763233156275,
+      "hi": 0.3109686287221392,
+      "n": 900
+    }
+  },
+  "per_judge": {
+    "claude-haiku": {
+      "method": "single judge: claude-haiku",
+      "code_explanation": {
+        "rho": -0.03099376707603881,
+        "lo": -0.18996248331188295,
+        "hi": 0.11701531161196065,
+        "n": 189
+      },
+      "news_summarization": {
+        "rho": 0.19039581417083432,
+        "lo": 0.0775973225643703,
+        "hi": 0.30024562224433665,
+        "n": 300
+      },
+      "text_summarization": {
+        "rho": 0.216057267173046,
+        "lo": 0.10802477926662159,
+        "hi": 0.31616822126843247,
+        "n": 300
+      },
+      "overall": {
+        "rho": 0.3540945170251086,
+        "lo": 0.2917637469837532,
+        "hi": 0.4160706165671745,
+        "n": 789
+      }
+    },
+    "gemini-flash": {
+      "method": "single judge: gemini-flash",
+      "code_explanation": {
+        "rho": -0.023192586898479153,
+        "lo": -0.14106241093402072,
+        "hi": 0.09208372826729075,
+        "n": 300
+      },
+      "news_summarization": {
+        "rho": 0.175756135980583,
+        "lo": 0.06478204503801022,
+        "hi": 0.2825325150495093,
+        "n": 300
+      },
+      "text_summarization": {
+        "rho": 0.0745449955759309,
+        "lo": -0.039839120655136326,
+        "hi": 0.18434890764598735,
+        "n": 300
+      },
+      "overall": {
+        "rho": 0.16694813652773344,
+        "lo": 0.10190819099628762,
+        "hi": 0.22813192521832018,
+        "n": 900
+      }
+    },
+    "gpt-3.5-turbo": {
+      "method": "single judge: gpt-3.5-turbo",
+      "code_explanation": {
+        "rho": -0.10628013647405614,
+        "lo": -0.21426395962806025,
+        "hi": 0.010740110269315362,
+        "n": 300
+      },
+      "news_summarization": {
+        "rho": 0.04949129005936487,
+        "lo": -0.06571462708000646,
+        "hi": 0.16181138224755773,
+        "n": 300
+      },
+      "text_summarization": {
+        "rho": -0.08911850854321132,
+        "lo": -0.21170087702816973,
+        "hi": 0.02189169892380775,
+        "n": 300
+      },
+      "overall": {
+        "rho": -0.04181680818182446,
+        "lo": -0.1008342844115712,
+        "hi": 0.020157845655607194,
+        "n": 900
+      }
+    },
+    "gpt-4o-mini": {
+      "method": "single judge: gpt-4o-mini",
+      "code_explanation": {
+        "rho": -0.01944682574909174,
+        "lo": -0.1464712775449434,
+        "hi": 0.09504599395703105,
+        "n": 300
+      },
+      "news_summarization": {
+        "rho": 0.05241083258904954,
+        "lo": -0.06852727464265847,
+        "hi": 0.172250680204445,
+        "n": 300
+      },
+      "text_summarization": {
+        "rho": 0.03550404212228281,
+        "lo": -0.09249169907483906,
+        "hi": 0.14798717592685007,
+        "n": 300
+      },
+      "overall": {
+        "rho": 0.23902779065424867,
+        "lo": 0.1746415913908231,
+        "hi": 0.3063934808919586,
+        "n": 900
+      }
+    }
+  },
+  "best_single_judge": {
+    "method": "Best single judge",
+    "code_explanation": {
+      "judge": "gpt-4o-mini",
+      "rho": -0.01944682574909174,
+      "lo": -0.1464712775449434,
+      "hi": 0.09504599395703105,
+      "n": 300
+    },
+    "news_summarization": {
+      "judge": "claude-haiku",
+      "rho": 0.19039581417083432,
+      "lo": 0.0775973225643703,
+      "hi": 0.30024562224433665,
+      "n": 300
+    },
+    "text_summarization": {
+      "judge": "claude-haiku",
+      "rho": 0.216057267173046,
+      "lo": 0.10802477926662159,
+      "hi": 0.31616822126843247,
+      "n": 300
+    },
+    "overall": {
+      "judge": "claude-haiku",
+      "rho": 0.3540945170251086,
+      "lo": 0.2917637469837532,
+      "hi": 0.4160706165671745,
+      "n": 789
+    }
+  }
+}

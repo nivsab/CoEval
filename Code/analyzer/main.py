@@ -36,6 +36,11 @@ def run_analyze(
     benchmark_format: str = 'jsonl',
     partial_ok: bool = False,
     log_level: str = 'INFO',
+    # Experiment subcommand options (EXP-002 / EXP-004 / EXP-005)
+    judges: list[str] | None = None,
+    tasks: list[str] | None = None,
+    method: str = 'pearson',
+    embedding_model: str = 'all-MiniLM-L6-v2',
 ) -> int:
     """Main EEA dispatch function.
 
@@ -146,6 +151,22 @@ def run_analyze(
                 model, out_p, **robust_kwargs,
                 benchmark_format=benchmark_format,
             )
+
+        elif subcommand == 'ensemble-ablation':
+            from .ensemble_ablation import write_ensemble_ablation
+            write_ensemble_ablation(model, out_p, judges=judges, tasks=tasks)
+            print(f"Written: {out_p / 'index.html'}")
+
+        elif subcommand == 'verbosity-bias':
+            from .verbosity_bias import write_verbosity_bias
+            write_verbosity_bias(model, out_p, judges=judges, tasks=tasks, method=method)
+            print(f"Written: {out_p / 'index.html'}")
+
+        elif subcommand == 'rubric-overlap':
+            from .rubric_generalization import write_rubric_overlap
+            write_rubric_overlap([run_p / 'phase2_rubric'], out_p,
+                                 embedding_model=embedding_model)
+            print(f"Written: {out_p / 'index.html'}")
 
         elif subcommand == 'all':
             _run_all(model, out_p, robust_kwargs)

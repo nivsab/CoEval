@@ -1,0 +1,45 @@
+EXP-004: Verbosity Bias Analysis — Manual Cost Estimate
+========================================================
+Computed: 2026-03-03
+Config:   Runs/EXP004-verbosity-bias-analysis/config.yaml
+
+PRIMARY SCENARIO: Pure re-analysis of medium-benchmark-v1 (recommended)
+-------------------------------------------------------------------------
+  New API calls:   0
+  New HF calls:    0
+  Cost:            $0.00
+
+  This experiment reads existing phase4 response files (token_count field)
+  and phase5 evaluation files (score_norm) from Runs/medium-benchmark/.
+  All computation is CPU-only (Pearson/Spearman correlation via scipy).
+
+  Compute time: < 5 minutes on any modern CPU.
+  Memory needed: < 100 MB (loading all JSONL files for medium-benchmark-v1).
+
+FALLBACK SCENARIO: Fresh data generation
+-----------------------------------------
+  Only needed if medium-benchmark-v1 phase4/5 data is unavailable or
+  if a larger sample is desired for statistical power.
+
+  This scenario would follow EXP-002's cost profile (same model panel and
+  task design), since both experiments re-use the medium-benchmark-v1 data.
+
+  If generating fresh (20 items/task, 5 teachers, 5 students, 2 judges):
+    Phase 3:   400 teacher calls
+    Phase 4: 2,000 student calls (400 × 5 students)
+    Phase 5: 10,000 judge calls (2,000 × 5 criteria × 2 API judges)
+
+  Rough fresh-generation cost (batch, gpt-4o-mini rates):
+    Phase 3:  ~$0.05
+    Phase 4:  ~$0.09
+    Phase 5:  ~$1.27
+    TOTAL:    ~$1.41
+
+  This is identical to the medium-benchmark-v1 cost for 2 API judges.
+  There is no benefit to generating fresh data for this experiment — use
+  the existing medium-benchmark-v1 data.
+
+Recommendation
+--------------
+  Implement the `verbosity-bias` analyzer subcommand and run against
+  existing data. Total cost: $0.00. Estimated dev time: 1 hour.

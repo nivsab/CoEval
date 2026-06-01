@@ -1,0 +1,179 @@
+models:
+
+  # --------------------------------------------------------------------------
+  # Virtual benchmark teachers — pre-ingested benchmark data.
+  # Phase 3 is automatically skipped for interface: benchmark.
+  # --------------------------------------------------------------------------
+  - name: sciq
+    interface: benchmark
+    parameters: { description: "SciQ science exam QA (exact-match ground truth)", task: science_qa }
+    roles: [teacher]
+
+  - name: arc_challenge
+    interface: benchmark
+    parameters: { description: "ARC-Challenge science reasoning MCQ (exact-match)", task: science_reasoning }
+    roles: [teacher]
+
+
+  # --------------------------------------------------------------------------
+  # gpt-4o-mini: student + judge
+  # Pricing: $0.15/$0.60 per 1M tokens (batch: $0.075/$0.30)
+  # --------------------------------------------------------------------------
+  - name: gpt-4o-mini
+    interface: openrouter
+    parameters:
+      model: openai/gpt-4o-mini
+      temperature: 0.7
+      max_tokens: 512
+    roles: [student, judge]
+    role_parameters:
+      student:
+        temperature: 0.7
+        max_tokens: 256
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # gpt-3.5-turbo: student + judge
+  # Pricing: $0.50/$1.50 per 1M tokens (batch: $0.25/$0.75)
+  # --------------------------------------------------------------------------
+  - name: gpt-3.5-turbo
+    interface: openrouter
+    parameters:
+      model: openai/gpt-3.5-turbo
+      temperature: 0.7
+      max_tokens: 512
+    roles: [student, judge]
+    role_parameters:
+      student:
+        temperature: 0.7
+        max_tokens: 256
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # CROSS-FAMILY frontier judges via OpenRouter (Anthropic + Google).
+  # Rationale (reviewer fix): the original panel was OpenAI-only, so ensemble
+  # reliability was inflated by shared-family error correlation. Adding
+  # Anthropic + Google judges gives a genuinely cross-vendor ensemble — the
+  # configuration CoEval's own theory says you need.
+  # --------------------------------------------------------------------------
+  - name: claude-haiku
+    interface: openrouter
+    parameters:
+      model: anthropic/claude-3.5-haiku
+      temperature: 0.0
+      max_tokens: 256
+    roles: [judge]
+    role_parameters:
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  - name: gemini-flash
+    interface: openrouter
+    parameters:
+      model: google/gemini-2.5-flash
+      temperature: 0.0
+      max_tokens: 256
+    roles: [judge]
+    role_parameters:
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # qwen2p5-1b5: student only (1.5B local HuggingFace model)
+  # NOTE: 1.5B models can serve as judges but require max_new_tokens >= 256.
+  #       Excluded from judge role here to keep the judge ensemble clean
+  #       (two frontier-class API models for reliable scoring).
+  # --------------------------------------------------------------------------
+  # Weak student via OpenRouter (replaces local Qwen — no local GPU, faster).
+  # A small 3B model provides the low-capability end needed for score spread.
+  - name: llama-3.2-3b
+    interface: openrouter
+    parameters:
+      model: meta-llama/llama-3.2-3b-instruct
+      temperature: 0.7
+      max_tokens: 512
+    roles: [student]
+    role_parameters:
+      student:
+        temperature: 0.7
+        max_tokens: 256
+
+
+
+  # STRONG frontier cross-family judges (reviewer R1/R3): genuine OpenAI +
+  # Anthropic + Google frontier panel to test whether a strong cross-family
+  # ensemble beats the best single judge and recovers monotone reliability.
+  - name: gpt-4o
+    interface: openrouter
+    parameters: { model: openai/gpt-4o, temperature: 0.0, max_tokens: 256 }
+    roles: [judge]
+    role_parameters: { judge: { temperature: 0.0, max_tokens: 128 } }
+
+  - name: claude-sonnet-4
+    interface: openrouter
+    parameters: { model: anthropic/claude-sonnet-4, temperature: 0.0, max_tokens: 256 }
+    roles: [judge]
+    role_parameters: { judge: { temperature: 0.0, max_tokens: 128 } }
+
+
+# ─── TASKS ───────────────────────────────────────────────────────────────────
+tasks:
+  - name: science_qa
+    description: "Answer a science exam multiple-choice question. Output only the correct option text."
+    output_description: "The exact text of the correct answer choice. No explanation."
+    target_attributes: { difficulty: [easy, medium, hard] }
+    nuanced_attributes: {}
+    sampling: { target: [1], nuance: [0], total: 100 }
+    rubric:
+      accuracy: "The answer exactly matches the scientifically correct choice."
+      relevance: "The answer directly addresses the question asked."
+    evaluation_mode: single
+    prompt_library:
+      test: |
+        Answer this question. Output only the correct answer, no explanation.
+        {input}
+      sample: "{prompt}"
+
+  - name: science_reasoning
+    description: "Answer an ARC-Challenge science reasoning multiple-choice question with the correct option."
+    output_description: "The exact text (or letter) of the correct option. No explanation."
+    target_attributes: { difficulty: [easy, medium, hard] }
+    nuanced_attributes: {}
+    sampling: { target: [1], nuance: [0], total: 100 }
+    rubric:
+      accuracy: "The selected option is the correct answer to the reasoning question."
+      relevance: "The response answers the question rather than restating it."
+    evaluation_mode: single
+    prompt_library:
+      test: |
+        Answer this multiple-choice question. Output only the correct option.
+        {input}
+      sample: "{prompt}"
+
+
+# ─── EXPERIMENT ──────────────────────────────────────────────────────────────
+experiment:
+  id: EXP001b-exactmatch-qa
+  storage_folder: ./Runs
+  log_level: INFO
+  generation_retries: 2
+  phases:
+    attribute_mapping:   New
+    rubric_mapping:      New
+    data_generation:     Extend
+    response_collection: New
+    evaluation:          Extend
+  quota:
+    gpt-4o-mini:  { max_calls: 4000 }
+    gpt-3.5-turbo: { max_calls: 4000 }
+    claude-haiku: { max_calls: 4000 }
+    gemini-flash: { max_calls: 4000 }
+    llama-3.2-3b: { max_calls: 4000 }
+    gpt-4o: { max_calls: 4000 }
+    claude-sonnet-4: { max_calls: 4000 }

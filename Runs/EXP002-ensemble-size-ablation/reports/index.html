@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CoEval EXP-002: Ensemble-Size Ablation</title>
+<script src="plotly.min.js"></script>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; padding: 0 0 60px; color: #1a1a1a; background: #fafafa; }
+  header { background: #1f2a44; color: #fff; padding: 22px 32px; }
+  header h1 { margin: 0; font-size: 21px; }
+  header p { margin: 6px 0 0; opacity: .8; font-size: 13px; }
+  .wrap { max-width: 1100px; margin: 24px auto; padding: 0 24px; }
+  .card { background: #fff; border: 1px solid #e3e6ee; border-radius: 10px;
+          padding: 20px 24px; margin-bottom: 22px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .card h2 { margin: 0 0 14px; font-size: 16px; color: #1f2a44; }
+  .summary { font-size: 14px; line-height: 1.6; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { border: 1px solid #e3e6ee; padding: 7px 10px; text-align: right; }
+  th { background: #f1f3f9; color: #1f2a44; }
+  td:first-child, th:first-child { text-align: left; }
+  .fig { width: 100%; height: 420px; }
+  .note { font-size: 12px; color: #667; margin-top: 8px; }
+  code { background: #f1f3f9; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header><h1>CoEval EXP-002: Ensemble-Size Ablation</h1><p>Runs\medium-benchmark | 10856 balanced items</p></header>
+<div class="wrap"><div class="card"><h2>Reliability vs ensemble size</h2><div id="fig_icc" class="fig"></div><p class="note">ICC(3,k) is the reliability of the averaged k-judge score; its rise with k is the Spearman-Brown effect of aggregation. ICC(3,1) (single-rater) stays roughly flat.</p></div><div class="card"><h2>Convergence to the full panel</h2><div id="fig_conv" class="fig"></div></div><div class="card"><h2>Per-k summary</h2><table><thead><tr><th>k</th><th>judge panel</th><th>ICC(3,1)</th><th>ICC(3,k)</th><th>Spearman vs full (95% CI)</th><th>ensemble var</th><th>n items</th></tr></thead><tbody><tr><td>1</td><td>gpt-4o-mini</td><td>nan</td><td>nan</td><td>0.668 [0.657, 0.679]</td><td>0.0856</td><td>10856</td></tr><tr><td>2</td><td>gpt-4o-mini+gpt-3.5-turbo</td><td>0.535</td><td>0.697</td><td>0.744 [0.734, 0.753]</td><td>0.0652</td><td>10856</td></tr><tr><td>3</td><td>gpt-4o-mini+gpt-3.5-turbo+qwen2p5-1b5</td><td>0.216</td><td>0.452</td><td>0.928 [0.925, 0.930]</td><td>0.0491</td><td>10856</td></tr><tr><td>4</td><td>gpt-4o-mini+gpt-3.5-turbo+qwen2p5-1b5+smollm2-1b7</td><td>0.145</td><td>0.405</td><td>1.000 [1.000, 1.000]</td><td>0.0322</td><td>10856</td></tr></tbody></table><p class="note">Balanced item set: 10856 (response, aspect) pairs scored by all 4 judges. Judge addition order: <code>gpt-4o-mini -> gpt-3.5-turbo -> qwen2p5-1b5 -> smollm2-1b7</code>.</p></div></div>
+<script>
+const FIGS = [{"div": "fig_icc", "data": [{"x": [1, 2, 3, 4], "y": [NaN, 0.6968531828569086, 0.4522157424692264, 0.4046877476061336], "type": "scatter", "mode": "lines+markers", "name": "ICC(3,k) average-measures", "line": {"color": "#2b6cb0", "width": 3}}, {"x": [1, 2, 3, 4], "y": [NaN, 0.5347464872642903, 0.21579620958179208, 0.14526092401879828], "type": "scatter", "mode": "lines+markers", "name": "ICC(3,1) single-rater", "line": {"color": "#a0aec0", "width": 2, "dash": "dot"}}], "layout": {"title": "Inter-rater reliability vs ensemble size", "xaxis": {"title": "judges in ensemble (k)", "dtick": 1}, "yaxis": {"title": "ICC", "range": [0, 1]}}}, {"div": "fig_conv", "data": [{"x": [1, 2, 3, 4], "y": [0.6676360578789745, 0.7437690370752017, 0.9277451196308125, 1.0], "error_y": {"type": "data", "symmetric": false, "array": [0.010995435608748383, 0.009268684607620425, 0.0026826904017902553, 0.0], "arrayminus": [0.010379448090519383, 0.009331037350749694, 0.003070797706741679, 1.1102230246251565e-16]}, "type": "scatter", "mode": "lines+markers", "name": "Spearman vs full panel", "line": {"color": "#2f855a", "width": 3}}], "layout": {"title": "Convergence of k-judge ensemble to full panel (95% bootstrap CI)", "xaxis": {"title": "judges in ensemble (k)", "dtick": 1}, "yaxis": {"title": "Spearman rho", "range": [0, 1.02]}}}];
+for (const f of FIGS) {
+  Plotly.newPlot(f.div, f.data, f.layout, {responsive: true, displaylogo: false});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+k,judges,icc_3_1,icc_3_k,spearman_vs_full,spearman_lo,spearman_hi,ensemble_score_var,n_items
+1,gpt-4o-mini,nan,nan,0.6676,0.6573,0.6786,0.08564,10856
+2,gpt-4o-mini+gpt-3.5-turbo,0.5347,0.6969,0.7438,0.7344,0.7530,0.06519,10856
+3,gpt-4o-mini+gpt-3.5-turbo+qwen2p5-1b5,0.2158,0.4522,0.9277,0.9247,0.9304,0.04915,10856
+4,gpt-4o-mini+gpt-3.5-turbo+qwen2p5-1b5+smollm2-1b7,0.1453,0.4047,1.0000,1.0000,1.0000,0.03224,10856

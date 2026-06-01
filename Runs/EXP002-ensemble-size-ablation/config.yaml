@@ -1,0 +1,381 @@
+# CoEval — EXP-002: Ensemble Size Ablation
+# =============================================================================
+# Purpose : Measure how Spearman rho (ensemble vs. single-best-judge) increases
+#           monotonically as the judge ensemble grows from 1 → 2 → 3 → 4 → 5
+#           judges, validating the multi-judge ensemble reliability claim.
+#
+# Strategy: This experiment is designed primarily as a RE-ANALYSIS of existing
+#           medium-benchmark-v1 phase5 evaluations.  If the full judge panel
+#           (gpt-4o-mini, gpt-3.5-turbo, qwen2p5-1b5, qwen2p5-0b5, smollm2-1b7)
+#           has already been evaluated in medium-benchmark-v1, the ablation can
+#           be computed by the analyzer by sub-sampling judge subsets:
+#
+#             coeval analyze ensemble-ablation \
+#                 --run Runs/medium-benchmark \
+#                 --out Runs/EXP002-ensemble-size-ablation/reports
+#
+#           If medium-benchmark-v1 evaluations are incomplete for any judge,
+#           use this config to generate the missing evaluations by running
+#           only Phase 5 (evaluation) with phases 1–4 set to Keep.
+#
+# Models  : gpt-4o-mini, gpt-3.5-turbo (API judges — also students)
+#           qwen2p5-1b5, qwen2p5-0b5, smollm2-1b7 (local HF judges — also students)
+#           (Matches medium-benchmark-v1 model panel exactly)
+#
+# Tasks   : text_summarization, code_explanation, email_composition,
+#           data_interpretation  (same as medium-benchmark-v1)
+#
+# Datapoints: 20 per task × 4 tasks = 80 datapoints per teacher model
+#             5 teacher models → 400 total datapoints
+#
+# Call budget (assumes re-use of medium-benchmark-v1 phases 1-4):
+#   Phase 3  : 0 new calls — Keep (existing datapoints)
+#   Phase 4  : 0 new calls — Keep (existing student responses)
+#   Phase 5  : 0 new calls — Keep (if all 5 judges already evaluated)
+#   Analysis : CPU only — no API calls
+#   ───────────────────────────────────────────────────────────────────────────
+#   TOTAL NEW API CALLS : 0  (pure re-analysis from medium-benchmark-v1)
+#
+# If Phase 5 is missing for any judge, set that phase to Extend and re-run.
+# =============================================================================
+
+
+# ─── MODELS ──────────────────────────────────────────────────────────────────
+# NOTE: This model panel is identical to medium-benchmark-v1 to allow
+#       direct re-use of existing phase5 evaluation files.
+
+models:
+
+  # --------------------------------------------------------------------------
+  # gpt-4o-mini: all three roles (matches medium-benchmark-v1)
+  # --------------------------------------------------------------------------
+  - name: gpt-4o-mini
+    interface: openai
+    parameters:
+      model: gpt-4o-mini
+      temperature: 0.7
+      max_tokens: 512
+    roles: [teacher, student, judge]
+    role_parameters:
+      teacher:
+        temperature: 0.8
+        max_tokens: 512
+      student:
+        temperature: 0.7
+        max_tokens: 256
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # gpt-3.5-turbo: all three roles (matches medium-benchmark-v1)
+  # --------------------------------------------------------------------------
+  - name: gpt-3.5-turbo
+    interface: openai
+    parameters:
+      model: gpt-3.5-turbo
+      temperature: 0.7
+      max_tokens: 512
+    roles: [teacher, student, judge]
+    role_parameters:
+      teacher:
+        temperature: 0.8
+        max_tokens: 512
+      student:
+        temperature: 0.7
+        max_tokens: 256
+      judge:
+        temperature: 0.0
+        max_tokens: 128
+
+  # --------------------------------------------------------------------------
+  # qwen2p5-0b5: teacher + student only (0.5B cannot reliably judge)
+  # (matches medium-benchmark-v1 — excluded from judge role)
+  # --------------------------------------------------------------------------
+  - name: qwen2p5-0b5
+    interface: huggingface
+    parameters:
+      model: Qwen/Qwen2.5-0.5B-Instruct
+      temperature: 0.7
+      max_new_tokens: 512
+      device: auto
+      load_in_4bit: true
+    roles: [teacher, student]
+    role_parameters:
+      teacher:
+        temperature: 0.8
+        max_new_tokens: 512
+      student:
+        temperature: 0.7
+        max_new_tokens: 256
+
+  # --------------------------------------------------------------------------
+  # qwen2p5-1b5: all three roles (matches medium-benchmark-v1)
+  # --------------------------------------------------------------------------
+  - name: qwen2p5-1b5
+    interface: huggingface
+    parameters:
+      model: Qwen/Qwen2.5-1.5B-Instruct
+      temperature: 0.7
+      max_new_tokens: 512
+      device: auto
+      load_in_4bit: true
+    roles: [teacher, student, judge]
+    role_parameters:
+      teacher:
+        temperature: 0.8
+        max_new_tokens: 512
+      student:
+        temperature: 0.7
+        max_new_tokens: 256
+      judge:
+        temperature: 0.0
+        max_new_tokens: 256
+
+  # --------------------------------------------------------------------------
+  # smollm2-1b7: all three roles (matches medium-benchmark-v1)
+  # --------------------------------------------------------------------------
+  - name: smollm2-1b7
+    interface: huggingface
+    parameters:
+      model: HuggingFaceTB/SmolLM2-1.7B-Instruct
+      temperature: 0.7
+      max_new_tokens: 512
+      device: auto
+      load_in_4bit: true
+    roles: [teacher, student, judge]
+    role_parameters:
+      teacher:
+        temperature: 0.8
+        max_new_tokens: 512
+      student:
+        temperature: 0.7
+        max_new_tokens: 256
+      judge:
+        temperature: 0.0
+        max_new_tokens: 256
+
+
+# ─── TASKS ───────────────────────────────────────────────────────────────────
+# Task definitions are identical to medium-benchmark-v1 to allow file reuse.
+
+tasks:
+
+  - name: text_summarization
+    description: >
+      Summarise a given passage of text. The summary must capture all key
+      information at the specified depth, match the required tone, and be
+      appropriate for the target audience.
+    output_description: >
+      A summary of the passage (50-150 words for moderate/detailed; 1-2 sentences
+      for brief) in plain prose. The tone must match the specification.
+
+    target_attributes:
+      complexity:   [simple, moderate, complex, technical]
+      tone:         [neutral, formal, conversational, critical]
+      length:       [brief, moderate, detailed]
+      audience:     [general_public, professional, expert, student]
+      format:       [paragraph, bullet_points, headline_and_body]
+
+    nuanced_attributes:
+      domain:       [science, business, politics, technology, health]
+      source_type:  [news_article, academic_paper, corporate_report, blog_post]
+
+    sampling:
+      target: [1, 2]
+      nuance: [1, 2]
+      total: 20
+
+    rubric:
+      accuracy:         "The summary correctly captures the main points without distortion or fabrication."
+      conciseness:      "The summary avoids redundancy and stays within the specified length and format."
+      readability:      "The summary is grammatically correct, well-structured, and easy to read."
+      tone_consistency: "The tone matches the specified requirement throughout the summary."
+      completeness:     "No key points from the passage are omitted given the specified depth."
+
+    evaluation_mode: single
+
+    prompt_library:
+      sample: |
+        Generate a benchmark data point for: {task_description}
+        Response format: {output_description}
+        Required attributes: {target_attributes}. Nuance: {nuanced_attributes}.
+
+        Follow this example format exactly:
+        {{"prompt": "The global average temperature has risen by approximately 1.1°C since pre-industrial times.",
+          "response": "Global temperatures have risen 1.1°C above pre-industrial levels due to fossil fuel emissions."}}
+
+        Now generate a NEW, different data point fitting the required attributes.
+        Return only a JSON object with keys "prompt" and "response". No explanation.
+
+      sample.smollm2-1b7: >
+        Generate a natural benchmark data point for the task {task_description} and produce a
+        response {output_description}, where the response is specified with {target_attributes}.
+        Return as JSON with exactly two keys: "prompt" and "response".
+
+  - name: code_explanation
+    description: >
+      Explain a given code snippet clearly for the specified audience and at
+      the specified depth. The explanation must match the programming language,
+      complexity level, and chosen explanation style.
+    output_description: >
+      A code explanation (80-200 words) that addresses what the code does,
+      how it works, and (where depth requires) why it is structured that way.
+
+    target_attributes:
+      language:          [python, javascript, java, sql, bash]
+      complexity:        [beginner, intermediate, advanced]
+      explanation_style: [step_by_step, conceptual_overview, example_driven]
+      audience:          [novice_programmer, junior_developer, senior_engineer]
+      depth:             [surface, standard, deep_dive]
+
+    nuanced_attributes:
+      paradigm:    [functional, object_oriented, procedural, declarative]
+      code_quality: [clean_idiomatic, legacy_style, optimised]
+
+    sampling:
+      target: [1, 2]
+      nuance: [1, 2]
+      total: 20
+
+    rubric:
+      technical_accuracy: "All statements about what the code does are factually correct."
+      clarity:            "The explanation is clearly written and avoids unnecessary jargon for the audience level."
+      appropriate_level:  "The depth and vocabulary precisely match the specified audience and depth level."
+      completeness:       "The explanation covers all significant parts of the snippet without skipping key logic."
+      practical_value:    "The explanation helps the reader understand when and how to use or avoid this pattern."
+
+    evaluation_mode: single
+
+    prompt_library:
+      sample: |
+        Generate a benchmark data point for: {task_description}
+        Response format: {output_description}
+        Required attributes: {target_attributes}. Nuance: {nuanced_attributes}.
+
+        Follow this example format exactly:
+        {{"prompt": "def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)",
+          "response": "This Python function computes the nth Fibonacci number using recursion."}}
+
+        Now generate a NEW, different data point fitting the required attributes.
+        Return only a JSON object with keys "prompt" and "response". No explanation.
+
+      sample.smollm2-1b7: >
+        Generate a natural benchmark data point for the task {task_description} and produce a
+        response {output_description}, where the response is specified with {target_attributes}.
+        Return as JSON with exactly two keys: "prompt" and "response".
+
+  - name: email_composition
+    description: >
+      Write a professional email matching the specified purpose, tone, urgency,
+      and length. The email must be appropriate for the described relationship.
+    output_description: >
+      A complete email including Subject line, greeting, body (2-4 paragraphs
+      for standard/detailed; 1 short paragraph for brief), and sign-off.
+
+    target_attributes:
+      tone:      [formal, semi_formal, casual, assertive, empathetic]
+      purpose:   [information_request, project_update, complaint_resolution, proposal, follow_up]
+      urgency:   [low, medium, high, critical]
+      length:    [brief, standard, detailed]
+      formality: [peer_to_peer, manager_to_report, report_to_manager, external_client]
+
+    nuanced_attributes:
+      industry:      [technology, finance, healthcare, education]
+      relationship:  [established_colleague, new_contact, long_term_client, vendor]
+
+    sampling:
+      target: [1, 2]
+      nuance: [1, 2]
+      total: 20
+
+    rubric:
+      clarity:           "The email communicates its purpose unambiguously in the first paragraph."
+      appropriate_tone:  "The tone and formality precisely match the specified relationship and context."
+      completeness:      "All necessary information is included; nothing critical is omitted."
+      professionalism:   "The email is free of grammatical errors and follows professional email conventions."
+      actionability:     "Where a response or action is needed, the request is specific and easy to act on."
+
+    evaluation_mode: single
+
+    prompt_library:
+      sample: |
+        Generate a benchmark data point for: {task_description}
+        Response format: {output_description}
+        Required attributes: {target_attributes}. Nuance: {nuanced_attributes}.
+        Return only a JSON object with keys "prompt" and "response". No explanation.
+
+      sample.smollm2-1b7: >
+        Generate a natural benchmark data point for the task {task_description} and produce a
+        response {output_description}, where the response is specified with {target_attributes}.
+        Return as JSON with exactly two keys: "prompt" and "response".
+
+  - name: data_interpretation
+    description: >
+      Interpret a described dataset or visualisation for the specified audience
+      and domain. Identify the key trend and explain its significance.
+    output_description: >
+      An interpretation (80-200 words) that identifies the primary trend,
+      explains what it means in context, and concludes with an insight.
+
+    target_attributes:
+      data_type:     [bar_chart, line_graph, scatter_plot, pivot_table, histogram]
+      insight_depth: [surface_observation, analytical_interpretation, predictive_inference]
+      audience:      [executive, data_analyst, technical_specialist, general_public]
+      domain:        [sales_revenue, public_health, climate, financial_markets]
+      complexity:    [single_variable, bivariate_comparison, multivariate_statistical]
+
+    nuanced_attributes:
+      time_period:     [monthly, quarterly, annual, multi_year_longitudinal]
+      comparison_type: [year_over_year, benchmark_vs_target, regional_breakdown]
+
+    sampling:
+      target: [1, 2]
+      nuance: [1, 2]
+      total: 20
+
+    rubric:
+      accuracy:             "All numerical claims and trend descriptions accurately reflect the described data."
+      insight_quality:      "The interpretation goes beyond stating the obvious; it explains why the trend matters."
+      statistical_literacy: "Statistical language is used correctly and proportionally to the data complexity."
+      clarity:              "The interpretation is clearly structured: observation → explanation → implication."
+      appropriate_caveats:  "Limitations in the data are acknowledged where relevant; claims are not overstated."
+
+    evaluation_mode: single
+
+    prompt_library:
+      sample: |
+        Generate a benchmark data point for: {task_description}
+        Response format: {output_description}
+        Required attributes: {target_attributes}. Nuance: {nuanced_attributes}.
+        Return only a JSON object with keys "prompt" and "response". No explanation.
+
+      sample.smollm2-1b7: >
+        Generate a natural benchmark data point for the task {task_description} and produce a
+        response {output_description}, where the response is specified with {target_attributes}.
+        Return as JSON with exactly two keys: "prompt" and "response".
+
+
+# ─── EXPERIMENT ──────────────────────────────────────────────────────────────
+
+experiment:
+  id: EXP002-ensemble-size-ablation
+  storage_folder: ./Runs
+  log_level: INFO
+  generation_retries: 2
+
+  # Primary usage: set all phases to Keep to re-use medium-benchmark-v1 data.
+  # If any phase5 judge files are missing, change evaluation to Extend.
+  phases:
+    attribute_mapping:   Keep     # re-use medium-benchmark-v1 phase1 outputs
+    rubric_mapping:      Keep     # re-use medium-benchmark-v1 phase2 outputs
+    data_generation:     Keep     # re-use medium-benchmark-v1 phase3 outputs
+    response_collection: Keep     # re-use medium-benchmark-v1 phase4 outputs
+    evaluation:          Keep     # re-use medium-benchmark-v1 phase5 outputs
+
+  # Conservative quotas — only applies if evaluation is set to Extend
+  quota:
+    gpt-4o-mini:
+      max_calls: 12000
+    gpt-3.5-turbo:
+      max_calls: 12000

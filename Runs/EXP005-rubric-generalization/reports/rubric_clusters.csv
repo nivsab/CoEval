@@ -1,0 +1,17 @@
+cluster,size,n_tasks,tasks,members
+1,1,1,email_composition,email_composition/clarity
+2,1,1,email_composition,email_composition/professionalism
+3,1,1,code_explanation,code_explanation/technical_accuracy
+4,1,1,data_interpretation,data_interpretation/accuracy
+5,1,1,text_summarization,text_summarization/accuracy
+6,1,1,data_interpretation,data_interpretation/statistical_literacy
+7,1,1,data_interpretation,data_interpretation/appropriate_caveats
+8,2,1,text_summarization,text_summarization/conciseness; text_summarization/readability
+9,3,3,code_explanation|email_composition|text_summarization,code_explanation/completeness; email_composition/completeness; text_summarization/completeness
+10,2,2,code_explanation|data_interpretation,code_explanation/clarity; data_interpretation/clarity
+11,1,1,code_explanation,code_explanation/structure
+12,1,1,data_interpretation,data_interpretation/insight_quality
+13,1,1,code_explanation,code_explanation/practical_value
+14,2,2,data_interpretation|email_composition,data_interpretation/actionability; email_composition/actionability
+15,2,2,email_composition|text_summarization,email_composition/appropriate_tone; text_summarization/tone_consistency
+16,1,1,code_explanation,code_explanation/appropriate_level

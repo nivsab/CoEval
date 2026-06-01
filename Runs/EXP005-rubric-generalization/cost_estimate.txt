@@ -1,0 +1,66 @@
+EXP-005: Cross-Task Rubric Generalization — Manual Cost Estimate
+================================================================
+Computed: 2026-03-03
+Config:   Runs/EXP005-rubric-generalization/config.yaml
+
+PRIMARY SCENARIO: Pure analysis of medium-benchmark-v1 rubrics (recommended)
+-----------------------------------------------------------------------------
+  New API calls:   0
+  Cost:            $0.00
+
+  The core experiment analyses existing rubric JSON files from
+  Runs/medium-benchmark/phase2_rubric/ using sentence embeddings.
+  All computation is CPU-only (sentence-transformers, cosine similarity).
+
+  Compute time: < 5 minutes on any modern CPU (embedding 4 rubrics).
+  Memory: < 1 GB (sentence-transformers model download ~90 MB).
+  Additional package: pip install sentence-transformers  (~$0.00)
+
+OPTIONAL EXTENSION: Generate 2 new domain tasks + analysis
+-----------------------------------------------------------
+  Tasks: legal_document_analysis (20 items), medical_summarization (20 items)
+  Total new datapoints: 40
+
+  Pricing reference: Config/provider_pricing.yaml
+    gpt-4o-mini: $0.15 input / $0.60 output per 1M tokens
+    gpt-3.5-turbo: $0.50 input / $1.50 output per 1M tokens
+    Batch discount: 50% for OpenAI Batch API
+
+  Token assumptions:
+    Phase 1 (attribute mapping, auto): 0 calls (static in config)
+    Phase 2 (rubric generation, auto): 2 tasks × 1 call = 2 LLM calls
+      Input: 2 × 800 = 1,600 tokens → negligible
+      Output: 2 × 400 = 800 tokens → negligible
+      Subtotal Phase 2: < $0.01
+
+    Phase 3 (data generation):
+      gpt-4o-mini teacher: 40 calls (20 per task)
+      Input:  40 × 500 = 20,000 tokens → $0.15/1M × 0.50 = $0.002
+      Output: 40 × 300 = 12,000 tokens → $0.60/1M × 0.50 = $0.004
+      Subtotal Phase 3: ~$0.006
+
+    Phase 4 (response collection):
+      gpt-4o-mini student: 40 calls
+      gpt-3.5-turbo student: 40 calls
+      Input:  80 × 400 = 32,000 tokens → mixed rate × 0.50 ≈ $0.005
+      Output: 80 × 150 = 12,000 tokens → mixed rate × 0.50 ≈ $0.005
+      Subtotal Phase 4: ~$0.010
+
+    Phase 5 (evaluation):
+      gpt-4o-mini judge: 80 responses × 5 criteria = 400 calls
+      Input:  400 × 600 = 240,000 tokens → $0.15/1M × 0.50 = $0.018
+      Output: 400 × 100 =  40,000 tokens → $0.60/1M × 0.50 = $0.012
+      Subtotal Phase 5: ~$0.030
+
+  EXTENSION TOTAL estimates:
+    LOW  (batch, efficient prompts):  ~$0.04
+    MID  (batch, avg tokens):         ~$0.05
+    HIGH (no batch):                  ~$0.10
+
+Overall cost summary
+--------------------
+  Core analysis:       $0.00
+  Optional extension:  $0.04 – $0.10
+
+  This is the cheapest of all 5 experiments. Run the core analysis first
+  (free), then decide if the extension tasks are needed for the paper.

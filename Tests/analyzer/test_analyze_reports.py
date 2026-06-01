@@ -546,15 +546,17 @@ class TestJudgeConsistency:
 
 class TestRobustSummary:
 
-    def test_creates_index_html_low_threshold(self, tmp_path, minimal_model, fake_plotly_cache):
-        """threshold=0.0 → D_robust is non-empty → full report generated."""
+    def test_creates_index_html_permissive_threshold(self, tmp_path, minimal_model, fake_plotly_cache):
+        """Permissive theta=1.0 (score tolerance, paper v2 §3.8) → every (s, c)
+        pair is within theta of the mean → D_robust is non-empty → full report
+        generated."""
         from analyzer.reports.robust import write_robust_summary
         out_dir = tmp_path / 'robust'
         write_robust_summary(
             minimal_model, out_dir,
             judge_selection='all',
             agreement_metric='spa',
-            agreement_threshold=0.0,
+            agreement_threshold=1.0,
             teacher_score_formula='v1',
         )
         _assert_html(out_dir / 'index.html', 'DATA')
@@ -569,13 +571,14 @@ class TestRobustSummary:
             object.__setattr__(u, 'score_norm',
                                1.0 if u.judge_model_id == 'J1' else 0.0)
         out_dir = tmp_path / 'robust_empty'
-        # threshold=1.0 with conflicting judges → D_robust = ∅ → should exit cleanly
+        # Strict theta=0.0 (exact-agreement tolerance) with conflicting judges
+        # (deviation 0.5 > 0.0) → no (s, c) pair passes → D_robust = ∅ → exit cleanly
         with pytest.raises(SystemExit):
             write_robust_summary(
                 minimal_model, out_dir,
                 judge_selection='all',
                 agreement_metric='spa',
-                agreement_threshold=1.0,
+                agreement_threshold=0.0,
                 teacher_score_formula='v1',
             )
 
@@ -593,7 +596,7 @@ class TestExportBenchmark:
             minimal_model, out_path,
             judge_selection='all',
             agreement_metric='spa',
-            agreement_threshold=0.0,
+            agreement_threshold=1.0,
             teacher_score_formula='v1',
             benchmark_format='jsonl',
         )
@@ -606,7 +609,7 @@ class TestExportBenchmark:
             minimal_model, out_path,
             judge_selection='all',
             agreement_metric='spa',
-            agreement_threshold=0.0,
+            agreement_threshold=1.0,
             teacher_score_formula='v1',
             benchmark_format='jsonl',
         )
@@ -622,7 +625,7 @@ class TestExportBenchmark:
             minimal_model, out_path,
             judge_selection='all',
             agreement_metric='spa',
-            agreement_threshold=0.0,
+            agreement_threshold=1.0,
             teacher_score_formula='v1',
             benchmark_format='jsonl',
         )
@@ -635,7 +638,10 @@ class TestExportBenchmark:
                 assert 'datapoint_id' in rec
 
     def test_empty_d_robust_raises_system_exit(self, tmp_path, minimal_model):
-        """If D_robust = ∅, export_benchmark raises SystemExit(1) (REQ-A-5.7.2a)."""
+        """If D_robust = ∅, export_benchmark raises SystemExit(1) (REQ-A-5.7.2a).
+
+        Strict theta=0.0 (exact-agreement tolerance) with conflicting judges
+        (deviation 0.5 > 0.0) forces every (s, c) pair to fail → D_robust = ∅."""
         from analyzer.reports.export_benchmark import export_benchmark
         # Make all units conflicting (J1=High vs J2=Low) to force D_robust = ∅
         for u in minimal_model.units:
@@ -649,7 +655,7 @@ class TestExportBenchmark:
                 minimal_model, out_path,
                 judge_selection='all',
                 agreement_metric='spa',
-                agreement_threshold=1.0,
+                agreement_threshold=0.0,
                 teacher_score_formula='v1',
                 benchmark_format='jsonl',
             )
@@ -666,7 +672,7 @@ class TestExportBenchmark:
             minimal_model, out_path,
             judge_selection='all',
             agreement_metric='spa',
-            agreement_threshold=0.0,
+            agreement_threshold=1.0,
             teacher_score_formula='v1',
             benchmark_format='parquet',
         )

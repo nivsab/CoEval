@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CoEval EXP-004: Verbosity-Bias Analysis</title>
+<script src="plotly.min.js"></script>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; padding: 0 0 60px; color: #1a1a1a; background: #fafafa; }
+  header { background: #1f2a44; color: #fff; padding: 22px 32px; }
+  header h1 { margin: 0; font-size: 21px; }
+  header p { margin: 6px 0 0; opacity: .8; font-size: 13px; }
+  .wrap { max-width: 1100px; margin: 24px auto; padding: 0 24px; }
+  .card { background: #fff; border: 1px solid #e3e6ee; border-radius: 10px;
+          padding: 20px 24px; margin-bottom: 22px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .card h2 { margin: 0 0 14px; font-size: 16px; color: #1f2a44; }
+  .summary { font-size: 14px; line-height: 1.6; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { border: 1px solid #e3e6ee; padding: 7px 10px; text-align: right; }
+  th { background: #f1f3f9; color: #1f2a44; }
+  td:first-child, th:first-child { text-align: left; }
+  .fig { width: 100%; height: 420px; }
+  .note { font-size: 12px; color: #667; margin-top: 8px; }
+  code { background: #f1f3f9; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header><h1>CoEval EXP-004: Verbosity-Bias Analysis</h1><p>Runs\medium-benchmark | pearson correlation</p></header>
+<div class="wrap"><div class="card"><h2>Verbosity bias: length vs score</h2><div id="fig_verb" class="fig"></div><p class="note">Mean individual-judge r = 0.020; ensemble r = 0.010; bias-reduction delta = 0.011. Positive r means longer responses score higher.</p></div><div class="card"><h2>Pooled correlation per judge</h2><table><thead><tr><th>judge</th><th>pooled pearson r (95% CI)</th><th>n responses</th></tr></thead><tbody><tr><td>gpt-4o-mini</td><td>-0.089 [-0.146, -0.034]</td><td>1985</td></tr><tr><td>gpt-3.5-turbo</td><td>-0.177 [-0.225, -0.124]</td><td>1985</td></tr><tr><td>qwen2p5-1b5</td><td>0.114 [0.064, 0.163]</td><td>1985</td></tr><tr><td>smollm2-1b7</td><td>0.234 [0.187, 0.274]</td><td>1976</td></tr><tr><td>ENSEMBLE</td><td>0.010 [-0.039, 0.057]</td><td>1985</td></tr></tbody></table></div></div>
+<script>
+const FIGS = [{"div": "fig_verb", "data": [{"x": ["gpt-4o-mini", "gpt-3.5-turbo", "qwen2p5-1b5", "smollm2-1b7", "ENSEMBLE"], "y": [-0.0886758068409618, -0.17708449705457624, 0.11379774416994469, 0.233775059149001, 0.009838245407105302], "type": "bar", "marker": {"color": ["#2b6cb0", "#2b6cb0", "#2b6cb0", "#2b6cb0", "#2f855a"]}, "error_y": {"type": "data", "symmetric": false, "array": [0.05498689965854169, 0.052765933477135346, 0.04950642848788821, 0.0403994530219913, 0.047217679319728395], "arrayminus": [0.056876526034969926, 0.04823102856356548, 0.049933568791467015, 0.046447861792428075, 0.04905374412466971]}}], "layout": {"title": "Length vs score correlation (pearson) - pooled", "yaxis": {"title": "pearson r (token_count vs score)"}, "shapes": [{"type": "line", "x0": -0.5, "x1": 4.5, "y0": 0, "y1": 0, "line": {"color": "#999", "width": 1}}]}}];
+for (const f of FIGS) {
+  Plotly.newPlot(f.div, f.data, f.layout, {responsive: true, displaylogo: false});
+}
+</script>
+</body>
+</html>

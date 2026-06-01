@@ -1,0 +1,26 @@
+{
+  "mode": "full",
+  "on_fail": "abort",
+  "results": {
+    "sciq": "ok",
+    "arc_challenge": "ok",
+    "gpt-4o-mini": "ok",
+    "gpt-3.5-turbo": "ok",
+    "claude-haiku": "ok",
+    "gemini-flash": "ok",
+    "llama-3.2-3b": "ok",
+    "gpt-4o": "ok",
+    "claude-sonnet-4": "ok"
+  },
+  "probed_models": [
+    "arc_challenge",
+    "claude-haiku",
+    "claude-sonnet-4",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o",
+    "gpt-4o-mini",
+    "llama-3.2-3b",
+    "sciq"
+  ]
+}

@@ -36,3 +36,4 @@ experiments/non_ascii.txt
 # Paper review files (local only - not for version control)
 Docs/paperv2/reviews/
 Docs/paperv2/drafts/*.docx
+Runs/**/plotly.min.js

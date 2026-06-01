@@ -1,0 +1,92 @@
+EXP-001: Benchmark-Grounded Comparison — Manual Cost Estimate
+==============================================================
+Computed: 2026-03-03
+Config:   Runs/EXP001-benchmark-grounded-comparison/config.yaml
+
+Pricing reference: Config/provider_pricing.yaml
+  gpt-4o-mini:   $0.15 input / $0.60 output per 1M tokens
+  gpt-3.5-turbo: $0.50 input / $1.50 output per 1M tokens
+  qwen2p5-1b5:   $0.00 (local HuggingFace model, GPU electricity only)
+  Batch discount: 50% for OpenAI Batch API (applied to Phase 4 + Phase 5)
+
+Assumptions
+-----------
+  Average input tokens per Phase 4 call  (student response): 400 tokens
+  Average output tokens per Phase 4 call:                     150 tokens
+  Average input tokens per Phase 5 call  (judge evaluation):  600 tokens
+    (includes task rubric + full student response in context)
+  Average output tokens per Phase 5 call:                     100 tokens
+  Number of rubric criteria: 4 criteria (avg across 3 tasks)
+
+API call counts
+---------------
+  Phase 3 (data generation):       0 calls — benchmark pre-ingested
+  Phase 4 (response collection):
+    gpt-4o-mini as student:       300 datapoints × 1 student = 300 calls
+    gpt-3.5-turbo as student:     300 datapoints × 1 student = 300 calls
+    qwen2p5-1b5 as student:       300 datapoints × 1 student = 300 calls (local)
+    Total API Phase 4 calls:      600 (gpt-4o-mini + gpt-3.5-turbo)
+
+  Phase 5 (evaluation):
+    NOTE: CoEval Phase 5 makes one judge call per (response, criterion) pair.
+    Responses per judge: 900 (300 datapoints × 3 students)
+    Criteria per task: text_summarization=4, news_summarization=5, code_explanation=5
+    Avg criteria: ~4.7 across tasks
+    Calls per judge: 900 responses × 4.7 criteria ≈ 4230 calls
+    Total API Phase 5 calls: 4230 × 2 judges ≈ 8460 calls
+
+Phase 4 cost calculation (with 50% batch discount)
+---------------------------------------------------
+  gpt-4o-mini (300 calls):
+    Input:  300 × 400 tokens = 120,000 tokens → $0.15/1M × 0.50 = $0.009
+    Output: 300 × 150 tokens =  45,000 tokens → $0.60/1M × 0.50 = $0.014
+    Subtotal gpt-4o-mini Phase 4: ~$0.023
+
+  gpt-3.5-turbo (300 calls):
+    Input:  300 × 400 tokens = 120,000 tokens → $0.50/1M × 0.50 = $0.030
+    Output: 300 × 150 tokens =  45,000 tokens → $1.50/1M × 0.50 = $0.034
+    Subtotal gpt-3.5-turbo Phase 4: ~$0.064
+
+  Phase 4 subtotal (API only): ~$0.09
+
+Phase 5 cost calculation (with 50% batch discount)
+---------------------------------------------------
+  gpt-4o-mini as judge (4230 calls):
+    Input:  4230 × 600 tokens = 2,538,000 tokens → $0.15/1M × 0.50 = $0.190
+    Output: 4230 × 100 tokens =   423,000 tokens → $0.60/1M × 0.50 = $0.127
+    Subtotal gpt-4o-mini Phase 5: ~$0.317
+
+  gpt-3.5-turbo as judge (4230 calls):
+    Input:  4230 × 600 tokens = 2,538,000 tokens → $0.50/1M × 0.50 = $0.635
+    Output: 4230 × 100 tokens =   423,000 tokens → $1.50/1M × 0.50 = $0.317
+    Subtotal gpt-3.5-turbo Phase 5: ~$0.952
+
+  Phase 5 subtotal (API only): ~$1.27
+
+Total cost estimates
+--------------------
+  LOW estimate  (batch API, efficient prompts, ~30% below avg tokens):
+    Phase 4: $0.06
+    Phase 5: $0.89
+    Total:   ~$0.95
+
+  MID estimate  (batch API, average token counts as above):
+    Phase 4: $0.09
+    Phase 5: $1.27
+    Total:   ~$1.40
+
+  HIGH estimate (no batch / prompt expansion / retry overhead, ~50% above avg):
+    Phase 4: $0.18
+    Phase 5: $2.54
+    Total:   ~$2.75
+
+  qwen2p5-1b5 (local): $0.00 API cost. Electricity only (~0.5-1 kWh on GPU).
+
+Notes
+-----
+- The backlog estimates $25 API cost. That figure was based on a larger-scale
+  800-item design (4 tasks × 200 items) with a heavier judge panel (GPT-4o).
+  This 300-item, gpt-4o-mini-centric config is substantially cheaper.
+- If batch API is unavailable or disabled, multiply by 2x for real-time pricing.
+- Post-run benchmark score computation (BERTScore, BLEU) runs locally — no cost.
+- HuggingFace dataset downloads are free.

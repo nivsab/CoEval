@@ -1,0 +1,234 @@
+{
+  "experiment": "EXP-004 verbosity-bias",
+  "run": "Runs\\medium-benchmark",
+  "method": "pearson",
+  "judges": [
+    "gpt-4o-mini",
+    "gpt-3.5-turbo",
+    "qwen2p5-1b5",
+    "smollm2-1b7"
+  ],
+  "tasks": [
+    "code_explanation",
+    "data_interpretation",
+    "email_composition",
+    "text_summarization"
+  ],
+  "per_judge_task": [
+    {
+      "judge": "gpt-4o-mini",
+      "task": "code_explanation",
+      "method": "pearson",
+      "corr": 0.4443479155256863,
+      "lo": 0.29836688368391395,
+      "hi": 0.554150115439357,
+      "n": 495
+    },
+    {
+      "judge": "gpt-4o-mini",
+      "task": "data_interpretation",
+      "method": "pearson",
+      "corr": -0.13865510134017683,
+      "lo": -0.315876855721548,
+      "hi": 0.03151308650591435,
+      "n": 490
+    },
+    {
+      "judge": "gpt-4o-mini",
+      "task": "email_composition",
+      "method": "pearson",
+      "corr": -0.05539839977965805,
+      "lo": -0.17654584026659528,
+      "hi": 0.08727651444360317,
+      "n": 500
+    },
+    {
+      "judge": "gpt-4o-mini",
+      "task": "text_summarization",
+      "method": "pearson",
+      "corr": 0.09615468125003214,
+      "lo": -0.04350957398506131,
+      "hi": 0.222741159257595,
+      "n": 500
+    },
+    {
+      "judge": "gpt-3.5-turbo",
+      "task": "code_explanation",
+      "method": "pearson",
+      "corr": 0.35543752223145175,
+      "lo": 0.21994021345579925,
+      "hi": 0.4779494654464791,
+      "n": 495
+    },
+    {
+      "judge": "gpt-3.5-turbo",
+      "task": "data_interpretation",
+      "method": "pearson",
+      "corr": -0.036466462508180676,
+      "lo": -0.16698753865017119,
+      "hi": 0.09444128043328397,
+      "n": 490
+    },
+    {
+      "judge": "gpt-3.5-turbo",
+      "task": "email_composition",
+      "method": "pearson",
+      "corr": -0.11379713819795909,
+      "lo": -0.19375910967154486,
+      "hi": -0.03080261536174823,
+      "n": 500
+    },
+    {
+      "judge": "gpt-3.5-turbo",
+      "task": "text_summarization",
+      "method": "pearson",
+      "corr": -0.09386024296809677,
+      "lo": -0.25192989861728127,
+      "hi": 0.05807774089155187,
+      "n": 500
+    },
+    {
+      "judge": "qwen2p5-1b5",
+      "task": "code_explanation",
+      "method": "pearson",
+      "corr": 0.002727690537684739,
+      "lo": -0.10756586242535396,
+      "hi": 0.11856472670928833,
+      "n": 495
+    },
+    {
+      "judge": "qwen2p5-1b5",
+      "task": "data_interpretation",
+      "method": "pearson",
+      "corr": 0.052875902374246275,
+      "lo": -0.0310726305793793,
+      "hi": 0.20006293193990538,
+      "n": 490
+    },
+    {
+      "judge": "qwen2p5-1b5",
+      "task": "email_composition",
+      "method": "pearson",
+      "corr": 0.16884683828578126,
+      "lo": 0.09431568839468482,
+      "hi": 0.2444847316473897,
+      "n": 500
+    },
+    {
+      "judge": "qwen2p5-1b5",
+      "task": "text_summarization",
+      "method": "pearson",
+      "corr": -0.17059581306169883,
+      "lo": -0.24875914729793552,
+      "hi": -0.0968736775215367,
+      "n": 500
+    },
+    {
+      "judge": "smollm2-1b7",
+      "task": "code_explanation",
+      "method": "pearson",
+      "corr": 0.042992435660609195,
+      "lo": -0.05939237975247039,
+      "hi": 0.14403813753830852,
+      "n": 491
+    },
+    {
+      "judge": "smollm2-1b7",
+      "task": "data_interpretation",
+      "method": "pearson",
+      "corr": -0.029805015092723156,
+      "lo": -0.13475343658808,
+      "hi": 0.07504961369781177,
+      "n": 485
+    },
+    {
+      "judge": "smollm2-1b7",
+      "task": "email_composition",
+      "method": "pearson",
+      "corr": 0.2777383834929137,
+      "lo": 0.19951367638044812,
+      "hi": 0.3509520646348489,
+      "n": 500
+    },
+    {
+      "judge": "smollm2-1b7",
+      "task": "text_summarization",
+      "method": "pearson",
+      "corr": 0.17846965053469785,
+      "lo": 0.07711198960752529,
+      "hi": 0.2822777875088125,
+      "n": 500
+    }
+  ],
+  "judge_pooled": {
+    "gpt-4o-mini": {
+      "point": -0.0886758068409618,
+      "lo": -0.14555233287593172,
+      "hi": -0.033688907182420104,
+      "n": 1985
+    },
+    "gpt-3.5-turbo": {
+      "point": -0.17708449705457624,
+      "lo": -0.22531552561814172,
+      "hi": -0.1243185635774409,
+      "n": 1985
+    },
+    "qwen2p5-1b5": {
+      "point": 0.11379774416994469,
+      "lo": 0.06386417537847768,
+      "hi": 0.1633041726578329,
+      "n": 1985
+    },
+    "smollm2-1b7": {
+      "point": 0.233775059149001,
+      "lo": 0.18732719735657294,
+      "hi": 0.2741745121709923,
+      "n": 1976
+    }
+  },
+  "ensemble_per_task": [
+    {
+      "task": "code_explanation",
+      "method": "pearson",
+      "corr": 0.4556321785143341,
+      "lo": 0.3239975431504879,
+      "hi": 0.5574810416617803,
+      "n": 495
+    },
+    {
+      "task": "data_interpretation",
+      "method": "pearson",
+      "corr": -0.08658969341031514,
+      "lo": -0.22625696054023695,
+      "hi": 0.04739464714361531,
+      "n": 490
+    },
+    {
+      "task": "email_composition",
+      "method": "pearson",
+      "corr": 0.09527406472772945,
+      "lo": -0.0028629190188038424,
+      "hi": 0.19426738105853766,
+      "n": 500
+    },
+    {
+      "task": "text_summarization",
+      "method": "pearson",
+      "corr": -0.07844736428894053,
+      "lo": -0.19417606277004082,
+      "hi": 0.03255952315699657,
+      "n": 500
+    }
+  ],
+  "ensemble_pooled": {
+    "point": 0.009838245407105302,
+    "lo": -0.039215498717564405,
+    "hi": 0.0570559247268337,
+    "n": 1985
+  },
+  "mean_individual_corr": 0.020453124855851913,
+  "mean_abs_individual_corr": 0.15333327680362094,
+  "ensemble_corr": 0.009838245407105302,
+  "verbosity_bias_delta": 0.010614879448746612,
+  "abs_bias_reduction": 0.14349503139651565
+}

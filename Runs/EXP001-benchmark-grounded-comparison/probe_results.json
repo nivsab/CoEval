@@ -1,0 +1,24 @@
+{
+  "mode": "full",
+  "on_fail": "abort",
+  "results": {
+    "xsum": "ok",
+    "cnn_dailymail": "ok",
+    "codesearchnet-python": "ok",
+    "gpt-4o-mini": "ok",
+    "gpt-3.5-turbo": "ok",
+    "claude-haiku": "ok",
+    "gemini-flash": "ok",
+    "llama-3.2-3b": "ok"
+  },
+  "probed_models": [
+    "claude-haiku",
+    "cnn_dailymail",
+    "codesearchnet-python",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o-mini",
+    "llama-3.2-3b",
+    "xsum"
+  ]
+}

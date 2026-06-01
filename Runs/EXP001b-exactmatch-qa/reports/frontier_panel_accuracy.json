@@ -1,0 +1,47 @@
+{
+  "panel": [
+    "gpt-4o",
+    "claude-sonnet-4",
+    "gemini-flash"
+  ],
+  "aspect": "accuracy",
+  "metric": "spearman",
+  "ensemble": {
+    "rho": 0.8593,
+    "lo": 0.765,
+    "hi": 0.9396,
+    "n_datapoints": 191,
+    "ci": "datapoint-clustered bootstrap"
+  },
+  "per_judge": {
+    "gpt-4o": {
+      "rho": 0.8593,
+      "lo": 0.765,
+      "hi": 0.9396
+    },
+    "claude-sonnet-4": {
+      "rho": 0.8593,
+      "lo": 0.765,
+      "hi": 0.9396
+    },
+    "gemini-flash": {
+      "rho": 0.8593,
+      "lo": 0.765,
+      "hi": 0.9396
+    }
+  },
+  "agreement": {
+    "n_items": 573,
+    "pairwise_disagreements": {
+      "gpt-4o|gpt-3.5-turbo": 3,
+      "gpt-4o|claude-haiku": 5,
+      "claude-sonnet-4|gpt-3.5-turbo": 3,
+      "claude-sonnet-4|claude-haiku": 5,
+      "gemini-flash|gpt-3.5-turbo": 3,
+      "gemini-flash|claude-haiku": 5,
+      "gpt-4o-mini|gpt-3.5-turbo": 3,
+      "gpt-4o-mini|claude-haiku": 5,
+      "gpt-3.5-turbo|claude-haiku": 8
+    }
+  }
+}

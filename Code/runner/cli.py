@@ -490,6 +490,9 @@ def _build_parser() -> argparse.ArgumentParser:
         ('robust-summary',    'HTML: robust student ranking with filtered datapoints'),
         ('export-benchmark',  'JSONL/Parquet: export robust benchmark datapoints'),
         ('summary-report',    'HTML: interactive single-page summary dashboard'),
+        ('ensemble-ablation', 'HTML: EXP-002 ensemble-size reliability ablation'),
+        ('verbosity-bias',    'HTML: EXP-004 response-length vs score correlation'),
+        ('rubric-overlap',    'HTML: EXP-005 cross-task rubric criterion overlap'),
         ('all',               'Generate all HTML reports + Excel into subdirectories'),
     ]
 
@@ -522,6 +525,20 @@ def _build_parser() -> argparse.ArgumentParser:
             sc_p.add_argument('--benchmark-format', default='jsonl',
                               choices=['jsonl', 'parquet'],
                               help='Output format (default: jsonl)')
+        # Experiment subcommands (EXP-002 / EXP-004 / EXP-005)
+        if sc_name in ('ensemble-ablation', 'verbosity-bias'):
+            sc_p.add_argument('--judges', nargs='*', default=None, metavar='MODEL',
+                              help='Judge models in addition order (default: all judges)')
+            sc_p.add_argument('--tasks', nargs='*', default=None, metavar='TASK',
+                              help='Restrict to these tasks (default: all)')
+        if sc_name == 'verbosity-bias':
+            sc_p.add_argument('--method', default='pearson',
+                              choices=['pearson', 'spearman'],
+                              help='Correlation method (default: pearson)')
+        if sc_name == 'rubric-overlap':
+            sc_p.add_argument('--embedding-model', default='all-MiniLM-L6-v2',
+                              metavar='NAME',
+                              help='sentence-transformers model (default: all-MiniLM-L6-v2)')
 
     return parser
 
@@ -627,6 +644,10 @@ def _cmd_analyze(args: argparse.Namespace) -> None:
         benchmark_format=getattr(args, 'benchmark_format', 'jsonl'),
         partial_ok=getattr(args, 'partial_ok', False),
         log_level=getattr(args, 'log_level', 'INFO'),
+        judges=getattr(args, 'judges', None),
+        tasks=getattr(args, 'tasks', None),
+        method=getattr(args, 'method', 'pearson'),
+        embedding_model=getattr(args, 'embedding_model', 'all-MiniLM-L6-v2'),
     )
     sys.exit(exit_code)
 
