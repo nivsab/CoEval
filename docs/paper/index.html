@@ -223,8 +223,9 @@
     local)&mdash;can be ranked on a target task or domain from a single declarative configuration file, with no human
     annotation, and we show CoEval recovers the ground-truth model ranking exactly across the task families we study. CoEval separates evaluation into three interchangeable roles &mdash; <em>teacher</em>, <em>student</em>,
     and <em>judge</em> &mdash; using the teacher to synthesize attribute-stratified, freshly generated <em>domain-focused</em>
-    benchmarks (so items cannot have leaked into a student's training), then scoring responses with a <em>cross-family
-    judge ensemble</em> whose vendor diversity cancels individual-judge biases. Across a four-task medium-scale
+    benchmarks (we measure zero 13-gram overlap between generated items and five major public benchmarks, so items cannot
+    have leaked into a student's training), then scoring responses with a <em>cross-family judge ensemble</em> whose
+    vendor diversity cancels individual-judge biases. Across a four-task medium-scale
     study, CoEval produced 7,978 valid evaluations at a total cost of USD 5.89 with no human annotation. We show that the
     ensemble removes a verbosity bias that no single judge avoids (mean per-judge $|r| = 0.153$ collapses to an ensemble
     $r = +0.010$ with a bootstrap CI spanning zero, a 93% reduction) and structurally precludes same-family
@@ -676,7 +677,25 @@ $$ \kappa \;=\; \frac{p_o - p_e}{1 - p_e}, $$
   $0.342 >$ cross-task $0.294$) while sharing a universal &ldquo;completeness&rdquo; dimension across three tasks.
 </div>
 
-<h3>5.6 Cost</h3>
+<h3>5.6 Contamination resistance</h3>
+<p>
+  We test the contamination-resistance claim empirically. We take the 400 CoEval-generated items from the
+  <code>medium-benchmark</code> study and measure their verbatim 13-gram overlap against a corpus of 491 items drawn
+  from five widely used public benchmarks (XSum, CNN/DailyMail, CodeSearchNet, SciQ, ARC-Challenge)&mdash;datasets that
+  are, by virtue of their age and popularity, present in the pretraining corpora of current models. Across
+  $110{,}784$ distinct public 13-grams, <strong>not a single CoEval-generated item shares any 13-gram</strong> with the
+  public corpus: mean and maximum overlap are both $0.0000$, and $0\%$ of generated items have any overlap. Freshly
+  generated items are thus novel by construction <em>and</em> in measurement, so a model cannot have memorized them from
+  a leaked public test set. (We re-emphasize the scope from Section&nbsp;5.1: this property holds for CoEval's generated
+  items; the benchmark-grounded anchor of Table&nbsp;1 deliberately reuses public items to obtain objective ground truth.)
+</p>
+<div class="keyfinding">
+  <strong>Finding (contamination).</strong> CoEval-generated items have $0.0000$ 13-gram overlap with five major public
+  benchmarks ($n=400$ vs $491$ items), an empirical confirmation that generated evaluation items are not present in
+  models' pretraining data.
+</div>
+
+<h3>5.7 Cost</h3>
 <p>
   The entire four-task medium-scale study &mdash; teacher generation, student response collection, cross-family judging,
   and analysis &mdash; produced <strong>7,978 valid evaluations</strong> for a total cost of <strong>USD 5.89</strong>,

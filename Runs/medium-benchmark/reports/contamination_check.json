@@ -1,0 +1,8 @@
+{
+  "metric": "13-gram verbatim overlap, CoEval-generated vs public benchmarks",
+  "n_generated": 400,
+  "n_public": 491,
+  "mean_overlap": 0.0,
+  "max_overlap": 0.0,
+  "frac_items_any_overlap": 0.0
+}
