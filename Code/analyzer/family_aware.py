@@ -5,7 +5,7 @@ from their own model family. CoEval's cross-family ensemble mitigates this in
 expectation, but we can make the control *explicit*: when scoring a model under
 test, exclude judges that share its vendor family, so no model ever contributes
 to its own (or its family's) score. This module computes both the naive ensemble
-ranking and the family-disjoint ranking and reports whether they differ&mdash;a
+ranking and the family-disjoint ranking and reports whether they differ: a
 direct, auditable correction for systematic same-family bias.
 """
 from __future__ import annotations
