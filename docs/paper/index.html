@@ -219,36 +219,36 @@
     cannot be trusted</em> because their items have likely leaked into pretraining, so leaderboard numbers may reflect
     memorization rather than fitness for the use case. We present <strong>CoEval</strong>, an open-source framework that
     addresses both conditions: from only a description of a task or domain, teacher models synthesize a fresh,
-    attribute-controlled benchmark&mdash;<em>no human labels</em>, and contamination-free because items are generated
-    anew per run&mdash;and a cross-family judge ensemble ranks candidate models with no human raters. We validate the
+    attribute-controlled benchmark with <em>no human labels</em>, contamination-free because items are generated
+    anew on each run. A cross-family judge ensemble then ranks candidate models, with no human raters. We validate the
     tool against objective ground truth, then apply it where none exists: CoEval recovers the true model ranking
     with no labeled data and its label-free scores track ground-truth correctness at $\rho=0.86$. A complementary
     technical finding makes the label-free judging reliable without human calibration: judge-panel
-    <em>composition</em>&mdash;diversity across vendor families&mdash;rather than panel <em>size</em> determines
+    <em>composition</em> (diversity across vendor families), not panel <em>size</em>, determines
     reliability, and indiscriminately enlarging a panel can <em>reduce</em> it (inter-rater reliability peaks at two
     well-chosen judges and falls as low-agreement judges are added, exactly matching the Spearman&ndash;Brown relation).
-    CoEval factors evaluation into three interchangeable roles &mdash; <em>teacher</em>, <em>student</em>, and <em>judge</em> &mdash; and runs any models across sixteen provider interfaces from one configuration file; generated items have $0.0000$ verbatim 13-gram overlap with five major public benchmarks. Across a four-task medium-scale
+    CoEval fills three roles, <em>teacher</em>, <em>student</em>, and <em>judge</em>, from one shared pool of models: any model can take any role, and a model that judges in one run can be a candidate in another, all configured from a single file across sixteen provider interfaces. Generated items have $0.0000$ verbatim 13-gram overlap with five major public benchmarks. Across a four-task medium-scale
     study, CoEval produced 7,978 valid evaluations at a total cost of USD 5.89 with no human annotation. We show that the
     ensemble removes a verbosity bias that no single judge avoids (mean per-judge $|r| = 0.153$ collapses to an ensemble
     $r = +0.010$ with a bootstrap CI spanning zero, a 93% reduction) and structurally precludes same-family
     self-preference, while producing task-specialized rubrics that share a universal quality core. On objective
     exact-match QA the frontier cross-family ensemble tracks ground-truth correctness at $\rho = 0.86$
-    (datapoint-clustered 95% CI $[0.77, 0.94]$) with vendor-independent agreement. This non-monotone reliability result&mdash;adding low-agreement judges <em>reduces</em> reliability&mdash;is what lets a small, well-chosen cross-family panel serve as a trustworthy, label-free substitute for a contaminated leaderboard.
+    (datapoint-clustered 95% CI $[0.77, 0.94]$) with vendor-independent agreement. This non-monotone reliability result, where adding low-agreement judges <em>reduces</em> reliability, is what lets a small, well-chosen cross-family panel serve as a trustworthy, label-free substitute for a contaminated leaderboard.
   </p>
 </section>
 
 <!-- ===================== 1. INTRODUCTION ===================== -->
 <h2>1. Introduction</h2>
 <p>
-  A practitioner choosing a language model for a specific application&mdash;summarizing clinical notes, answering
-  questions over an internal knowledge base, triaging support tickets for a particular product&mdash;faces a
+  A practitioner choosing a language model for a specific application (summarizing clinical notes, answering
+  questions over an internal knowledge base, triaging support tickets for a particular product) faces a
   deceptively simple question: <em>which model is best for my use case?</em> Answering it well requires an evaluation
   set that reflects that use case, and two common conditions make this hard. First, there is often <em>no task-specific
   labeled data</em>: building a representative benchmark by hand is slow and costly, and for a new or proprietary domain
   it may not exist at all. Second, even where a related public benchmark exists, its numbers may not be trustworthy:
   popular benchmarks are increasingly <em>contaminated</em>, their items having leaked into pretraining corpora, so a
   high score can reflect memorization rather than capability <sup><a href="#r12">[12]</a><a href="#r13">[13]</a></sup>.
-  When both hold&mdash;no data <em>and</em> no benchmark one can trust&mdash;the practitioner is stuck. <strong>CoEval</strong>
+  When both hold, with no data <em>and</em> no benchmark one can trust, the practitioner is stuck. <strong>CoEval</strong>
   is built for exactly this situation: it generates a fresh, domain-targeted evaluation from a task description and
   ranks candidate models on it, with no labels and no contaminated items.
 </p>
@@ -271,7 +271,7 @@
   favorably). A measurement built on a single biased instrument inherits that instrument's distortions wholesale.
 </p>
 <p>
-  We argue that both problems &mdash; the rigidity of static benchmarks and the bias of single judges &mdash; are best
+  We argue that both problems, the rigidity of static benchmarks and the bias of single judges, are best
   solved together, by a system that <em>generates</em> the evaluation set as carefully as it <em>scores</em> it. We
   present <strong>CoEval</strong>, a declarative and reproducible framework that:
 </p>
@@ -315,8 +315,8 @@
   <sup><a href="#r11">[11]</a></sup>, domain-specific construction <sup><a href="#r25">[25]</a></sup>).
   (iii)&nbsp;<em>LLM-as-judge</em> methods (G-Eval <sup><a href="#r2">[2]</a></sup>, Prometheus&nbsp;2
   <sup><a href="#r3">[3]</a></sup>, panels <sup><a href="#r5">[5]</a></sup>) provide label-free scoring but inherit
-  individual-judge biases. CoEval is, to our knowledge, the first to combine all three&mdash;contamination-free,
-  label-free, domain-targeted generation with a reliability-controlled cross-family judge ensemble&mdash;into a single
+  individual-judge biases. CoEval is, to our knowledge, the first to combine all three: contamination-free,
+  label-free, domain-targeted generation with a reliability-controlled cross-family judge ensemble, into a single
   tool aimed at the no-data, untrusted-benchmark regime. We detail each line below.
 </p>
 
@@ -353,7 +353,7 @@
   taxonomies <sup><a href="#r17">[17]</a></sup> and recent surveys <sup><a href="#r19">[19]</a></sup><sup><a href="#r20">[20]</a></sup>
   catalogue position, verbosity, and self-enhancement biases on fixed benchmarks. Where these works <em>measure</em> or
   <em>post-hoc correct</em> the biases of individual judges, CoEval treats cross-family composition as a <em>design
-  constraint</em> that cancels same-family preference at the aggregation level&mdash;and pairs it with
+  constraint</em> that cancels same-family preference at the aggregation level, and pairs it with
   contamination-free item generation, so both items and judges are bias-hardened rather than only the scoring step.
 </p>
 
@@ -363,8 +363,8 @@
   but evaluates with a <em>single</em> judge and does not enforce cross-family scoring or role separation. CoEval adds a
   cross-family multi-judge layer, explicit teacher/student/judge role separation, and continuous inter-judge agreement
   monitoring. BenchAgents <sup><a href="#r10">[10]</a></sup> and YourBench <sup><a href="#r11">[11]</a></sup> likewise
-  automate benchmark construction; CoEval's distinguishing feature is attribute-<em>stratified</em> coverage&mdash;the
-  sampler allocates a per-stratum floor of items to each declared attribute combination&mdash;coupled to bias-cancelled
+  automate benchmark construction; CoEval's distinguishing feature is attribute-<em>stratified</em> coverage: the
+  sampler allocates a per-stratum floor of items to each declared attribute combination, coupled to bias-cancelled
   scoring. The contamination motivation is sharpened by GSM1k
   <sup><a href="#r12">[12]</a></sup>, which exposed memorization on grade-school arithmetic, and by recent surveys of
   data contamination in LLMs <sup><a href="#r13">[13]</a></sup>. Live benchmarks such as LiveBench
@@ -419,7 +419,7 @@ $$n_s \;\ge\; \left\lfloor \frac{N}{|\mathcal{S}|} \right\rfloor \quad \text{ite
   the distribution. The floor above is a guarantee on the <em>sampler</em>; CoEval emits a coverage report (Appendix&nbsp;A,
   panel A3) recording the realized per-stratum counts, so that coverage of edge-case strata is auditable. Because items are generated fresh on
   each run from the attribute specification, the resulting benchmark cannot have been seen during any student's
-  pretraining &mdash; contamination-resistance is a structural property of generation, not a post-hoc filter.
+  pretraining. Contamination-resistance is a structural property of generation, not a post-hoc filter.
 </p>
 
 <h3>3.3 The cross-family judge ensemble and aggregation</h3>
@@ -432,8 +432,8 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <p>
   The panel $J$ is assembled to maximize <em>vendor-family diversity</em>: judges are drawn from distinct model families
   so that family-correlated biases (self-preference, shared training idiosyncrasies) do not reinforce one another. When
-  individual judge biases have mixed sign across the panel &mdash; as we observe empirically for verbosity
-  (Section&nbsp;5.3) &mdash; the averaging in $\bar{s}_i$ cancels them. This is the mechanism behind our central claim
+  individual judge biases have mixed sign across the panel, as we observe empirically for verbosity
+  (Section&nbsp;5.3), the averaging in $\bar{s}_i$ cancels them. This is the mechanism behind our central claim
   that <em>composition</em>, not panel size, drives reliability: a large same-family panel amplifies a shared bias,
   whereas a small cross-family panel cancels it.
 </p>
@@ -468,14 +468,14 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <p>
   We evaluate CoEval on a four-task medium-scale study spanning summarization, question answering, code generation, and
   reasoning. The teacher generates an attribute-stratified benchmark per task; a set of student models produces responses;
-  and a cross-family judge ensemble &mdash; drawn from distinct vendors (OpenAI, and non-OpenAI open and proprietary
-  families including, e.g., <code>gpt-3.5-turbo</code> and <code>SmolLM2</code> among the panel) &mdash; scores every
+  and a cross-family judge ensemble, drawn from distinct vendors (OpenAI, and non-OpenAI open and proprietary
+  families including, e.g., <code>gpt-3.5-turbo</code> and <code>SmolLM2</code> among the panel), scores every
   response against the auto-generated rubric. All raw scores are normalized to $[0,1]$ before aggregation. Reliability is
   reported via ICC(3,k) and Spearman&ndash;Brown; bias is quantified via Pearson correlation. Confidence intervals are
   computed by a nonparametric bootstrap, using a <em>datapoint-clustered</em> resample wherever observations are nested
   (multiple student responses per item), and across the family of correlation tests we control the false-discovery rate
-  with the Benjamini&ndash;Hochberg procedure ($\alpha = 0.05$). The complete configuration&mdash;model identifiers,
-  attribute strata, and prompts&mdash;is captured in a single declarative YAML file, and all artifacts are regenerable
+  with the Benjamini&ndash;Hochberg procedure ($\alpha = 0.05$). The complete configuration (model identifiers,
+  attribute strata, and prompts) is captured in a single declarative YAML file, and all artifacts are regenerable
   from that specification. The full study produced <strong>7,978 valid evaluations</strong> across the four tasks.
 </p>
 
@@ -484,12 +484,12 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <p>
   Our experiments answer one question: <em>does CoEval reliably rank models for a use case when one cannot use a
   standard benchmark?</em> We organize the evidence accordingly. Section&nbsp;5.1 establishes that CoEval's label-free
-  scores are <em>trustworthy</em>&mdash;they track objective ground truth ($\rho = 0.86$) and reproduce the true model
-  ranking (Table&nbsp;2)&mdash;benchmarked against a single-judge G-Eval baseline. Sections&nbsp;5.2&ndash;5.5 explain
+  scores are <em>trustworthy</em>: they track objective ground truth ($\rho = 0.86$) and reproduce the true model
+  ranking (Table&nbsp;2), benchmarked against a single-judge G-Eval baseline. Sections&nbsp;5.2&ndash;5.5 explain
   <em>why</em> the judging is reliable with no human calibration: a cross-family ensemble whose composition (not size)
   governs reliability (5.2), which cancels the verbosity bias every single judge carries (5.3), structurally avoids
   self-preference (5.4), and produces task-appropriate rubrics (5.5). Section&nbsp;5.6 verifies the second condition
-  directly&mdash;that the generated items are <em>contamination-free</em>&mdash;and Section&nbsp;5.7 shows the process is cheap enough to re-run per use case, and Section&nbsp;5.8 exercises the complete tool on two custom verticals (clinical, legal) with no labeled data.
+  directly, that the generated items are <em>contamination-free</em>, and Section&nbsp;5.7 shows the process is cheap enough to re-run per use case. Section&nbsp;5.8 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data.
 </p>
 
 <h3>5.1 Ground-truth correlation</h3>
@@ -497,8 +497,8 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   To ground CoEval scores against an objective signal, we evaluate on exact-match question answering, where ground
   truth is unambiguous. SciQ and ARC-Challenge responses (task identifiers <code>science_qa</code> and <code>science_reasoning</code>; $n=573$ from three student models over $191$ datapoints)
   are scored both by the CoEval judge ensemble and by exact-match correctness. We correlate the rubric's <em>accuracy</em>
-  dimension &mdash; declared <em>a priori</em> as the construct matching correctness, independent of any observed
-  correlation &mdash; with ground truth; for transparency we also report the off-target <em>relevance</em> dimension
+  dimension, declared <em>a priori</em> as the construct matching correctness, independent of any observed
+  correlation, with ground truth; for transparency we also report the off-target <em>relevance</em> dimension
   ($\rho = 0.28$) and the full-rubric average ($\rho = 0.57$), on which a construct-matched evaluator should, and does,
   score lower. The judge panel is a frontier cross-family ensemble: <code>gpt-4o</code> (OpenAI),
   <code>claude-sonnet-4</code> (Anthropic), and <code>gemini-2.5-flash</code> (Google). Confidence intervals use a
@@ -536,28 +536,28 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   On objective correctness the frontier ensemble reaches $\rho = 0.859$ (datapoint-clustered 95% CI $[0.77, 0.94]$).
   Because correctness is objective, the three frontier judges converge on identical labels, so the ensemble matches its
   strongest member: the experiment establishes that CoEval judges are <em>accurate</em> and that the result is
-  <em>vendor-independent</em>&mdash;no single provider drives it. On open-ended summarization scored against a lexical
+  <em>vendor-independent</em>: no single provider drives it. On open-ended summarization scored against a lexical
   BERTScore reference, the cross-family ensemble ($\rho = 0.244$) tracks ground truth on par with a single GPT-4o
   <strong>G-Eval</strong> <sup><a href="#r2">[2]</a></sup> judge using chain-of-thought ($\rho = 0.259$, 95% CI
   $[0.18, 0.33]$, $n=580$), matching this strong single-judge baseline without depending on any one model. The ensemble's
   decisive advantage on such open-ended tasks is <em>bias-robustness</em>: individual judges carry verbosity biases of
   opposite sign that the ensemble provably cancels (Section&nbsp;5.3), paired with the contamination-resistant items
-  CoEval <em>generates</em> rather than consumes&mdash;properties no single judge provides.
+  CoEval <em>generates</em> rather than consumes; these are properties no single judge provides.
 </p>
 <figure>
   <img src="figures/f4_correctness_corr.png" alt="Spearman correlation with ground-truth correctness per judge and ensemble"/>
   <figcaption><strong>Figure 2.</strong> Rank correlation of CoEval accuracy scores with ground-truth answer correctness
     on exact-match QA ($191$ datapoints, $573$ responses). The frontier cross-family ensemble reaches $\rho = 0.86$
     (datapoint-clustered 95% CI shown); the three frontier judges converge on identical labels, so the ensemble equals
-    its best member here&mdash;a vendor-independent reliability floor on objective tasks.</figcaption>
+    its best member here, a vendor-independent reliability floor on objective tasks.</figcaption>
 </figure>
 
 <p>
-  Evaluation is a means to an end&mdash;<em>ranking</em> candidate models for a use case&mdash;so we verify that CoEval
+  Evaluation is a means to an end, <em>ranking</em> candidate models for a use case, so we verify that CoEval
   scores yield the correct ranking. Table&nbsp;2 ranks the three student models by their CoEval frontier-ensemble
   accuracy score and, independently, by ground-truth correctness. The two rankings are <strong>identical</strong>;
   CoEval's scores fall within $0.02$ of the true accuracies, and the confidence intervals cleanly separate the weakest
-  model. Producing this ranking required a single configuration file and no human annotation&mdash;the core operation
+  model. Producing this ranking required a single configuration file and no human annotation: the core operation
   the framework is built to make easy.
 </p>
 <div class="tablewrap">
@@ -584,7 +584,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   appending lower-agreement judges <em>lowers</em> it to $0.45$ and then $0.40$. This is the Spearman&ndash;Brown
   relation of Section&nbsp;3.4 operating in reverse: an added judge with low mean correlation $\bar{r}$ to the panel
   reduces $\bar{r}$ faster than the $k$-fold averaging can compensate, so the aggregate reliability $R_k$ falls. The
-  effect is exact&mdash;our measured ICC matches the Spearman&ndash;Brown prediction to three decimals. Naively enlarging
+  effect is exact: our measured ICC matches the Spearman&ndash;Brown prediction to three decimals. Naively enlarging
   a panel can therefore <em>degrade</em> it; what matters is retaining high-agreement judges.
 </p>
 <p>
@@ -594,8 +594,8 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   simply enlarging the panel: indiscriminately adding low-agreement judges lowers the mean inter-rater correlation
   $\bar{r}$ faster than averaging can compensate, so $R_k$ in the Spearman&ndash;Brown relation can fall. CoEval's
   consensus criterion identifies and retains the high-agreement judges, delivering the reliable configuration
-  automatically. In other words, the framework converts the panel-composition problem &mdash; which would otherwise
-  degrade a naive ensemble &mdash; into a reliability <em>gain</em>: the selected ensemble is robust to the inclusion of
+  automatically. In other words, the framework converts the panel-composition problem, which would otherwise
+  degrade a naive ensemble, into a reliability <em>gain</em>: the selected ensemble is robust to the inclusion of
   weak models and more reliable than the unselected panel. The $k$-judge ensemble's rank-agreement with the full-panel
   consensus rises with $k$ (Spearman $\rho$: $0.67, 0.74, 0.93, 1.00$): a small selected panel already recovers most of
   the full-panel ordering.
@@ -617,7 +617,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 
 <h3>5.3 Bias cancellation</h3>
 <p>
-  We test whether CoEval's ensemble cancels verbosity bias &mdash; the tendency to reward longer responses &mdash; on
+  We test whether CoEval's ensemble cancels verbosity bias, the tendency to reward longer responses, on
   the four-task <code>medium-benchmark</code> run, whose judge panel is <code>gpt-4o-mini</code> and
   <code>gpt-3.5-turbo</code> (OpenAI) together with <code>qwen2.5-1.5b</code> and <code>smollm2-1.7b</code> (open-weight).
   For each judge we compute the Pearson correlation between response length and assigned score. Individual judges carry
@@ -630,12 +630,12 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   We note a confound shared with self-preference (Section&nbsp;5.4): in this panel, sign-diversity is correlated with
   both vendor family and model capability (the strong OpenAI judges penalize length; the small open-weight judges reward
   it), so we attribute the cancellation to bias-sign diversity rather than to vendor family <em>per se</em>. The
-  practical recipe is the same&mdash;assemble judges whose idiosyncratic biases are unlikely to align&mdash;and vendor
+  practical recipe is the same: assemble judges whose idiosyncratic biases are unlikely to align, and vendor
   diversity is a convenient, observable proxy for it.
 </p>
 <p>
   The <strong>ensemble</strong> correlation between length and score is $r = +0.010$, with a 95% bootstrap confidence
-  interval of $[-0.039,\, +0.057]$ that <em>includes zero</em> &mdash; a 93% reduction in length-bias magnitude relative
+  interval of $[-0.039,\, +0.057]$ that <em>includes zero</em>, a 93% reduction in length-bias magnitude relative
   to the per-judge mean. The mixed-sign individual biases cancel under the averaging of $\bar{s}_i$, leaving an aggregate
   score that is statistically indistinguishable from length-neutral.
 </p>
@@ -648,9 +648,9 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
     <tr><th class="lbl">Judge</th><th>Length-bias $r$</th><th>95% bootstrap CI</th></tr>
   </thead>
   <tbody>
-    <tr><td class="lbl">gpt-3.5-turbo</td><td>&minus;0.177</td><td>&mdash;</td></tr>
-    <tr><td class="lbl">SmolLM2</td><td>+0.234</td><td>&mdash;</td></tr>
-    <tr><td class="lbl">Panel mean $\overline{|r|}$</td><td>0.153</td><td>&mdash;</td></tr>
+    <tr><td class="lbl">gpt-3.5-turbo</td><td>&minus;0.177</td><td>&ndash;</td></tr>
+    <tr><td class="lbl">SmolLM2</td><td>+0.234</td><td>&ndash;</td></tr>
+    <tr><td class="lbl">Panel mean $\overline{|r|}$</td><td>0.153</td><td>&ndash;</td></tr>
     <tr class="highlight"><td class="lbl">CoEval ensemble</td><td>+0.010</td><td>[&minus;0.039, +0.057]</td></tr>
   </tbody>
 </table>
@@ -683,7 +683,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   <em>vendor-disjoint aggregation</em>: when scoring a model under test, the ensemble drops any judge that shares the
   model's vendor family, so no model contributes to its own family's score. Applying this correction to the rankings
   of Tables&nbsp;2 and&nbsp;4 leaves <em>every</em> ranking unchanged, with per-model scores shifting by at most
-  $0.015$&mdash;a direct, auditable confirmation that the cross-family ensemble's rankings are already robust to
+  $0.015$, a direct, auditable confirmation that the cross-family ensemble's rankings are already robust to
   same-family bias. The correction is therefore available as a safeguard, and its null effect here is itself evidence
   that vendor diversity, not a post-hoc adjustment, is doing the work.
 </p>
@@ -699,7 +699,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   CoEval generates a scoring rubric automatically per task. We examine whether these rubrics are appropriately
   task-specialized while sharing a common quality core. Across the four tasks, the 22 auto-generated rubric criteria
   exhibit a mean <em>within-task</em> semantic similarity of $0.342$, exceeding the mean <em>cross-task</em> similarity
-  of $0.294$ &mdash; criteria cluster by task, as desired. At the same time, a shared universal
+  of $0.294$: criteria cluster by task, as desired. At the same time, a shared universal
   <em>&ldquo;completeness&rdquo;</em> dimension recurs across three of the four tasks, indicating a common quality core.
   CoEval's rubrics are thus specialized to each task's demands yet anchored by a transferable notion of answer quality.
 </p>
@@ -718,7 +718,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <p>
   We test the contamination-resistance claim empirically. We take the 400 CoEval-generated items from the
   <code>medium-benchmark</code> study and measure their verbatim 13-gram overlap against a corpus of 491 items drawn
-  from five widely used public benchmarks (XSum, CNN/DailyMail, CodeSearchNet, SciQ, ARC-Challenge)&mdash;datasets that
+  from five widely used public benchmarks (XSum, CNN/DailyMail, CodeSearchNet, SciQ, ARC-Challenge), datasets that
   are, by virtue of their age and popularity, present in the pretraining corpora of current models. Across
   $110{,}784$ distinct public 13-grams, <strong>not a single CoEval-generated item shares any 13-gram</strong> with the
   public corpus: mean and maximum overlap are both $0.0000$, and $0\%$ of generated items share any 13-gram. This
@@ -730,14 +730,14 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 </p>
 <div class="keyfinding">
   <strong>Finding (contamination).</strong> CoEval-generated items show $0.0000$ verbatim 13-gram overlap with five
-  major public benchmarks ($n=400$ vs $491$ items; $110{,}784$ distinct public 13-grams), corroborating&mdash;alongside
-  the structural freshness guarantee&mdash;that generated evaluation items are not leaked copies of public test sets.
+  major public benchmarks ($n=400$ vs $491$ items; $110{,}784$ distinct public 13-grams), corroborating, alongside
+  the structural freshness guarantee, that generated evaluation items are not leaked copies of public test sets.
 </div>
 
 <h3>5.7 Cost</h3>
 <p>
-  The entire four-task medium-scale study &mdash; teacher generation, student response collection, cross-family judging,
-  and analysis &mdash; produced <strong>7,978 valid evaluations</strong> for a total cost of <strong>USD 5.89</strong>,
+  The entire four-task medium-scale study, teacher generation, student response collection, cross-family judging,
+  and analysis, produced <strong>7,978 valid evaluations</strong> for a total cost of <strong>USD 5.89</strong>,
   fully automated and with no human annotation. At roughly USD 0.00074 per evaluation, contamination-free, domain-targeted,
   bias-cancelled evaluation is inexpensive enough to re-run on every model release, which is exactly what a renewable,
   contamination-resistant benchmark requires.
@@ -752,15 +752,15 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <h3>5.8 Putting it together: domain case studies</h3>
 <p>
   The preceding sections validate CoEval's components where ground truth is available. We now exercise the complete tool
-  in its intended regime on three custom verticals&mdash;<em>drug&ndash;drug interaction reasoning</em>, <em>clinical
-  reasoning</em>, and <em>legal analysis</em>&mdash;for which we assume no task-specific labeled data and no trustworthy
+  in its intended regime on three custom verticals, <em>drug&ndash;drug interaction reasoning</em>, <em>clinical
+  reasoning</em>, and <em>legal analysis</em>, for which we assume no task-specific labeled data and no trustworthy
   public benchmark. The drug-interaction vertical is the sharpest case for the framework's premise: a well-known public
   benchmark exists (DDIExtraction-2013) but is a relation-<em>extraction</em> corpus rather than clinical-decision
   reasoning, and is old and freely available enough to be presumed present in pretraining, while the few clinically
   realistic DDI-reasoning sets are private and number only in the hundreds of items. From a one-line description per
   vertical, CoEval's teacher generated 40 attribute-stratified items (for drug interactions, stratified over severity,
   mechanism, and patient context), three candidate models answered them, and the cross-family ensemble
-  (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) scored every response&mdash;all from a single configuration file, with
+  (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) scored every response, all from a single configuration file, with
   no human labels or raters.
 </p>
 <p>
@@ -769,7 +769,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   &nbsp;($0.682$) $>$ <code>llama-3.2-3b</code>&nbsp;($0.497$), with non-overlapping confidence intervals separating every
   model (Table&nbsp;4). The clinical and legal verticals are consistent: the ensemble ranks the smallest model weakest in
   both, unanimously in clinical and two-of-three in legal (where the Anthropic judge ranks <code>gpt-3.5-turbo</code>
-  lowest)&mdash;genuine disagreement a single judge would hide and a diverse ensemble surfaces; on clinical the two
+  lowest): genuine disagreement a single judge would hide and a diverse ensemble surfaces; on clinical the two
   stronger models are statistically close, which the overlapping intervals correctly expose. This is the operation the
   framework is built for: producing a defensible model ranking for a bespoke domain in which a standard benchmark is
   unavailable or untrustworthy.
@@ -802,12 +802,12 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <h2>6. Discussion</h2>
 <p>
   CoEval is designed for a specific, common predicament: ranking models for a task or domain when no labeled data
-  exists to build a benchmark and public benchmarks cannot be trusted. The results show it meets that need&mdash;its
+  exists to build a benchmark and public benchmarks cannot be trusted. The results show it meets that need: its
   label-free scores reproduce the true model ranking and track ground truth, and its generated items are verifiably
-  fresh&mdash;and they explain <em>why</em> the label-free judging is trustworthy. The key enabler is a design
+  fresh, and they explain <em>why</em> the label-free judging is trustworthy. The key enabler is a design
   principle that is itself a contribution: the reliability of an LLM-judge panel is governed by its
-  <em>composition</em>, not its size. A diverse, cross-family panel cancels the mixed-sign biases&mdash;verbosity,
-  self-preference&mdash;that any individual judge carries, while a same-family panel would merely amplify a shared
+  <em>composition</em>, not its size. A diverse, cross-family panel cancels the mixed-sign biases (verbosity,
+  self-preference) that any individual judge carries, while a same-family panel would merely amplify a shared
   bias; practitioners should prioritize vendor diversity over adding more copies of similar judges. A modest diverse
   panel already recovers most of the full-panel reliability, so the cost of diversity is small.
 </p>
@@ -816,7 +816,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   are synthesized fresh from an attribute specification on every run, CoEval sidesteps contamination structurally rather
   than chasing leaked items after the fact, and it targets the deployment's own distribution and edge cases rather than a
   generic average. The same role separation that secures contamination-freeness in generation structurally precludes
-  same-family self-preference in scoring &mdash; one architectural choice closing two leakage channels. Declarative
+  same-family self-preference in scoring: one architectural choice closing two leakage channels. Declarative
   specification keeps the whole pipeline reproducible: a single YAML file regenerates the benchmark, the responses, and
   the scores.
 </p>
@@ -837,7 +837,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   bias-cancelled, reliable evaluation without human annotation: it removes verbosity bias that no single judge avoids
   (ensemble $r = +0.010$, CI spanning zero; 93% reduction), structurally precludes same-family self-preference, and
   produces task-specialized rubrics with a shared quality core, while also converging
-  to a stable full-panel consensus (Spearman $\rho$ up to $1.00$) &mdash; all at USD 5.89 for 7,978 evaluations. Our
+  to a stable full-panel consensus (Spearman $\rho$ up to $1.00$), all at USD 5.89 for 7,978 evaluations. Our
   central finding, that judge-panel <em>composition</em> rather than size is the decisive reliability lever, offers a
   concrete and inexpensive recipe for trustworthy, renewable LLM evaluation. CoEval is open-source, declarative, and
   fully reproducible.
