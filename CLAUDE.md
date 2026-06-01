@@ -262,9 +262,27 @@ provide continuous scores.
 
 ---
 
-## Paper status (as of 2026-03-03)
+## Paper status (as of 2026-06-01)
 
-- 7 sections + ethics + appendix written; 8 figures in `docs/paper/figures/`
-- **Numbers in `docs/paper/04_results.md` are FICTIONAL PLACEHOLDERS**
-- Gaps fixed: G1 (RAR), G3 (token_count), G4 (calibration), G5 (baselines), G8 (surface bias)
-- Deferred: G2 (positional swap), G6 (cost tracking), G7 (pass@k)
+- **Published HTML paper**: `docs/paper/index.html` (KaTeX math, 4 data tables, figures
+  in `docs/paper/figures/`), live on GitHub Pages at
+  https://apartsinprojects.github.io/CoEval/ with a top-right Word download
+  (`docs/paper/CoEval.docx`, native OMML equations regenerated via the `html2doc` skill).
+- **Title**: "CoEval: Ranking Language Models for Custom Tasks Without Labeled Data or
+  Trustworthy Benchmarks". **Authors**: Alexander Apartsin (Holon Institute of
+  Technology), Yehudit Aperstein (Afeka Tel Aviv Academic College of Engineering).
+- **Framing**: a tool to rank/evaluate models for a custom task or domain when (a) no
+  task-specific labeled data exists and (b) standard public benchmarks are suspected
+  contaminated. Open framework, any models/tasks; contamination-free, domain-focused.
+- **All numbers are REAL** and verified against committed artifacts under
+  `Runs/**/reports/*.json` (frontier QA rho=0.86 CI[0.77,0.94]; Table 2 ranking;
+  ICC non-monotone 0.70->0.40; verbosity cancellation +0.010; vendor-disjoint shift
+  <=0.015; rubric within 0.342 > cross 0.294; 0.0000 contamination; USD 5.89 / 7,978
+  evals; DDI 3/3 unanimous, clinical, legal verticals). The old `04_results.md`
+  placeholders are superseded.
+- **Style invariants** (re-audit after ANY regeneration): zero em-dashes (use
+  commas/colons/semicolons/parentheses); money written "USD X" not "$X" (a literal `$`
+  breaks KaTeX auto-render); references validated with the `bibtest` skill (26/26 valid);
+  docx must rebuild with 0 stray `$` (strip padding inside `$$ ... $$` display math, the
+  converter trims the latex before matching).
+- Experiment registry: `experiments/INDEX.md` (EXP-001..007 + family-aware).
