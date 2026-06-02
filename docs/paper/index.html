@@ -231,7 +231,7 @@
     <em>composition</em> (diversity across vendor families), not panel <em>size</em>, determines
     reliability, and indiscriminately enlarging a panel can <em>reduce</em> it (inter-rater reliability peaks at two
     well-chosen judges and falls as low-agreement judges are added, exactly matching the Spearman&ndash;Brown relation).
-    CoEval fills three roles, <em>teacher</em>, <em>student</em>, and <em>judge</em>, from one shared pool of models: any model can take any role, and a model that judges in one run can be a candidate in another, all configured from a single file across sixteen provider interfaces. Generated items have $0.0000$ verbatim 13-gram overlap with five major public benchmarks. Across a four-task medium-scale
+    CoEval fills three roles, <em>teacher</em>, <em>student</em>, and <em>judge</em>, from one shared pool of models: any model can take any role, and a model that judges in one run can be a candidate in another, all configured from a single file across many provider interfaces. Generated items have $0.0000$ verbatim 13-gram overlap with five major public benchmarks. Across a four-task medium-scale
     study, CoEval produced 7,978 valid evaluations at a total cost of USD 5.89 with no human annotation. We show that the
     ensemble removes a verbosity bias that no single judge avoids (mean per-judge $|r| = 0.153$ collapses to an ensemble
     $r = +0.010$ with a bootstrap CI spanning zero, a 93% reduction) and structurally precludes same-family
@@ -290,12 +290,12 @@
   <li><strong>(3) Bias-cancelling aggregation.</strong> Consensus aggregation across a vendor-diverse panel cancels
     verbosity bias that individual judges carry with mixed sign, and the vendor-disjoint design structurally precludes
     same-family self-preference.</li>
-  <li><strong>(4) An open, declarative system that ranks models from one file.</strong> CoEval is model-agnostic and
-    task-agnostic: any model reachable through one of sixteen provider interfaces (cloud, open-weight, or local) can
+  <li><strong>(4) An open, declarative system that ranks models from one specification.</strong> CoEval is model-agnostic and
+    task-agnostic: any model reachable through a broad range of provider interfaces (cloud, open-weight, or local) can
     serve as teacher, student, or judge, and a task or domain is described declaratively. Ranking a family of candidate
-    models on a custom use case is a single command, and we demonstrate (Section&nbsp;5.1, Table&nbsp;2) that CoEval
-    recovers the correct ground-truth ranking. The whole pipeline is specified in one YAML file and is fully
-    reproducible and open-source.</li>
+    models on a custom use case requires only this declarative specification, and we demonstrate (Section&nbsp;5.1, Table&nbsp;2) that CoEval
+    recovers the correct ground-truth ranking. The whole pipeline is reproducible from a single declarative
+    configuration.</li>
 </ul>
 <p>
   CoEval requires no human annotation. In a four-task medium-scale study it produced 7,978 valid evaluations for
@@ -385,7 +385,7 @@
 <!-- ===================== 3. FRAMEWORK ===================== -->
 <h2>3. The CoEval Framework</h2>
 <p>
-  CoEval executes a declarative, five-phase pipeline specified in a single YAML configuration. The conceptual core is a
+  CoEval executes a declarative, five-phase pipeline specified in a single declarative configuration. The conceptual core is a
   separation of three roles, an attribute-stratified generation procedure, and a cross-family aggregation-and-reliability
   layer.
 </p>
@@ -394,7 +394,7 @@
   <figcaption><strong>Figure 1.</strong> The CoEval pipeline. A single pool of models rotates through three roles:
     teachers map attributes, construct rubrics, and generate fresh benchmark items (Phases&nbsp;1&ndash;3); students
     produce candidate responses (Phase&nbsp;4); and a cross-family judge ensemble scores them (Phase&nbsp;5). The entire
-    run is specified in one YAML file and emits eight interactive reports plus a benchmark export.</figcaption>
+    run is specified in one declarative configuration.</figcaption>
 </figure>
 
 <h3>3.1 Teacher, student, and judge roles</h3>
@@ -420,8 +420,7 @@ $$n_s \;\ge\; \left\lfloor \frac{N}{|\mathcal{S}|} \right\rfloor \quad \text{ite
 <p>
   with remaining items distributed to balance the marginal attribute distributions. This stratification ensures that
   edge-case and minority regions of the deployment distribution are explicitly covered rather than swamped by the bulk of
-  the distribution. The floor above is a guarantee on the <em>sampler</em>; CoEval emits a coverage report (Appendix&nbsp;A,
-  panel A3) recording the realized per-stratum counts, so that coverage of edge-case strata is auditable. Because items are generated fresh on
+  the distribution. The floor above is a guarantee on the <em>sampler</em>; CoEval emits a coverage report recording the realized per-stratum counts, so that coverage of edge-case strata is auditable. Because items are generated fresh on
   each run from the attribute specification, the resulting benchmark cannot have been seen during any student's
   pretraining. Contamination-resistance is a structural property of generation, not a post-hoc filter.
 </p>
@@ -479,7 +478,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   computed by a nonparametric bootstrap, using a <em>datapoint-clustered</em> resample wherever observations are nested
   (multiple student responses per item), and across the family of correlation tests we control the false-discovery rate
   with the Benjamini&ndash;Hochberg procedure ($\alpha = 0.05$). The complete configuration (model identifiers,
-  attribute strata, and prompts) is captured in a single declarative YAML file, and all artifacts are regenerable
+  attribute strata, and prompts) is captured in a single declarative configuration file, and all artifacts are regenerable
   from that specification. The full study produced <strong>7,978 valid evaluations</strong> across the four tasks.
 </p>
 
@@ -821,7 +820,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   than chasing leaked items after the fact, and it targets the deployment's own distribution and edge cases rather than a
   generic average. The same role separation that secures contamination-freeness in generation structurally precludes
   same-family self-preference in scoring: one architectural choice closing two leakage channels. Declarative
-  specification keeps the whole pipeline reproducible: a single YAML file regenerates the benchmark, the responses, and
+  specification keeps the whole pipeline reproducible: a single declarative configuration regenerates the benchmark, the responses, and
   the scores.
 </p>
 
@@ -907,36 +906,6 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <footer class="paperfoot">
   Preprint. Generated HTML build. &copy; 2026 Alexander Apartsin &amp; Yehudit Aperstein.
 </footer>
-
-<!-- ===================== APPENDIX A: REPORT GALLERY ===================== -->
-<h2>Appendix A: Interactive Report Gallery</h2>
-<p>
-  Every CoEval run emits a suite of self-contained, interactive HTML reports (no external dependencies) alongside a
-  machine-readable benchmark export. The panels below are drawn from the four-task study of Section&nbsp;5. They are
-  illustrative; the live reports support filtering, drill-down, and CSV export.
-</p>
-<div class="gallery">
-  <figure>
-    <img src="figures/gallery_fig_summary.png" alt="CoEval summary dashboard"/>
-    <figcaption><strong>A1.</strong> Summary dashboard: model rankings, confidence intervals, and navigation.</figcaption>
-  </figure>
-  <figure>
-    <img src="figures/gallery_fig_judge_report.png" alt="Judge agreement and reliability report"/>
-    <figcaption><strong>A2.</strong> Judge report: pairwise agreement, calibration, and reliability per judge.</figcaption>
-  </figure>
-  <figure>
-    <img src="figures/gallery_fig_coverage_summary.png" alt="Attribute coverage summary report"/>
-    <figcaption><strong>A3.</strong> Coverage summary: attribute-coverage ratio and rare-stratum recall per task.</figcaption>
-  </figure>
-  <figure>
-    <img src="figures/gallery_fig_score_distribution.png" alt="Score distribution report"/>
-    <figcaption><strong>A4.</strong> Score distribution: High/Medium/Low histograms, filterable by task and role.</figcaption>
-  </figure>
-  <figure>
-    <img src="figures/gallery_fig_interaction_matrix.png" alt="Teacher-student interaction matrix"/>
-    <figcaption><strong>A5.</strong> Interaction matrix: teacher&times;student pair quality heatmap.</figcaption>
-  </figure>
-</div>
 
 </div>
 </body>

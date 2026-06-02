@@ -49,11 +49,15 @@ def convert() -> None:
 def poststyle() -> None:
     from docx import Document
     from docx.enum.text import WD_ALIGN_PARAGRAPH
-    from docx.shared import Pt
+    from docx.shared import Pt, Emu
     from docx.oxml.ns import qn
 
     d = Document(str(OUT))
     paras = d.paragraphs
+
+    # Front matter: center the title block and give BOTH authors one uniform
+    # font (the skill styles a single author; the second was left as body text
+    # with a different font). Block order is name, affiliation, name, affiliation.
     ti = ai = None
     for i, p in enumerate(paras):
         if ti is None and p.style.name == "Title":
@@ -62,14 +66,29 @@ def poststyle() -> None:
             ai = i
             break
     if ti is not None and ai is not None:
-        for p in paras[ti + 1:ai]:
-            if p.text.strip():
-                p.style = d.styles["Subtitle"]
-                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        block = [p for p in paras[ti + 1:ai] if p.text.strip()]
+        for j, p in enumerate(block):
+            p.style = d.styles["Subtitle"]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            is_name = (j % 2 == 0)
+            for r in p.runs:
+                r.font.name = "Times New Roman"
+                r.font.size = Pt(12) if is_name else Pt(11)
+                r.font.bold = is_name
+                r.font.italic = not is_name
+
+    # Figures: cap height so a figure plus its caption fits within a page (this
+    # is what prevents large blank gaps), then center with modest spacing.
+    max_h = Emu(int(4.5 * 914400))
+    for shp in d.inline_shapes:
+        if shp.height and shp.height > max_h:
+            ratio = float(max_h) / float(shp.height)
+            shp.height = max_h
+            shp.width = Emu(int(shp.width * ratio))
     for p in paras:
         if p._element.findall(".//" + qn("w:drawing")):
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p.paragraph_format.space_before = Pt(12)
+            p.paragraph_format.space_before = Pt(8)
             p.paragraph_format.space_after = Pt(6)
     d.save(str(OUT))
 
