@@ -1,0 +1,131 @@
+# EXP-012: scaled doubly-robust rank-recovery (16 candidate models)
+# Strengthens the 7-model EXP010 result: rank-recovery correlation now rests on
+# n=16 models instead of n=7. Same sciq+ARC gold, same vendor-disjoint judge panel.
+models:
+  - name: sciq
+    interface: benchmark
+    parameters: { description: "SciQ science exam QA (exact-match ground truth)", task: science_qa }
+    roles: [teacher]
+  - name: arc_challenge
+    interface: benchmark
+    parameters: { description: "ARC-Challenge science reasoning MCQ (harder; spreads models)", task: science_reasoning }
+    roles: [teacher]
+
+  # --- 16 candidate students spanning a wide capability gradient ---
+  - name: gpt-4o
+    interface: openrouter
+    parameters: { model: openai/gpt-4o, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: gpt-4o-mini-student
+    interface: openrouter
+    parameters: { model: openai/gpt-4o-mini, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: gpt-4.1-mini
+    interface: openrouter
+    parameters: { model: openai/gpt-4.1-mini, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: claude-3.5-haiku-student
+    interface: openrouter
+    parameters: { model: anthropic/claude-3.5-haiku, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: gemini-flash-student
+    interface: openrouter
+    parameters: { model: google/gemini-2.5-flash, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: gemma-2-9b
+    interface: openrouter
+    parameters: { model: google/gemma-2-9b-it, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: llama-3.3-70b
+    interface: openrouter
+    parameters: { model: meta-llama/llama-3.3-70b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: llama-3.1-8b
+    interface: openrouter
+    parameters: { model: meta-llama/llama-3.1-8b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: llama-3.2-3b
+    interface: openrouter
+    parameters: { model: meta-llama/llama-3.2-3b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: llama-3.2-1b
+    interface: openrouter
+    parameters: { model: meta-llama/llama-3.2-1b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: qwen-2.5-72b
+    interface: openrouter
+    parameters: { model: qwen/qwen-2.5-72b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: qwen-2.5-7b
+    interface: openrouter
+    parameters: { model: qwen/qwen-2.5-7b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: mistral-7b
+    interface: openrouter
+    parameters: { model: mistralai/mistral-7b-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: mistral-nemo
+    interface: openrouter
+    parameters: { model: mistralai/mistral-nemo, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: deepseek-chat
+    interface: openrouter
+    parameters: { model: deepseek/deepseek-chat, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+  - name: phi-3.5-mini
+    interface: openrouter
+    parameters: { model: microsoft/phi-3.5-mini-128k-instruct, temperature: 0.7, max_tokens: 256 }
+    roles: [student]
+
+  # --- vendor-disjoint cross-family judge panel (same as EXP010/EXP011) ---
+  - name: judge-gpt4o-mini
+    interface: openrouter
+    parameters: { model: openai/gpt-4o-mini, temperature: 0.0, max_tokens: 128 }
+    roles: [judge]
+  - name: judge-claude-haiku
+    interface: openrouter
+    parameters: { model: anthropic/claude-3.5-haiku, temperature: 0.0, max_tokens: 128 }
+    roles: [judge]
+  - name: judge-gemini-flash
+    interface: openrouter
+    parameters: { model: google/gemini-2.5-flash, temperature: 0.0, max_tokens: 128 }
+    roles: [judge]
+
+tasks:
+  - name: science_qa
+    description: "Answer a science exam multiple-choice question. Output only the correct option text."
+    output_description: "The exact text of the correct answer choice. No explanation."
+    target_attributes: { difficulty: [easy, medium, hard] }
+    nuanced_attributes: {}
+    sampling: { target: [1], nuance: [0], total: 40 }
+    rubric:
+      accuracy: "The answer exactly matches the scientifically correct choice."
+      relevance: "The answer directly addresses the question asked."
+    evaluation_mode: single
+    prompt_library:
+      test: |
+        Answer this question. Output only the correct answer, no explanation.
+        {input}
+      sample: "{prompt}"
+
+  - name: science_reasoning
+    description: "Answer an ARC-Challenge science reasoning multiple-choice question with the correct option."
+    output_description: "The exact text (or letter) of the correct option. No explanation."
+    target_attributes: { difficulty: [easy, medium, hard] }
+    nuanced_attributes: {}
+    sampling: { target: [1], nuance: [0], total: 40 }
+    rubric:
+      accuracy: "The selected option is the correct answer to the reasoning question."
+      relevance: "The response answers the question rather than restating it."
+    evaluation_mode: single
+    prompt_library:
+      test: |
+        Answer this multiple-choice question. Output only the correct option.
+        {input}
+      sample: "{prompt}"
+
+experiment:
+  id: EXP012-scale-ranking-16
+  storage_folder: ./Runs
+  log_level: INFO
+  generation_retries: 2

@@ -710,12 +710,14 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <p>
   The panel's two label-free quality signals, item discriminative power and judge agreement, compose into the
   <em>doubly-robust ranking</em> of Section&nbsp;3.3, which leans on the items that separate models (Section&nbsp;5.7)
-  and the judges that agree with the panel. On a benchmark-grounded check where gold accuracy is available (seven models
-  ranked on science QA and reasoning), it improves rank-recovery of the true model ordering from the plain mean's
-  Spearman $0.87$ (Kendall $0.75$) to <strong>$0.98$</strong> (Kendall $0.95$), mostly by down-weighting saturated items
-  that carry no ranking signal (the top tenth of items by discrimination hold over half the weight), and it is robust:
-  injecting a random judge leaves the recovered ranking at $0.98$, the rogue judge receiving weight $0.06$. The two
-  weights are complementary, since on the discriminative items judge reliability matters most.
+  and the judges that agree with the panel. On a benchmark-grounded check where gold accuracy is available (thirteen
+  models ranked on science QA and reasoning, spanning <code>gpt-4o</code> down to <code>llama-3.2-1b</code>), it improves
+  rank-recovery of the true model ordering from the plain mean's Spearman $0.88$ (Kendall $0.76$) to
+  <strong>$0.95$</strong> (Kendall $0.87$), by down-weighting saturated items that carry no ranking signal (nearly half
+  the items hold near-zero weight) and judges that disagree with the panel. The two signals are complementary, each
+  helping on its own (item-weighting alone $0.94$, judge-weighting alone $0.92$) and most on the discriminative items
+  where judge reliability matters. The aggregator is robust: injecting a random judge degrades the plain mean to $0.85$
+  but leaves the doubly-robust ranking at $0.95$, the rogue judge receiving weight $0.00$.
 </p>
 
 <h3>5.3 Bias cancellation</h3>
@@ -1000,9 +1002,9 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   <strong>Scope and limitations.</strong> Our ground-truth validation of the ranking operation uses objective
   exact-match QA, where labels exist; on subjective custom domains (Section&nbsp;5.7) we rely on the cross-family
   ensemble and report intervals rather than a held-out gold ranking, because by assumption none exists. We study up to
-  six candidate models across four exact-match QA tasks, three custom verticals, and a four-domain divergence study
-  (Section&nbsp;5.8); broader model pools and additional domains would further
-  test generality. The contamination guarantee is structural (fresh per-run synthesis), validated both by zero verbatim
+  thirteen candidate models across four exact-match QA tasks, three custom verticals, a four-domain divergence study
+  (Section&nbsp;5.8), and a thirteen-model rank-recovery check (Section&nbsp;5.2); broader model pools and additional
+  domains would further test generality. The contamination guarantee is structural (fresh per-run synthesis), validated both by zero verbatim
   overlap and by a controlled memorization study (Section&nbsp;5.5); a verbatim n-gram test is not a membership test
   against any model's full pretraining corpus.
 </p>

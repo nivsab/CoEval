@@ -1,0 +1,43 @@
+{
+  "experiment": "v2_doubly_robust_ranking",
+  "n_items": 80,
+  "n_students": 13,
+  "judges": [
+    "judge-claude-haiku",
+    "judge-gemini-flash",
+    "judge-gpt4o-mini"
+  ],
+  "clean_panel": {
+    "plain_mean": [
+      0.882,
+      0.761
+    ],
+    "item_weighted_only": [
+      0.936,
+      0.844
+    ],
+    "judge_weighted_only": [
+      0.919,
+      0.816
+    ],
+    "doubly_robust": [
+      0.95,
+      0.871
+    ]
+  },
+  "with_broken_judge": {
+    "plain_mean": [
+      0.849,
+      0.705
+    ],
+    "doubly_robust": [
+      0.95,
+      0.871
+    ],
+    "broken_judge_weight": 0.0
+  },
+  "item_weight_concentration": {
+    "top10pct_share": 0.324,
+    "frac_items_near_zero": 0.463
+  }
+}

@@ -27,7 +27,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "Code"))
 from analyzer.loader import load_ees  # noqa: E402
 
-RUN = ROOT / "Runs" / "EXP010-scale-ranking-pilot"
+# Optional CLI arg = run-folder name (defaults to the 7-model pilot for back-compat).
+_RUN_NAME = sys.argv[1] if len(sys.argv) > 1 else "EXP010-scale-ranking-pilot"
+RUN = ROOT / "Runs" / _RUN_NAME
 
 
 def _gold_by_student_item():
