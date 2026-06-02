@@ -1,0 +1,36 @@
+{
+  "experiment": "v2_aggregation_regret",
+  "task": "summarization vs BERTScore",
+  "n_responses": 600,
+  "judges": [
+    "claude-haiku",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o-mini"
+  ],
+  "single_judge_rho": {
+    "claude-haiku": 0.202,
+    "gemini-flash": 0.2025,
+    "gpt-3.5-turbo": -0.0056,
+    "gpt-4o-mini": 0.2491
+  },
+  "best_single": {
+    "gpt-4o-mini": 0.2491
+  },
+  "worst_single": {
+    "gpt-3.5-turbo": -0.0056
+  },
+  "judge_choice_regret_range": 0.2547,
+  "reliability_weights": {
+    "claude-haiku": 0.253,
+    "gemini-flash": 0.314,
+    "gpt-3.5-turbo": 0.181,
+    "gpt-4o-mini": 0.252
+  },
+  "aggregations": {
+    "mean (current)": 0.227,
+    "median": 0.2085,
+    "trimmed_mean": 0.2085,
+    "reliability_weighted": 0.2423
+  }
+}
