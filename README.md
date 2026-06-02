@@ -1,5 +1,7 @@
 # CoEval: Ensemble-Based Self-Evaluation for LLMs
 
+📄 **[Read the CoEval paper online](https://apartsinprojects.github.io/CoEval/)** &nbsp;·&nbsp; [Download the Word version](https://github.com/ApartsinProjects/CoEval/raw/master/docs/paper/CoEval.docx)
+
 [![Paper](https://img.shields.io/badge/%F0%9F%93%84%20paper-online-success)](https://apartsinprojects.github.io/CoEval/)
 [![Status WIP](https://img.shields.io/badge/status-WIP-yellow)](CHANGELOG.md)
 [![Python ≥3.10](https://img.shields.io/badge/python-%E2%89%A53.10-blue?logo=python&logoColor=white)](https://www.python.org/)
