@@ -1,0 +1,65 @@
+{
+  "experiment": "v2_item_discrimination",
+  "threshold_range": 0.15,
+  "verticals": {
+    "drug_interaction_reasoning": {
+      "n_items": 40,
+      "students_by_overall": [
+        "gpt-4o-mini",
+        "gpt-3.5-turbo",
+        "llama-3.2-3b"
+      ],
+      "overall_scores": {
+        "gpt-4o-mini": 0.77,
+        "gpt-3.5-turbo": 0.682,
+        "llama-3.2-3b": 0.497
+      },
+      "separability_top_minus_bottom": 0.273,
+      "mean_item_range": 0.362,
+      "median_item_range": 0.333,
+      "pct_discriminative": 77.5,
+      "pct_decisive_top": 57.5
+    },
+    "clinical_reasoning": {
+      "n_items": 40,
+      "students_by_overall": [
+        "gpt-3.5-turbo",
+        "gpt-4o-mini",
+        "llama-3.2-3b"
+      ],
+      "overall_scores": {
+        "gpt-3.5-turbo": 0.873,
+        "gpt-4o-mini": 0.864,
+        "llama-3.2-3b": 0.814
+      },
+      "separability_top_minus_bottom": 0.059,
+      "mean_item_range": 0.19,
+      "median_item_range": 0.146,
+      "pct_discriminative": 50.0,
+      "pct_decisive_top": 50.0
+    },
+    "legal_analysis": {
+      "n_items": 40,
+      "students_by_overall": [
+        "gpt-4o-mini",
+        "gpt-3.5-turbo",
+        "llama-3.2-3b"
+      ],
+      "overall_scores": {
+        "gpt-4o-mini": 0.982,
+        "gpt-3.5-turbo": 0.74,
+        "llama-3.2-3b": 0.709
+      },
+      "separability_top_minus_bottom": 0.273,
+      "mean_item_range": 0.423,
+      "median_item_range": 0.354,
+      "pct_discriminative": 85.0,
+      "pct_decisive_top": 82.5
+    }
+  },
+  "pooled": {
+    "n_items": 120,
+    "mean_item_range": 0.325,
+    "pct_discriminative": 70.8
+  }
+}

@@ -269,7 +269,9 @@
 <ul class="tight">
   <li><strong>(1) Self-generating, contamination-resistant benchmarks.</strong> A teacher model synthesizes an
     attribute-stratified benchmark targeted at a declared domain. Because items are freshly generated per run, they
-    are resistant to leakage into a student's training data by construction.</li>
+    are resistant to leakage into a student's training data by construction, and the generated items are
+    <em>discriminative</em>, separating candidate models (most carry ranking signal), the property a benchmark needs to
+    rank them rather than saturate.</li>
   <li><strong>(2) A self-validating cross-family judge panel: composition over size.</strong> Responses are scored by
     judges drawn from distinct model vendors. Our central finding is that <em>composition</em> (vendor diversity), not
     panel <em>size</em>, is the decisive reliability lever: adding low-agreement judges can <em>reduce</em> reliability, a
@@ -845,6 +847,24 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   framework is built for: producing a defensible model ranking for a bespoke domain in which a standard benchmark is
   unavailable or untrustworthy.
 </p>
+<p>
+  A ranking is only possible if the items <em>separate</em> the models, the generation-side analog of judge
+  discrimination: a good teacher writes questions on which candidates actually differ. We measure per-item
+  discriminativeness as the spread of candidate-model ensemble scores. Across the $120$ generated vertical items,
+  <strong>$71\%$ are discriminative</strong> (a score range $\ge 0.15$ across the three models), with a mean per-item
+  range of $0.33$; on drug-interaction and legal analysis the figure rises to $78\%$ and $85\%$. Where the items do not
+  separate the models they are honest about it: clinical reasoning is only $50\%$ discriminative precisely because its
+  two stronger candidates are genuinely close ($0.873$ vs $0.864$), so the items reflect a real near-tie rather than
+  manufacturing a gap. This is why the panel yields non-overlapping ranking intervals: the teacher supplies items that
+  carry ranking signal, and a non-discriminative benchmark, on which every model scores alike, could not separate the
+  candidates no matter how reliable the judges are.
+</p>
+<div class="keyfinding">
+  <strong>Finding (discriminative generation).</strong> A good teacher generates items that separate the models. On the
+  $120$ CoEval-generated vertical items, $71\%$ are discriminative (candidate-score range $\ge 0.15$, mean range $0.33$),
+  and the fraction tracks the true model separation (drug-interaction $78\%$, legal $85\%$, clinical $50\%$ where two
+  models are genuinely close), so the generated benchmark carries the ranking signal a saturated benchmark lacks.
+</div>
 <div class="tablewrap">
 <table class="data">
   <caption><strong>Table 5.</strong> CoEval ranks three candidate models on three custom, contamination-free verticals
