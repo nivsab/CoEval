@@ -37,3 +37,4 @@ experiments/non_ascii.txt
 Docs/paperv2/reviews/
 Docs/paperv2/drafts/*.docx
 Runs/**/plotly.min.js
+Runs/EXP008-contamination/adapter/
