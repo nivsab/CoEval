@@ -1,0 +1,28 @@
+{
+  "mode": "full",
+  "on_fail": "abort",
+  "results": {
+    "teacher": "ok",
+    "gpt-4o-mini": "ok",
+    "gpt-3.5-turbo": "ok",
+    "claude-3.5-haiku": "ok",
+    "gemini-flash": "ok",
+    "llama-3.1-8b": "ok",
+    "qwen-2.5-7b": "ok",
+    "judge-gpt4o-mini": "ok",
+    "judge-claude-haiku": "ok",
+    "judge-gemini-flash": "ok"
+  },
+  "probed_models": [
+    "claude-3.5-haiku",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o-mini",
+    "judge-claude-haiku",
+    "judge-gemini-flash",
+    "judge-gpt4o-mini",
+    "llama-3.1-8b",
+    "qwen-2.5-7b",
+    "teacher"
+  ]
+}

@@ -298,7 +298,7 @@
   USD 5.89 end-to-end. The remainder of this paper formalizes the framework (Section&nbsp;3), describes the experimental
   setup (Section&nbsp;4), and reports our empirical results (Section&nbsp;5): ground-truth correlation, the
   composition-over-size reliability finding, verbosity-bias cancellation, the cross-family self-preference design
-  property, rubric generalization, contamination resistance, cost, and end-to-end domain case studies on three custom verticals.
+  property, rubric generalization, contamination resistance, cost, end-to-end domain case studies on three custom verticals, and a demonstration that model rankings are domain-specific, so a generic leaderboard misdirects three of four domain practitioners.
 </p>
 
 <!-- ===================== 2. RELATED WORK ===================== -->
@@ -521,7 +521,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   governs reliability (5.2), which cancels the verbosity bias every single judge carries (5.3) and structurally avoids
   self-preference (5.4); the auto-generated rubrics are themselves task-specialized with a shared quality core
   (<a href="#appB">Appendix&nbsp;B</a>). Section&nbsp;5.5 verifies the second condition
-  directly, that the generated items are <em>contamination-free</em>, and Section&nbsp;5.5 shows the process is cheap enough to re-run per use case. Section&nbsp;5.7 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data.
+  directly, that the generated items are <em>contamination-free</em>, and Section&nbsp;5.5 shows the process is cheap enough to re-run per use case. Section&nbsp;5.7 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data, and Section&nbsp;5.8 shows that rankings are domain-specific: across four de-novo domains three different models take first place, so a generic leaderboard misdirects the practitioner that CoEval's per-domain ranking serves.
 </p>
 
 <h3>5.1 Ground-truth correlation</h3>
@@ -918,6 +918,61 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </table>
 </div>
 
+<h3>5.8 Rankings are domain-specific: why a generic leaderboard misleads</h3>
+<p>
+  The case studies above rank models <em>within</em> one domain. The premise of a custom-evaluation tool is that this
+  is necessary: the best model for one domain need not be the best for another, so a single public leaderboard, which
+  pools tasks into one number, can send a practitioner to the wrong model. We test this directly. From four one-line
+  descriptions, <em>math word problems</em>, <em>code explanation</em>, <em>clinical reasoning</em>, and <em>legal
+  analysis</em>, CoEval generated $25$ contamination-free items each ($100$ items), six candidate models answered them,
+  and the same vendor-disjoint cross-family panel (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) scored every
+  response: $1{,}800$ evaluations at full coverage, from one configuration file, for USD&nbsp;0.83.
+</p>
+<p>
+  The four per-domain rankings <strong>disagree sharply</strong>. Three different models take first place across the four
+  domains, and each winner is stable under a bootstrap over items ($B=2000$): <code>gpt-4o-mini</code> tops clinical
+  reasoning (top with probability $0.88$) and code explanation ($0.60$), <code>gemini-flash</code> tops legal analysis
+  ($1.00$), and <code>claude-3.5-haiku</code> tops math word problems ($0.85$). The movement is not confined to the lead:
+  <code>gpt-4o-mini</code> falls from first on clinical reasoning to fifth of six on math (where it is top in only
+  $0.001$ of bootstrap draws), and <code>claude-3.5-haiku</code> moves the opposite way, from first on math to fifth on
+  code (Table&nbsp;6). The mean cross-domain rank agreement is low (Kendall&nbsp;$\tau = 0.19$ averaged over the six
+  domain pairs); the least-aligned pair, code explanation versus math word problems, has a negative point estimate
+  ($\tau = -0.41$).
+</p>
+<p>
+  This is exactly the regret a generic leaderboard incurs. Pooling the four domains into one average ranks
+  <code>gemini-flash</code> first, but that model is the correct pick for only one of the four domains (legal analysis);
+  on clinical reasoning and code explanation the best model is <code>gpt-4o-mini</code>, and on math it is
+  <code>claude-3.5-haiku</code>, which the pooled board ranks only third. A practitioner who reads the generic
+  leaderboard and deploys its top model is choosing the domain-best model in just one of four cases. CoEval removes the
+  guess: it ranks the candidates on the practitioner's own domain, contamination-free, with no labeled data.
+</p>
+<div class="keyfinding">
+  <strong>Finding (domain-specific ranking).</strong> Across four de-novo domains scored by one vendor-disjoint panel
+  ($1{,}800$ evaluations), three different models take first place and the mean cross-domain rank agreement is weak
+  (Kendall&nbsp;$\tau = 0.19$); the winners are bootstrap-stable ($P(\text{top}) = 0.88$&ndash;$1.00$). A generic
+  leaderboard that pools the domains crowns a model that is domain-best in only one of the four, so a single number
+  misdirects three of four domain practitioners. Domain-specific evaluation is the operation CoEval is built to perform.
+</div>
+<div class="tablewrap">
+<table class="data">
+  <caption><strong>Table 6.</strong> The same six candidate models ranked by the same cross-family panel on four
+    CoEval-generated domains diverge: each cell is the model's rank ($1$ = best) in that domain, rows ordered by the
+    generic pooled leaderboard. Three distinct models win the four domains (highlighted), and the pooled-best model
+    (<code>gemini-flash</code>) is domain-best in only one. <code>gpt-4o-mini</code> swings from $1$st to $5$th and
+    <code>claude-3.5-haiku</code> from $5$th to $1$st across domains.</caption>
+  <thead><tr><th class="lbl">Model</th><th>Pooled</th><th>Clinical</th><th>Code</th><th>Legal</th><th>Math</th></tr></thead>
+  <tbody>
+    <tr><td class="lbl"><code>gemini-flash</code></td><td>1</td><td>2</td><td>3</td><td class="highlight">1</td><td>2</td></tr>
+    <tr><td class="lbl"><code>gpt-4o-mini</code></td><td>2</td><td class="highlight">1</td><td class="highlight">1</td><td>2</td><td>5</td></tr>
+    <tr><td class="lbl"><code>claude-3.5-haiku</code></td><td>3</td><td>3</td><td>5</td><td>3</td><td class="highlight">1</td></tr>
+    <tr><td class="lbl"><code>qwen-2.5-7b</code></td><td>4</td><td>5</td><td>2</td><td>4</td><td>4</td></tr>
+    <tr><td class="lbl"><code>llama-3.1-8b</code></td><td>5</td><td>4</td><td>4</td><td>6</td><td>6</td></tr>
+    <tr><td class="lbl"><code>gpt-3.5-turbo</code></td><td>6</td><td>6</td><td>6</td><td>5</td><td>3</td></tr>
+  </tbody>
+</table>
+</div>
+
 <!-- ===================== 6. DISCUSSION ===================== -->
 <h2>6. Discussion</h2>
 <p>
@@ -944,8 +999,9 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <p>
   <strong>Scope and limitations.</strong> Our ground-truth validation of the ranking operation uses objective
   exact-match QA, where labels exist; on subjective custom domains (Section&nbsp;5.7) we rely on the cross-family
-  ensemble and report intervals rather than a held-out gold ranking, because by assumption none exists. We study three
-  candidate models across four tasks, an exact-match QA validation, and three custom verticals; broader model pools and additional domains would further
+  ensemble and report intervals rather than a held-out gold ranking, because by assumption none exists. We study up to
+  six candidate models across four exact-match QA tasks, three custom verticals, and a four-domain divergence study
+  (Section&nbsp;5.8); broader model pools and additional domains would further
   test generality. The contamination guarantee is structural (fresh per-run synthesis), validated both by zero verbatim
   overlap and by a controlled memorization study (Section&nbsp;5.5); a verbatim n-gram test is not a membership test
   against any model's full pretraining corpus.

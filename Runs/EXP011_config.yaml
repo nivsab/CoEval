@@ -1,0 +1,79 @@
+models:
+  - name: teacher
+    interface: openrouter
+    parameters: { model: openai/gpt-4o-mini, temperature: 0.8, max_tokens: 512 }
+    roles: [teacher]
+  # ---- 6 diverse candidate models (different strengths across domains) ----
+  - name: gpt-4o-mini
+    interface: openrouter
+    parameters: { model: openai/gpt-4o-mini, temperature: 0.5, max_tokens: 400 }
+    roles: [student]
+  - name: gpt-3.5-turbo
+    interface: openrouter
+    parameters: { model: openai/gpt-3.5-turbo, temperature: 0.5, max_tokens: 400 }
+    roles: [student]
+  - name: claude-3.5-haiku
+    interface: openrouter
+    parameters: { model: anthropic/claude-3.5-haiku, temperature: 0.5, max_tokens: 400 }
+    roles: [student]
+  - name: gemini-flash
+    interface: openrouter
+    parameters: { model: google/gemini-2.5-flash, temperature: 0.5, max_tokens: 400 }
+    roles: [student]
+  - name: llama-3.1-8b
+    interface: openrouter
+    parameters: { model: meta-llama/llama-3.1-8b-instruct, temperature: 0.5, max_tokens: 400 }
+    roles: [student]
+  - name: qwen-2.5-7b
+    interface: openrouter
+    parameters: { model: qwen/qwen-2.5-7b-instruct, temperature: 0.5, max_tokens: 400 }
+    roles: [student]
+  # ---- cross-family judge panel ----
+  - name: judge-gpt4o-mini
+    interface: openrouter
+    parameters: { model: openai/gpt-4o-mini, temperature: 0.0, max_tokens: 128 }
+    roles: [judge]
+  - name: judge-claude-haiku
+    interface: openrouter
+    parameters: { model: anthropic/claude-3.5-haiku, temperature: 0.0, max_tokens: 128 }
+    roles: [judge]
+  - name: judge-gemini-flash
+    interface: openrouter
+    parameters: { model: google/gemini-2.5-flash, temperature: 0.0, max_tokens: 128 }
+    roles: [judge]
+
+tasks:
+  - name: math_word_problems
+    description: "A grade-school to early-algebra math word problem requiring multi-step numeric reasoning."
+    output_description: "The final numeric answer with brief working shown."
+    target_attributes: { difficulty: [easy, medium, hard] }
+    sampling: { target: [1], nuance: [0], total: 25 }
+    rubric: auto
+    evaluation_mode: single
+  - name: code_explanation
+    description: "Explain what a given short Python function does, including its purpose and edge-case behavior."
+    output_description: "A clear, correct explanation of the function's behavior."
+    target_attributes: { difficulty: [easy, medium, hard] }
+    sampling: { target: [1], nuance: [0], total: 25 }
+    rubric: auto
+    evaluation_mode: single
+  - name: clinical_reasoning
+    description: "A clinical reasoning question a clinician would face, requiring medical knowledge and safe, accurate reasoning."
+    output_description: "A concise, clinically accurate answer with correct reasoning."
+    target_attributes: { specialty: [cardiology, infectious_disease, pediatrics, emergency], difficulty: [routine, hard] }
+    sampling: { target: [1], nuance: [0], total: 25 }
+    rubric: auto
+    evaluation_mode: single
+  - name: legal_analysis
+    description: "A legal analysis question requiring identification of the relevant rule and correct application to the facts."
+    output_description: "A concise legal analysis: issue, governing rule, and correct application."
+    target_attributes: { area_of_law: [contracts, torts, criminal, constitutional], complexity: [basic, advanced] }
+    sampling: { target: [1], nuance: [0], total: 25 }
+    rubric: auto
+    evaluation_mode: single
+
+experiment:
+  id: EXP011-domain-divergence
+  storage_folder: ./Runs
+  log_level: INFO
+  generation_retries: 2

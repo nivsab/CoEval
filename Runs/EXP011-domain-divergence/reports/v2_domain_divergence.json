@@ -1,0 +1,224 @@
+{
+  "experiment": "v2_domain_divergence",
+  "tasks": [
+    "clinical_reasoning",
+    "code_explanation",
+    "legal_analysis",
+    "math_word_problems"
+  ],
+  "n_students": 6,
+  "pooled_leaderboard": [
+    {
+      "model": "gemini-flash",
+      "score": 0.885
+    },
+    {
+      "model": "gpt-4o-mini",
+      "score": 0.882
+    },
+    {
+      "model": "claude-3.5-haiku",
+      "score": 0.871
+    },
+    {
+      "model": "qwen-2.5-7b",
+      "score": 0.855
+    },
+    {
+      "model": "llama-3.1-8b",
+      "score": 0.833
+    },
+    {
+      "model": "gpt-3.5-turbo",
+      "score": 0.829
+    }
+  ],
+  "pooled_top_model": "gemini-flash",
+  "pooled_leaderboard_regret": {
+    "clinical_reasoning": {
+      "domain_best": "gpt-4o-mini",
+      "domain_best_rank_on_pooled_board": 2,
+      "pooled_top_rank_in_domain": 2
+    },
+    "code_explanation": {
+      "domain_best": "gpt-4o-mini",
+      "domain_best_rank_on_pooled_board": 2,
+      "pooled_top_rank_in_domain": 3
+    },
+    "legal_analysis": {
+      "domain_best": "gemini-flash",
+      "domain_best_rank_on_pooled_board": 1,
+      "pooled_top_rank_in_domain": 1
+    },
+    "math_word_problems": {
+      "domain_best": "claude-3.5-haiku",
+      "domain_best_rank_on_pooled_board": 3,
+      "pooled_top_rank_in_domain": 2
+    }
+  },
+  "per_domain_ranking": {
+    "clinical_reasoning": [
+      {
+        "model": "gpt-4o-mini",
+        "score": 0.919
+      },
+      {
+        "model": "gemini-flash",
+        "score": 0.902
+      },
+      {
+        "model": "claude-3.5-haiku",
+        "score": 0.9
+      },
+      {
+        "model": "llama-3.1-8b",
+        "score": 0.852
+      },
+      {
+        "model": "qwen-2.5-7b",
+        "score": 0.841
+      },
+      {
+        "model": "gpt-3.5-turbo",
+        "score": 0.802
+      }
+    ],
+    "code_explanation": [
+      {
+        "model": "gpt-4o-mini",
+        "score": 0.904
+      },
+      {
+        "model": "qwen-2.5-7b",
+        "score": 0.893
+      },
+      {
+        "model": "gemini-flash",
+        "score": 0.891
+      },
+      {
+        "model": "llama-3.1-8b",
+        "score": 0.891
+      },
+      {
+        "model": "claude-3.5-haiku",
+        "score": 0.863
+      },
+      {
+        "model": "gpt-3.5-turbo",
+        "score": 0.85
+      }
+    ],
+    "legal_analysis": [
+      {
+        "model": "gemini-flash",
+        "score": 0.89
+      },
+      {
+        "model": "gpt-4o-mini",
+        "score": 0.86
+      },
+      {
+        "model": "claude-3.5-haiku",
+        "score": 0.843
+      },
+      {
+        "model": "qwen-2.5-7b",
+        "score": 0.838
+      },
+      {
+        "model": "gpt-3.5-turbo",
+        "score": 0.815
+      },
+      {
+        "model": "llama-3.1-8b",
+        "score": 0.784
+      }
+    ],
+    "math_word_problems": [
+      {
+        "model": "claude-3.5-haiku",
+        "score": 0.878
+      },
+      {
+        "model": "gemini-flash",
+        "score": 0.858
+      },
+      {
+        "model": "gpt-3.5-turbo",
+        "score": 0.85
+      },
+      {
+        "model": "qwen-2.5-7b",
+        "score": 0.848
+      },
+      {
+        "model": "gpt-4o-mini",
+        "score": 0.846
+      },
+      {
+        "model": "llama-3.1-8b",
+        "score": 0.804
+      }
+    ]
+  },
+  "top_model_by_domain": {
+    "clinical_reasoning": "gpt-4o-mini",
+    "code_explanation": "gpt-4o-mini",
+    "legal_analysis": "gemini-flash",
+    "math_word_problems": "claude-3.5-haiku"
+  },
+  "distinct_top_models": [
+    "claude-3.5-haiku",
+    "gemini-flash",
+    "gpt-4o-mini"
+  ],
+  "cross_domain_kendall_tau": {
+    "clinical_reasoning | code_explanation": 0.414,
+    "clinical_reasoning | legal_analysis": 0.6,
+    "clinical_reasoning | math_word_problems": -0.067,
+    "code_explanation | legal_analysis": 0.276,
+    "code_explanation | math_word_problems": -0.414,
+    "legal_analysis | math_word_problems": 0.333
+  },
+  "mean_cross_domain_tau": 0.19,
+  "min_cross_domain_tau": -0.414,
+  "model_rank_by_domain": {
+    "claude-3.5-haiku": {
+      "clinical_reasoning": 3,
+      "code_explanation": 5,
+      "legal_analysis": 3,
+      "math_word_problems": 1
+    },
+    "gemini-flash": {
+      "clinical_reasoning": 2,
+      "code_explanation": 3,
+      "legal_analysis": 1,
+      "math_word_problems": 2
+    },
+    "gpt-3.5-turbo": {
+      "clinical_reasoning": 6,
+      "code_explanation": 6,
+      "legal_analysis": 5,
+      "math_word_problems": 3
+    },
+    "gpt-4o-mini": {
+      "clinical_reasoning": 1,
+      "code_explanation": 1,
+      "legal_analysis": 2,
+      "math_word_problems": 5
+    },
+    "llama-3.1-8b": {
+      "clinical_reasoning": 4,
+      "code_explanation": 4,
+      "legal_analysis": 6,
+      "math_word_problems": 6
+    },
+    "qwen-2.5-7b": {
+      "clinical_reasoning": 5,
+      "code_explanation": 2,
+      "legal_analysis": 4,
+      "math_word_problems": 4
+    }
+  }
+}

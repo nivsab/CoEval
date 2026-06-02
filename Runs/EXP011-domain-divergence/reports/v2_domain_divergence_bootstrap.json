@@ -1,0 +1,74 @@
+{
+  "experiment": "v2_domain_divergence_bootstrap",
+  "B": 2000,
+  "n_students": 6,
+  "tasks": [
+    "clinical_reasoning",
+    "code_explanation",
+    "legal_analysis",
+    "math_word_problems"
+  ],
+  "p_model_is_top_by_domain": {
+    "clinical_reasoning": {
+      "claude-3.5-haiku": 0.118,
+      "gemini-flash": 0.001,
+      "gpt-4o-mini": 0.881
+    },
+    "code_explanation": {
+      "claude-3.5-haiku": 0.099,
+      "gemini-flash": 0.069,
+      "gpt-4o-mini": 0.604,
+      "llama-3.1-8b": 0.151,
+      "qwen-2.5-7b": 0.077
+    },
+    "legal_analysis": {
+      "gemini-flash": 1.0,
+      "qwen-2.5-7b": 0.001
+    },
+    "math_word_problems": {
+      "claude-3.5-haiku": 0.848,
+      "gemini-flash": 0.149,
+      "gpt-3.5-turbo": 0.001,
+      "gpt-4o-mini": 0.001,
+      "qwen-2.5-7b": 0.002
+    }
+  },
+  "cross_domain_kendall_tau_ci": {
+    "clinical_reasoning | code_explanation": {
+      "mean": 0.354,
+      "ci_lo": -0.067,
+      "ci_hi": 0.733,
+      "p_tau_lt_0": 0.062
+    },
+    "clinical_reasoning | legal_analysis": {
+      "mean": 0.493,
+      "ci_lo": 0.2,
+      "ci_hi": 0.733,
+      "p_tau_lt_0": 0.0
+    },
+    "clinical_reasoning | math_word_problems": {
+      "mean": 0.186,
+      "ci_lo": -0.2,
+      "ci_hi": 0.6,
+      "p_tau_lt_0": 0.15
+    },
+    "code_explanation | legal_analysis": {
+      "mean": 0.211,
+      "ci_lo": -0.333,
+      "ci_hi": 0.733,
+      "p_tau_lt_0": 0.22
+    },
+    "code_explanation | math_word_problems": {
+      "mean": -0.185,
+      "ci_lo": -0.733,
+      "ci_hi": 0.467,
+      "p_tau_lt_0": 0.723
+    },
+    "legal_analysis | math_word_problems": {
+      "mean": 0.382,
+      "ci_lo": 0.067,
+      "ci_hi": 0.733,
+      "p_tau_lt_0": 0.019
+    }
+  }
+}
