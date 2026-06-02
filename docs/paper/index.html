@@ -270,10 +270,13 @@
   <li><strong>(1) Self-generating, contamination-resistant benchmarks.</strong> A teacher model synthesizes an
     attribute-stratified benchmark targeted at a declared domain. Because items are freshly generated per run, they
     are resistant to leakage into a student's training data by construction.</li>
-  <li><strong>(2) Composition over size in cross-family judge ensembles.</strong> Responses are scored by judges drawn
-    from distinct model vendors. Our central finding is that <em>composition</em> (vendor diversity), not panel
-    <em>size</em>, is the decisive reliability lever: adding low-agreement judges can <em>reduce</em> reliability, a
-    result that reframes how judge panels should be assembled.</li>
+  <li><strong>(2) A self-validating cross-family judge panel: composition over size.</strong> Responses are scored by
+    judges drawn from distinct model vendors. Our central finding is that <em>composition</em> (vendor diversity), not
+    panel <em>size</em>, is the decisive reliability lever: adding low-agreement judges can <em>reduce</em> reliability, a
+    result that reframes how judge panels should be assembled. Crucially, the panel also <em>audits itself</em>: a judge's
+    agreement with the rest is a label-free estimate of its reliability, so the ensemble detects and down-weights broken
+    judges (a random, constant, or anti-correlated judge is driven to zero weight) with no ground truth, something a
+    single judge cannot do.</li>
   <li><strong>(3) Bias-cancelling aggregation.</strong> Consensus aggregation across a vendor-diverse panel cancels
     verbosity bias that individual judges carry with mixed sign, and the vendor-disjoint design structurally precludes
     same-family self-preference.</li>
@@ -666,6 +669,23 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   anti-correlated), and among label-free aggregators reliability weighting is the strongest ($0.246$, versus $0.222$ for
   median/trimmed and $0.178$ for Dawid&ndash;Skene), using only the panel's internal agreement.
 </div>
+<p>
+  Aggregation does more than average: it lets the evaluator <em>audit its own judges</em> with no labels. A judge's mean
+  agreement with the rest of the panel is an unsupervised reliability signal, and it cleanly separates competent judges
+  from broken ones. We stress-test this by adding three deliberately broken judges to the four-judge panel, one returning
+  uniform-random scores, one a constant score, and one anti-correlated with quality. All three fall to the bottom of the
+  agreement ranking (mean agreement $\le 0$ versus $0.07$ to $0.18$ for the competent judges), and their effect on a naive
+  average is large: the plain-mean correlation with ground truth drops from $0.238$ to $0.126$ once they are included.
+  Reliability weighting, using only peer agreement, assigns each broken judge a weight of essentially zero and recovers
+  the clean-panel accuracy ($0.228$). A single judge offers no such safeguard, because there is nothing to check it
+  against: the panel turns the absence of labels from a liability into a design that validates itself.
+</p>
+<div class="keyfinding">
+  <strong>Finding (self-validating panel).</strong> A panel both suppresses and <em>diagnoses</em> bad judges with no
+  labels. Adding three broken judges (random, constant, anti-correlated) to a four-judge panel nearly halves the
+  plain-mean accuracy ($0.238 \to 0.126$); reliability weighting gives each broken judge weight $0.000$ from peer
+  agreement alone and restores $0.228$. A single judge has no internal check to fall back on.
+</div>
 
 <h3>5.3 Bias cancellation</h3>
 <p>
@@ -890,7 +910,9 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   produces task-specialized rubrics with a shared quality core, while also converging
   to a stable full-panel consensus (Spearman $\rho$ up to $1.00$), all at USD 5.89 for 7,978 evaluations. Our
   central finding, that judge-panel <em>composition</em> rather than size is the decisive reliability lever, offers a
-  concrete and inexpensive recipe for trustworthy, renewable LLM evaluation. Because the same declarative pipeline runs
+  concrete and inexpensive recipe for trustworthy, renewable LLM evaluation. The panel is also self-validating: because a
+  judge's agreement with its peers is a label-free reliability estimate, the ensemble detects and zeroes out broken judges
+  with no ground truth, a safeguard a single judge cannot provide. Because the same declarative pipeline runs
   unchanged across models and domains and is cheap enough to repeat on every model release, CoEval is a reusable
   instrument a team points at its own application when neither labeled data nor a trustworthy benchmark exists, rather
   than a single static study. CoEval is open-source, declarative, and fully reproducible.

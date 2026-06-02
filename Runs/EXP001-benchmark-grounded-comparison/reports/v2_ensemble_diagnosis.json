@@ -1,0 +1,67 @@
+{
+  "experiment": "v2_ensemble_diagnosis",
+  "run": "EXP001-benchmark-grounded-comparison",
+  "n_responses": 900,
+  "real_judges": [
+    "claude-haiku",
+    "gemini-flash",
+    "gpt-3.5-turbo",
+    "gpt-4o-mini"
+  ],
+  "per_judge": {
+    "claude-haiku": {
+      "acc_vs_gold": 0.3084,
+      "panel_agree": 0.171,
+      "discrimination_std": 0.1981
+    },
+    "gemini-flash": {
+      "acc_vs_gold": 0.1669,
+      "panel_agree": 0.1809,
+      "discrimination_std": 0.1869
+    },
+    "gpt-3.5-turbo": {
+      "acc_vs_gold": -0.0418,
+      "panel_agree": 0.1241,
+      "discrimination_std": 0.0908
+    },
+    "gpt-4o-mini": {
+      "acc_vs_gold": 0.239,
+      "panel_agree": 0.0708,
+      "discrimination_std": 0.1236
+    },
+    "BAD:random": {
+      "acc_vs_gold": -0.041,
+      "panel_agree": -0.0123,
+      "discrimination_std": 0.286
+    },
+    "BAD:constant": {
+      "acc_vs_gold": NaN,
+      "panel_agree": NaN,
+      "discrimination_std": 0.0
+    },
+    "BAD:adversarial": {
+      "acc_vs_gold": -0.239,
+      "panel_agree": -0.4708,
+      "discrimination_std": 0.1236
+    }
+  },
+  "claim1_panel_agreement_predicts_accuracy": {
+    "spearman_across_judges": 0.6,
+    "n_judges": 7,
+    "interpretation": "high -> a judge's peer-agreement is a label-free proxy for its accuracy"
+  },
+  "claim2_robustness_and_downweighting": {
+    "plain_mean_clean_panel": 0.2374,
+    "plain_mean_with_3_bad_judges": 0.1255,
+    "reliability_weighted_with_3_bad_judges": 0.2276,
+    "bad_judge_weights": {
+      "BAD:random": 0.0,
+      "BAD:constant": 0.0,
+      "BAD:adversarial": 0.0
+    },
+    "good_judge_weight_range": [
+      0.1294,
+      0.3309
+    ]
+  }
+}
