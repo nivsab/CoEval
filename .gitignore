@@ -38,3 +38,8 @@ Docs/paperv2/reviews/
 Docs/paperv2/drafts/*.docx
 Runs/**/plotly.min.js
 Runs/EXP008-contamination/adapter/
+
+# EXP010 rank-recovery pilot: diagnostic only — keep config/reports, drop bulky raw data
+Runs/EXP010-scale-ranking-pilot/phase4_responses/
+Runs/EXP010-scale-ranking-pilot/phase5_evaluations/
+Runs/EXP010-scale-ranking-pilot/*.log

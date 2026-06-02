@@ -1,0 +1,86 @@
+{
+  "experiment": "v2_rank_recovery",
+  "run": "EXP010-scale-ranking-pilot",
+  "n_models": 7,
+  "models_by_gold": [
+    {
+      "model": "gpt-4o",
+      "gold_acc": 1.0,
+      "coeval_ens": 0.984
+    },
+    {
+      "model": "gpt-4o-mini",
+      "gold_acc": 1.0,
+      "coeval_ens": 0.979
+    },
+    {
+      "model": "gemini-flash-student",
+      "gold_acc": 0.988,
+      "coeval_ens": 0.989
+    },
+    {
+      "model": "llama-3.3-70b",
+      "gold_acc": 0.988,
+      "coeval_ens": 0.957
+    },
+    {
+      "model": "claude-3.5-haiku-student",
+      "gold_acc": 0.975,
+      "coeval_ens": 0.876
+    },
+    {
+      "model": "llama-3.1-8b",
+      "gold_acc": 0.95,
+      "coeval_ens": 0.926
+    },
+    {
+      "model": "llama-3.2-3b",
+      "gold_acc": 0.85,
+      "coeval_ens": 0.853
+    }
+  ],
+  "judges": [
+    "judge-claude-haiku",
+    "judge-gemini-flash",
+    "judge-gpt4o-mini"
+  ],
+  "rank_recovery": {
+    "ensemble_all_aspects": {
+      "spearman": 0.8,
+      "kendall": 0.651
+    },
+    "ensemble_accuracy_aspect": {
+      "spearman": 0.873,
+      "kendall": 0.751
+    },
+    "reliability_weighted": {
+      "spearman": 0.8,
+      "kendall": 0.651
+    },
+    "single_judges": {
+      "judge-claude-haiku": {
+        "spearman": 0.636,
+        "kendall": 0.551
+      },
+      "judge-gemini-flash": {
+        "spearman": 0.873,
+        "kendall": 0.751
+      },
+      "judge-gpt4o-mini": {
+        "spearman": 0.855,
+        "kendall": 0.751
+      }
+    },
+    "best_single_judge": {
+      "judge-gemini-flash": {
+        "kendall": 0.751
+      }
+    },
+    "worst_single_judge": {
+      "judge-claude-haiku": {
+        "kendall": 0.551
+      }
+    },
+    "judge_choice_regret_kendall": 0.2
+  }
+}
