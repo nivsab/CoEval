@@ -46,3 +46,33 @@ Reused EXP001b ingested items; ran phases 4-5 via the real framework.
 ## Artifacts
 `Runs/EXP010-scale-ranking-pilot/` (config, phases, reports/v2_rank_recovery.json),
 `scripts/v2_rank_recovery.py`, `scripts/v2_gold_rescorer.py`.
+
+## Update — ARC-Challenge iteration (harder task added)
+Added ARC-Challenge (science_reasoning, 40 items) to spread models, with the
+format-robust gold scorer. Completing phase-5 judging took an automated
+reset+`--continue` loop (5 cycles) because OpenRouter rate-limiting truncates each
+run at ~118/280 responses — reinforcing that the scaled run MUST use native Batch APIs.
+
+ARC gold spreads the weak end (llama-3.2-3b 0.70, llama-3.1-8b 0.90, llama-3.3-70b
+0.975) but frontier models still saturate at 1.0. Combined sciq+ARC (80 items/model),
+7 models, gold range 0.85-1.00:
+- **CoEval ensemble (accuracy aspect) rank-recovery: Spearman 0.873, Kendall 0.751.**
+- Matches the best single judge (gemini-flash / gpt-4o-mini, Kendall 0.751) and beats
+  the worst (claude-haiku 0.551); judge-choice regret (tau) = 0.20. Consistent with the
+  paper's low-regret thesis (the ensemble is never the bad pick).
+
+## Honest assessment (NOT yet paper-headline)
+Encouraging preliminary signal that CoEval's label-free ranking tracks gold capability
+(rho 0.87) and is the low-regret choice. NOT clean enough to headline because:
+(i) these benchmarks saturate frontier models (4-way top tie -> ranking partly unorderable);
+(ii) 7 models, not the 12-20 targeted (claude-3.5-sonnet slug 404'd);
+(iii) the ensemble ties rather than beats the best single judge here.
+
+## Clear path to the clean result (the funded scaled run)
+1. HARDER task with frontier spread: ingest MMLU-Pro / GPQA / MATH (the `coeval ingest`
+   command supports mmlu, gsm8k, medqa) or use bigbench_hard / math loaders.
+2. 12-20 models spanning frontier->tiny; fix the sonnet slug (anthropic/claude-sonnet-4).
+3. BATCH-routed judging (openai/anthropic/mistral native Batch) — eliminates the
+   rate-limit truncation that forced 5 reset+continue cycles here, and halves cost.
+4. Expect: with real frontier spread, the ensemble should pull strictly above the best
+   single judge (the regret result), giving the headline rank-recovery win.
