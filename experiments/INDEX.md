@@ -7,8 +7,12 @@ One row per experiment. New entries append; superseded runs are marked, not dele
 | [EXP-002](2026-06-01_exp002_004_005_free_reanalysis.md) | Ensemble-size ablation | 2026-06-01 | completed | $0 | ICC(3,k) is **non-monotone**: peaks at k=2 (0.70) then falls to 0.40 as weak judges dilute the panel; Spearman-to-full rises 0.67→1.0. Motivates judge selection. |
 | [EXP-004](2026-06-01_exp002_004_005_free_reanalysis.md) | Verbosity bias | 2026-06-01 | completed | $0 | Strong judges show **negative** length bias (GPT-3.5 r=−0.18), weak judges positive (SmolLM2 +0.23); ensemble r=+0.01 (CI straddles 0). mean\|indiv\|=0.153 → ensemble 0.010 (93% magnitude reduction). |
 | [EXP-005](2026-06-01_exp002_004_005_free_reanalysis.md) | Rubric generalization | 2026-06-01 | completed | $0 | 22 criteria / 4 tasks; within-task sim 0.342 > cross-task 0.294; one universal cluster (`completeness`, 3 tasks), 11 task-specific singletons. |
-| EXP-001 | Benchmark-grounded comparison + frontier judge + G-Eval | — | planned | ~$8-15 | Pending. Unblocked by `score_responses.py` integrity fix. |
-| EXP-003 | Positional-bias / flip-rate | — | planned | ~$1.30 | Pending `positional_bias_analysis.py`. |
+| EXP-001 | Benchmark-grounded comparison + frontier judge + G-Eval | 2026-06-01 | completed | ~$10 | DONE (paper §5.1–5.2). 3-task pooled: ensemble ρ=0.238, best-single claude-haiku 0.308; G-Eval ρ=0.259 (summ, n=580); ranking recovered exactly. Reconciled to live n=900 data 2026-06-02. |
+| [EXP-006/007](2026-06-01_exp001_benchmark_grounded.md) | Vertical case studies (DDI/clinical/legal) | 2026-06-01 | completed | ~$3 | Cross-family ensemble ranks 3 students on 3 contamination-free verticals; DDI fully unanimous (paper §5.7, Table 5). |
+| EXP-008 | Contamination ranking-flip | 2026-06-02 | completed | ~$2 (GPU) | Static benchmark ranks a 0.5B memorizer above gpt-4o-mini (1.00 vs 0.845); fresh items flip it back (paper §5.5). |
+| EXP-V2 | Make CoEval a clear win (judge-choice regret + reliability-weighted agg) | 2026-06-02 | completed | $0 | Regret 0.35; reliability-weighted 0.246 best label-free aggregator (paper §5.2). |
+| [EXP-010](_diagnostics/2026-06-02_exp010_pilot_rank_recovery.md) | Many-model rank-recovery | 2026-06-02 | pilot/diagnostic | ~$3 | Pipeline validated; 7 models ρ=0.87 (low-regret) but benchmarks saturate frontier. Clean run needs harder task + 12-20 models + batch. |
+| EXP-003 | Positional-bias / flip-rate | — | planned (optional) | ~$1.30 | Pending `positional_bias_analysis.py`. NOT a paper dependency (positional bias is only a motivating mention in §1). |
 
 ## Code artifacts produced (2026-06-01)
 - `Code/analyzer/stats.py` — bootstrap CIs, ICC(3,1)/ICC(3,k), Benjamini-Hochberg (validated vs Shrout & Fleiss reference).
