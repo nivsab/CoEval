@@ -1,0 +1,56 @@
+{
+  "experiment": "v2_self_preference",
+  "run": "E:\\Projects\\CoEval\\main\\Runs\\EXP006-vertical-case-studies",
+  "per_task": {
+    "clinical_reasoning": {
+      "in_family_judge": "gpt-4o-mini",
+      "score_in_family_judge": {
+        "gpt-4o-mini": 0.856,
+        "gpt-3.5-turbo": 0.841
+      },
+      "score_cross_family": {
+        "gpt-4o-mini": 0.867,
+        "gpt-3.5-turbo": 0.889
+      },
+      "delta_same": 0.016,
+      "delta_cross": -0.022,
+      "self_preference": 0.038,
+      "ranking_same_family_judge": [
+        "gpt-4o-mini",
+        "gpt-3.5-turbo",
+        "llama-3.2-3b"
+      ],
+      "ranking_cross_family_ensemble": [
+        "gpt-3.5-turbo",
+        "gpt-4o-mini",
+        "llama-3.2-3b"
+      ],
+      "ranking_flipped_by_self_preference": true
+    },
+    "legal_analysis": {
+      "in_family_judge": "gpt-4o-mini",
+      "score_in_family_judge": {
+        "gpt-4o-mini": 0.953,
+        "gpt-3.5-turbo": 0.738
+      },
+      "score_cross_family": {
+        "gpt-4o-mini": 0.997,
+        "gpt-3.5-turbo": 0.741
+      },
+      "delta_same": 0.216,
+      "delta_cross": 0.256,
+      "self_preference": -0.041,
+      "ranking_same_family_judge": [
+        "gpt-4o-mini",
+        "gpt-3.5-turbo",
+        "llama-3.2-3b"
+      ],
+      "ranking_cross_family_ensemble": [
+        "gpt-4o-mini",
+        "gpt-3.5-turbo",
+        "llama-3.2-3b"
+      ],
+      "ranking_flipped_by_self_preference": false
+    }
+  }
+}
