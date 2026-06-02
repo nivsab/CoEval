@@ -458,8 +458,11 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   enforced by judge <em>selection</em> (which judges enter $J$; Section&nbsp;5.2), so the scorer stays simple and
   auditable. CoEval additionally offers an <em>unsupervised reliability-weighted</em> aggregator that requires no ground
   truth: it weights each judge by its mean agreement with the panel consensus, $w_j \propto \bar{r}_j$ with
-  $\sum_j w_j = 1$, so a judge that disagrees with the rest of the panel is automatically down-weighted. We evaluate both
-  aggregators in Section&nbsp;5.2.
+  $\sum_j w_j = 1$, so a judge that disagrees with the rest of the panel is automatically down-weighted. It generalizes
+  to a <strong>doubly-robust ranking</strong> that also weights each item by its <em>discriminative power</em>
+  $d_i \propto \operatorname{Var}_m s_{m,i}$ (the variance of candidate-model scores on item $i$), so the ranking leans
+  on the items that actually separate models and on the judges that agree with the panel, both label-free: the model
+  score is $\sum_i d_i \sum_{j} w_j\, s_{m,i,j}$, normalized. We evaluate these aggregators in Section&nbsp;5.2.
 </p>
 
 <h3>3.4 Reliability and bias metrics</h3>
@@ -688,6 +691,16 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   plain-mean accuracy ($0.238 \to 0.126$); reliability weighting gives each broken judge weight $0.000$ from peer
   agreement alone and restores $0.228$. A single judge has no internal check to fall back on.
 </div>
+<p>
+  The panel's two label-free quality signals, item discriminative power and judge agreement, compose into the
+  <em>doubly-robust ranking</em> of Section&nbsp;3.3, which leans on the items that separate models (Section&nbsp;5.7)
+  and the judges that agree with the panel. On a benchmark-grounded check where gold accuracy is available (seven models
+  ranked on science QA and reasoning), it improves rank-recovery of the true model ordering from the plain mean's
+  Spearman $0.87$ (Kendall $0.75$) to <strong>$0.98$</strong> (Kendall $0.95$), mostly by down-weighting saturated items
+  that carry no ranking signal (the top tenth of items by discrimination hold over half the weight), and it is robust:
+  injecting a random judge leaves the recovered ranking at $0.98$, the rogue judge receiving weight $0.06$. The two
+  weights are complementary, since on the discriminative items judge reliability matters most.
+</p>
 
 <h3>5.3 Bias cancellation</h3>
 <p>
