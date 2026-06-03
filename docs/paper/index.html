@@ -225,21 +225,21 @@
   <h2>Abstract</h2>
     <p>
     Selecting a pretrained language model, or evaluating a fine-tuned one, for a specific application is a high-value
-    decision, yet the public benchmarks used to make it are poorly suited: a generic benchmark measures average-case
-    ability and need not reflect a particular <em>sub-domain or sub-task</em>, and its scores are suspect when its items
-    have <em>leaked into pretraining</em> and are recalled rather than solved. We present <strong>CoEval</strong>, an
-    open framework that supplies a trustworthy, task-specific signal through <em>ensemble self-evaluation</em>: from a
-    task or domain description, a pool of models is rotated through teacher and judge roles to generate a fresh,
-    contamination-free benchmark and score the candidates with no human labels or raters, jointly weighted by each
-    question's discriminative power and each judge's consensus with the panel. Where ground truth exists, this
-    weighting recovers the true ranking and tracks objective correctness at $\rho = 0.86$, recovering the gold ranking
-    of thirteen models at Spearman $0.95$. Reliability comes from panel <em>composition</em>, not size: peer agreement
-    is a label-free reliability estimate, so a cross-family panel zeroes out broken judges, where a single judge can be
-    anti-correlated with ground truth (judge-choice regret $0.35$) and the ensemble never is. Generated items show
-    <em>zero</em> verbatim overlap with five public benchmarks, the panel cancels verbosity bias and precludes
-    same-family self-preference, and rankings are <em>domain-specific</em>: three models win four de-novo domains, so a
-    generic leaderboard misdirects most practitioners. The same pipeline reruns on each model release, giving any team a
-    contamination-free leaderboard for its own application.
+    decision, yet the public benchmarks used to make it are poorly suited: a generic benchmark need not reflect a
+    particular <em>sub-domain or sub-task</em>, and its scores are suspect when its items leaked into pretraining and
+    are recalled rather than solved. We present <strong>CoEval</strong>, an open framework that supplies a trustworthy,
+    task-specific signal through <em>ensemble self-evaluation</em>: from a task or domain description, a pool of models
+    is rotated through teacher and judge roles to generate a fresh, contamination-free benchmark and score the candidates
+    with no human labels or raters, jointly weighting questions by discriminative power and judges by panel consensus.
+    Where ground truth exists, CoEval recovers the true ranking and tracks objective correctness at $\rho = 0.86$, and
+    the weighting recovers the gold ranking of thirteen models at Spearman $0.95$. Reliability comes from panel
+    <em>composition</em>, not size, and is label-free on both sides: peer disagreement zeroes out broken judges (a single
+    judge can be anti-correlated with ground truth, judge-choice regret $0.35$; the ensemble never is), while low
+    discriminative power down-weights challenges that fail to separate the candidates. Generated items show <em>zero</em>
+    verbatim overlap with five public benchmarks, the panel cancels verbosity bias and precludes same-family
+    self-preference, and rankings are <em>domain-specific</em>: three different models top four domains, so a generic
+    leaderboard misdirects most practitioners. The same pipeline reruns on each model release, giving any team a
+    contamination-free leaderboard for its application.
   </p>
 </section>
 
