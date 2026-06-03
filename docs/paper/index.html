@@ -517,7 +517,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   <thead><tr><th class="lbl">Experiment</th><th>Task(s)</th><th>Judge panel</th><th>Size</th></tr></thead>
   <tbody>
     <tr><td class="lbl">5.1 ground truth</td><td>SciQ, ARC (exact-match QA)</td><td>gpt-4o, claude-sonnet-4, gemini-2.5-flash</td><td>191 items / 573 resp.</td></tr>
-    <tr><td class="lbl">5.1&ndash;5.2 benchmark-grounded</td><td>code (BLEU), news + text summ. (BERTScore)</td><td>gpt-4o-mini, gpt-3.5-turbo, claude-haiku, gemini-flash</td><td>3 tasks / 900 resp.</td></tr>
+    <tr><td class="lbl">5.2 reliability (5.1 summ. anchor)</td><td>code (BLEU), news + text summ. (BERTScore)</td><td>gpt-4o-mini, gpt-3.5-turbo, claude-haiku, gemini-flash</td><td>3 tasks / 900 resp.</td></tr>
     <tr><td class="lbl">5.2&ndash;5.3, App. B</td><td>4-task medium study</td><td>gpt-4o-mini, gpt-3.5-turbo, qwen2.5-1.5b, smollm2-1.7b</td><td>7,978 eval.</td></tr>
     <tr><td class="lbl">5.4, 5.7 verticals</td><td>drug-interaction, clinical, legal</td><td>claude-haiku, gemini-flash, gpt-4o-mini</td><td>40 items each</td></tr>
     <tr><td class="lbl">5.5 contamination</td><td>SciQ memorization</td><td>exact-match (no LLM judge)</td><td>200 memorized / 100 fresh</td></tr>
@@ -536,7 +536,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   governs reliability (5.2), which cancels the verbosity bias every single judge carries (5.3) and structurally avoids
   self-preference (5.4); the auto-generated rubrics are themselves task-specialized with a shared quality core
   (<a href="#appB">Appendix&nbsp;B</a>). Section&nbsp;5.5 verifies the second condition
-  directly, that the generated items are <em>contamination-free</em>, and Section&nbsp;5.5 shows the process is cheap enough to re-run per use case. Section&nbsp;5.7 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data, and Section&nbsp;5.8 shows that rankings are domain-specific: across four de-novo domains three different models take first place, so a generic leaderboard misdirects the practitioner that CoEval's per-domain ranking serves.
+  directly, that the generated items are <em>contamination-free</em>, and Section&nbsp;5.6 shows the process is cheap enough to re-run per use case. Section&nbsp;5.7 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data, and Section&nbsp;5.8 shows that rankings are domain-specific: across four de-novo domains three different models take first place, so a generic leaderboard misdirects the practitioner that CoEval's per-domain ranking serves.
 </p>
 
 <h3>5.1 Ground-truth correlation</h3>
@@ -584,10 +584,10 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   Because correctness is objective, the three frontier judges converge on identical labels, so the ensemble matches its
   strongest member: the experiment establishes that CoEval judges are <em>accurate</em> and that the result is
   <em>vendor-independent</em>: no single provider drives it. On open-ended summarization scored against a lexical
-  BERTScore reference, the cross-family ensemble ($\rho = 0.227$) tracks ground truth on par with a single GPT-4o
-  <strong>G-Eval</strong> [<a href="#r2">2</a>] judge using chain-of-thought ($\rho = 0.259$, 95% CI
-  $[0.18, 0.33]$, $n=580$), matching this strong single-judge baseline without depending on any one model. A single judge
-  is a gamble one cannot hedge in advance: on this task the panel's individual judges range from anti-correlated
+  BERTScore reference, the cross-family ensemble ($\rho = 0.227$) tracks ground truth within the confidence interval of a
+  single GPT-4o <strong>G-Eval</strong> [<a href="#r2">2</a>] judge using chain-of-thought ($\rho = 0.259$, 95% CI
+  $[0.18, 0.33]$, $n=580$): a statistical tie with this strong single-judge baseline, without depending on any one model. A single judge
+  is a gamble one cannot hedge in advance: on this summarization subset ($n=580$) the panel's individual judges range from anti-correlated
   (<code>gpt-3.5-turbo</code>, $\rho = -0.01$) to $\rho = 0.25$, and which judge is best changes by task, so no fixed
   single-judge choice is safe a priori (Section&nbsp;5.2 quantifies this judge-choice regret across the full
   benchmark-grounded set). The cross-family ensemble is the low-regret alternative: it is never
@@ -645,8 +645,8 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   simply enlarging the panel: indiscriminately adding low-agreement judges lowers the mean inter-rater correlation
   $\bar{r}$ faster than averaging can compensate, so $R_k$ in the Spearman&ndash;Brown relation can fall. CoEval's
   consensus criterion identifies and retains the high-agreement judges, delivering the reliable configuration
-  automatically. In other words, the framework converts the panel-composition problem, which would otherwise
-  degrade a naive ensemble, into a reliability <em>gain</em>: the selected ensemble is robust to the inclusion of
+  automatically. In other words, the framework converts panel composition from a liability for an unweighted
+  ensemble into a reliability <em>gain</em>: the selected ensemble is robust to the inclusion of
   weak models and more reliable than the unselected panel. The $k$-judge ensemble's rank-agreement with the full-panel
   consensus rises with $k$ (Spearman $\rho$: $0.67, 0.74, 0.93, 1.00$): a small selected panel already recovers most of
   the full-panel ordering.
