@@ -227,19 +227,20 @@
     <p>
     Selecting a pretrained language model, or evaluating a fine-tuned one, for a specific application is a high-value
     decision, yet the public benchmarks used to make it are poorly suited: a generic benchmark need not reflect a
-    particular <em>sub-domain or sub-task</em>, and its scores are suspect when its items leaked into pretraining and
-    are recalled rather than solved. We present <strong>CoEval</strong>, an open framework that supplies a trustworthy,
-    task-specific signal through <em>ensemble self-evaluation</em>: from a task or domain description, a pool of models
-    is rotated through teacher and judge roles to generate a fresh, contamination-free benchmark and score the candidates
-    with no human labels or raters, jointly weighting questions by discriminative power and judges by panel consensus.
-    Where ground truth exists, CoEval recovers the true ranking and tracks objective correctness at $\rho = 0.86$, and
-    the weighting recovers the gold ranking of thirteen models at Spearman $0.95$. Reliability comes from panel
-    <em>composition</em>, not size, and is label-free on both sides: peer disagreement zeroes out broken judges, while low
-    discriminative power down-weights challenges that fail to separate the candidates. Generated items show <em>zero</em>
-    verbatim overlap with five public benchmarks, the panel cancels verbosity bias and precludes same-family
-    self-preference, and rankings are <em>domain-specific</em>: three different models top four domains, so a generic
-    leaderboard misdirects most practitioners. The same pipeline reruns on each model release, giving any team a
-    contamination-free leaderboard for its application.
+    particular <em>sub-domain or sub-task</em>, and its scores are suspect when its items have <em>leaked into
+    pretraining</em> and are recalled rather than solved. We present <strong>CoEval</strong>, an open framework that
+    supplies a trustworthy, task-specific signal through <em>ensemble self-evaluation</em>: from a task or domain
+    description, a pool of models rotates through all three roles, <em>teacher</em>, <em>student</em>, and
+    <em>judge</em>, to generate a fresh, contamination-free benchmark, answer it, and score one another, with no human
+    labels or raters. Because every model also answers as a student, the responses are the data that weight each question
+    by its discriminative power and each judge by its consensus with the panel. Where ground truth exists, CoEval
+    recovers the true ranking and tracks objective correctness at $\rho = 0.86$, and the weighting recovers the gold
+    ranking of thirteen models at Spearman $0.95$. Reliability comes from panel <em>composition</em>, not size: this
+    label-free weighting zeroes out broken judges and down-weights saturated questions, so neither distorts the ranking.
+    Generated items show <em>zero</em> verbatim overlap with five public benchmarks, the panel cancels verbosity bias and
+    precludes same-family self-preference, and rankings are <em>domain-specific</em>: three different models top four
+    de-novo domains, so a generic leaderboard misdirects most practitioners. The same pipeline reruns on each model
+    release, giving any team a contamination-free leaderboard for its application.
   </p>
 </section>
 
@@ -280,9 +281,10 @@
   We argue that both problems, the rigidity of static benchmarks and the bias of single judges, are best
   solved together, by a system that <em>generates</em> the evaluation set as carefully as it <em>scores</em> it. We
   present <strong>CoEval</strong>, a declarative and reproducible framework for <em>ensemble self-evaluation</em>: a
-  pool of models is rotated through teacher and judge roles to generate a fresh, contamination-free benchmark and score
-  the candidate models, jointly weighting questions by their discriminative power and judges by their consensus with the
-  panel. CoEval contributes:
+  pool of models rotates through all three roles, <em>teacher</em>, <em>student</em>, and <em>judge</em>, to generate a
+  fresh, contamination-free benchmark, answer it, and score one another. Because every model also answers as a student,
+  the responses provide the data that weight each question by its discriminative power and each judge by its consensus
+  with the panel. CoEval contributes:
 </p>
 <ul class="tight">
   <li><strong>(1) Self-generating, contamination-resistant benchmarks.</strong> A teacher model synthesizes an
@@ -996,7 +998,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <!-- ===================== 7. CONCLUSION ===================== -->
 <h2>7. Conclusion</h2>
 <p>
-  We presented CoEval, a framework for <em>ensemble self-evaluation</em> that ranks language models for a specific application when neither labeled data nor a trustworthy benchmark is available: from a task description alone, a pool of models is rotated through teacher and judge roles to generate a fresh, contamination-resistant benchmark and rank the candidate models, jointly weighting questions by their discriminative power and judges by their consensus, with no human annotation. CoEval delivers
+  We presented CoEval, a framework for <em>ensemble self-evaluation</em> that ranks language models for a specific application when neither labeled data nor a trustworthy benchmark is available: from a task description alone, a pool of models rotates through all three roles, teacher, student, and judge, to generate a fresh, contamination-resistant benchmark, answer it, and rank the candidates, jointly weighting questions by discriminative power and judges by consensus, with no human annotation. Because every model also answers as a student, the same responses supply the data for both label-free weights. CoEval delivers
   bias-cancelled, reliable evaluation without human annotation: it removes verbosity bias that no single judge avoids
   (ensemble $r = +0.010$, CI spanning zero; 93% reduction), structurally precludes same-family self-preference, and
   produces task-specialized rubrics with a shared quality core, while also converging
