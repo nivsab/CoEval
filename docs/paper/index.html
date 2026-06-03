@@ -531,7 +531,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   are scored both by the CoEval judge ensemble and by exact-match correctness. We correlate the rubric's <em>accuracy</em>
   dimension, declared <em>a priori</em> as the construct matching correctness, independent of any observed
   correlation, with ground truth; for transparency we also report the off-target <em>relevance</em> dimension
-  ($\rho = 0.28$) and the full-rubric average ($\rho = 0.57$), on which a construct-matched evaluator should, and does,
+  ($\rho = 0.20$) and the full-rubric average ($\rho = 0.55$), on which a construct-matched evaluator should, and does,
   score lower. The judge panel is a frontier cross-family ensemble: <code>gpt-4o</code> (OpenAI),
   <code>claude-sonnet-4</code> (Anthropic), and <code>gemini-2.5-flash</code> (Google). Confidence intervals use a
   <em>datapoint-clustered</em> bootstrap (resampling the $191$ items rather than the $573$ dependent responses), so
@@ -798,7 +798,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   <em>vendor-disjoint aggregation</em>: when scoring a model under test, the ensemble drops any judge that shares the
   model's vendor family, so no model contributes to its own family's score. Applying this correction to the rankings
   of Tables&nbsp;3 and&nbsp;5 leaves <em>every</em> ranking unchanged, with per-model scores shifting by at most
-  $0.015$, a direct, auditable confirmation that the cross-family ensemble's rankings are already robust to
+  $0.016$, a direct, auditable confirmation that the cross-family ensemble's rankings are already robust to
   same-family bias. The correction is therefore available as a safeguard, and its null effect here is itself evidence
   that vendor diversity, not a post-hoc adjustment, is doing the work.
 </p>
@@ -806,7 +806,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   <strong>Finding (self-preference).</strong> CoEval's vendor-disjoint panel structurally precludes a model from judging
   its own family. The measured residual same-family preference is small and inconsistent in sign across three verticals
   ($|\text{effect}| \le 0.04$), and vendor-disjoint aggregation leaves every ranking unchanged (scores shift
-  $\le 0.015$): the cross-family design neutralizes self-preference by construction.
+  $\le 0.016$): the cross-family design neutralizes self-preference by construction.
 </div>
 
 <h3>5.5 Contamination resistance</h3>
