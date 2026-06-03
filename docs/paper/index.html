@@ -233,8 +233,7 @@
     with no human labels or raters, jointly weighting questions by discriminative power and judges by panel consensus.
     Where ground truth exists, CoEval recovers the true ranking and tracks objective correctness at $\rho = 0.86$, and
     the weighting recovers the gold ranking of thirteen models at Spearman $0.95$. Reliability comes from panel
-    <em>composition</em>, not size, and is label-free on both sides: peer disagreement zeroes out broken judges (a single
-    judge can be anti-correlated with ground truth, judge-choice regret $0.35$; the ensemble never is), while low
+    <em>composition</em>, not size, and is label-free on both sides: peer disagreement zeroes out broken judges, while low
     discriminative power down-weights challenges that fail to separate the candidates. Generated items show <em>zero</em>
     verbatim overlap with five public benchmarks, the panel cancels verbosity bias and precludes same-family
     self-preference, and rankings are <em>domain-specific</em>: three different models top four domains, so a generic
