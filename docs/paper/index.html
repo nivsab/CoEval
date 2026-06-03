@@ -245,9 +245,9 @@
 <!-- ===================== 1. INTRODUCTION ===================== -->
 <h2>1. Introduction</h2>
 <p>
-  A practitioner choosing a language model for a specific application (summarizing clinical notes, answering
-  questions over an internal knowledge base, triaging support tickets for a particular product) faces a
-  deceptively simple question: <em>which model is best for my use case?</em> Answering it well requires an evaluation
+  A practitioner selecting a pretrained language model, or evaluating a fine-tuned one, for a specific application
+  (summarizing clinical notes, answering questions over an internal knowledge base, triaging support tickets for a
+  particular product) faces a deceptively simple question: <em>which model is best for my use case?</em> Answering it well requires an evaluation
   set that reflects that use case, and two common conditions make this hard. First, there is often <em>no task-specific
   labeled data</em>: building a representative benchmark by hand is slow and costly, and for a new or proprietary domain
   it may not exist at all. Second, even where a related public benchmark exists, its numbers may not be trustworthy:
@@ -278,7 +278,10 @@
 <p>
   We argue that both problems, the rigidity of static benchmarks and the bias of single judges, are best
   solved together, by a system that <em>generates</em> the evaluation set as carefully as it <em>scores</em> it. We
-  present <strong>CoEval</strong>, a declarative and reproducible framework that:
+  present <strong>CoEval</strong>, a declarative and reproducible framework for <em>ensemble self-evaluation</em>: a
+  pool of models is rotated through teacher and judge roles to generate a fresh, contamination-free benchmark and score
+  the candidate models, jointly weighting questions by their discriminative power and judges by their consensus with the
+  panel. CoEval contributes:
 </p>
 <ul class="tight">
   <li><strong>(1) Self-generating, contamination-resistant benchmarks.</strong> A teacher model synthesizes an
@@ -1044,7 +1047,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <!-- ===================== 7. CONCLUSION ===================== -->
 <h2>7. Conclusion</h2>
 <p>
-  We presented CoEval, a tool for ranking language models on custom tasks and domains when neither labeled data nor a trustworthy benchmark is available: from a task description alone it generates a fresh, contamination-resistant benchmark and ranks candidate models with a cross-family judge ensemble, with no human annotation. CoEval delivers
+  We presented CoEval, a framework for <em>ensemble self-evaluation</em> that ranks language models for a specific application when neither labeled data nor a trustworthy benchmark is available: from a task description alone, a pool of models is rotated through teacher and judge roles to generate a fresh, contamination-resistant benchmark and rank the candidate models, jointly weighting questions by their discriminative power and judges by their consensus, with no human annotation. CoEval delivers
   bias-cancelled, reliable evaluation without human annotation: it removes verbosity bias that no single judge avoids
   (ensemble $r = +0.010$, CI spanning zero; 93% reduction), structurally precludes same-family self-preference, and
   produces task-specialized rubrics with a shared quality core, while also converging
@@ -1052,10 +1055,12 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   central finding, that judge-panel <em>composition</em> rather than size is the decisive reliability lever, offers a
   concrete and inexpensive recipe for trustworthy, renewable LLM evaluation. The panel is also self-validating: because a
   judge's agreement with its peers is a label-free reliability estimate, the ensemble detects and zeroes out broken judges
-  with no ground truth, a safeguard a single judge cannot provide. Because the same declarative pipeline runs
-  unchanged across models and domains and is cheap enough to repeat on every model release, CoEval is a reusable
-  instrument a team points at its own application when neither labeled data nor a trustworthy benchmark exists, rather
-  than a single static study. CoEval is open-source and fully reproducible.
+  with no ground truth, a safeguard a single judge cannot provide; the same weighting down-weights non-discriminative
+  challenges, so saturated questions carry no spurious ranking signal. Because model rankings are
+  <em>domain-specific</em> (three different models top four de-novo domains, so a generic leaderboard misdirects most
+  practitioners) and the same declarative pipeline runs unchanged across models and domains, cheap enough to repeat on
+  every model release, CoEval is a reusable instrument a team points at its own application when neither labeled data nor
+  a trustworthy benchmark exists, rather than a single static study. CoEval is open-source and fully reproducible.
 </p>
 
 <!-- ===================== REFERENCES ===================== -->
