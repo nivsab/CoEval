@@ -615,7 +615,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   <img src="figures/f4_correctness_corr.png" alt="CoEval ensemble score versus ground-truth accuracy per model; rankings identical"/>
   <figcaption><strong>Figure 2.</strong> CoEval recovers the true model ranking with no labels. For each student model
     the CoEval frontier-ensemble accuracy score (green, datapoint-clustered 95% CI) and the held-out ground-truth
-    accuracy (blue) coincide within $0.02$, and the order <code>gpt-4o-mini</code> &gt; <code>gpt-3.5-turbo</code> &gt;
+    accuracy (blue) coincide within 0.02, and the order <code>gpt-4o-mini</code> &gt; <code>gpt-3.5-turbo</code> &gt;
     <code>llama-3.2-3b</code> is reproduced exactly (cf. Table&nbsp;3).</figcaption>
 </figure>
 <div class="tablewrap">
@@ -660,7 +660,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </p>
 <figure>
   <img src="figures/f2_icc_curve.png" alt="ICC(3,k) versus number of judges, peaking at the selected strong panel"/>
-  <figcaption><strong>Figure 3.</strong> Composition over size. Average-measures reliability $\mathrm{ICC}(3,k)$ as
+  <figcaption><strong>Figure 3.</strong> Composition over size. Average-measures reliability ICC(3,&nbsp;<em>k</em>) as
     judges are added in descending agreement order. A selected strong panel reaches $\mathrm{ICC}=0.70$; indiscriminately
     adding low-agreement judges lowers the mean inter-rater correlation faster than averaging compensates, so reliability
     falls. CoEval's consensus selection retains the high-agreement judges, delivering the reliable configuration
@@ -786,7 +786,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 
 <div class="tablewrap">
 <table class="data">
-  <caption><strong>Table 5.</strong> Verbosity bias (Pearson $r$ between response length and score) for representative
+  <caption><strong>Table 5.</strong> Verbosity bias (Pearson <em>r</em> between response length and score) for representative
     individual judges versus the CoEval ensemble. The ensemble CI includes zero.</caption>
   <thead>
     <tr><th class="lbl">Judge</th><th>Length-bias $r$</th><th>95% bootstrap CI</th></tr>
@@ -1188,7 +1188,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <h2 id="appC">Appendix C. Evaluation throughput</h2>
 <figure>
   <img src="figures/f6_cost.png" alt="Evaluations per dollar: CoEval versus human annotation"/>
-  <figcaption><strong>Figure 6.</strong> Throughput. CoEval produces roughly $1{,}350$ evaluations per dollar
+  <figcaption><strong>Figure 6.</strong> Throughput. CoEval produces roughly 1,350 evaluations per dollar
     (7,978 evaluations for USD 5.89), two to three orders of magnitude above typical human annotation, enabling
     re-evaluation on every model release.</figcaption>
 </figure>
