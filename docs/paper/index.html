@@ -732,8 +732,25 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   the items hold near-zero weight) and judges that disagree with the panel. The two signals are complementary, each
   helping on its own (item-weighting alone $0.94$, judge-weighting alone $0.92$) and most on the discriminative items
   where judge reliability matters. The aggregator is robust: injecting a random judge degrades the plain mean to $0.85$
-  but leaves the doubly-robust ranking at $0.95$, the rogue judge receiving weight $0.00$.
+  but leaves the doubly-robust ranking at $0.95$,   the rogue judge receiving weight $0.00$ (Table&nbsp;4).
 </p>
+<div class="tablewrap">
+<table class="data">
+  <caption><strong>Table 4.</strong> Doubly-robust rank-recovery on thirteen candidate models (science QA and
+    reasoning; gold = benchmark-native accuracy). Each label-free weight helps on its own, and the two compose into the
+    best recovery; the aggregator is robust to an injected random judge, which it gives weight $0.00$. Values are the
+    Spearman and Kendall correlations between the recovered ranking and the gold-accuracy ranking.</caption>
+  <thead><tr><th class="lbl">Aggregator</th><th>Spearman</th><th>Kendall</th></tr></thead>
+  <tbody>
+    <tr><td class="lbl">Plain mean</td><td>0.88</td><td>0.76</td></tr>
+    <tr><td class="lbl">Item-weighted (discrimination) only</td><td>0.94</td><td>0.84</td></tr>
+    <tr><td class="lbl">Judge-weighted (agreement) only</td><td>0.92</td><td>0.82</td></tr>
+    <tr class="highlight"><td class="lbl">Doubly-robust (both)</td><td>0.95</td><td>0.87</td></tr>
+    <tr><td class="lbl">&nbsp;&nbsp;with injected random judge: plain mean</td><td>0.85</td><td>0.71</td></tr>
+    <tr><td class="lbl">&nbsp;&nbsp;with injected random judge: doubly-robust</td><td>0.95</td><td>0.87</td></tr>
+  </tbody>
+</table>
+</div>
 
 <h3>5.3 Bias cancellation</h3>
 <p>
@@ -762,7 +779,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 
 <div class="tablewrap">
 <table class="data">
-  <caption><strong>Table 4.</strong> Verbosity bias (Pearson $r$ between response length and score) for representative
+  <caption><strong>Table 5.</strong> Verbosity bias (Pearson $r$ between response length and score) for representative
     individual judges versus the CoEval ensemble. The ensemble CI includes zero.</caption>
   <thead>
     <tr><th class="lbl">Judge</th><th>Length-bias $r$</th><th>95% bootstrap CI</th></tr>
@@ -886,7 +903,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   On the drug-interaction vertical CoEval produces a <strong>clean, fully unanimous ranking</strong>: all three
   cross-family judges agree on the complete order <code>gpt-4o-mini</code>&nbsp;($0.770$) $>$ <code>gpt-3.5-turbo</code>
   &nbsp;($0.682$) $>$ <code>llama-3.2-3b</code>&nbsp;($0.497$), with non-overlapping confidence intervals separating every
-  model (Table&nbsp;5). The clinical and legal verticals are consistent: the ensemble ranks the smallest model weakest in
+  model (Table&nbsp;6). The clinical and legal verticals are consistent: the ensemble ranks the smallest model weakest in
   both, unanimously in clinical and two-of-three in legal (where the Anthropic judge ranks <code>gpt-3.5-turbo</code>
   lowest): genuine disagreement a single judge would hide and a diverse ensemble surfaces; on clinical the two
   stronger models are statistically close, which the overlapping intervals correctly expose. This is the operation the
@@ -913,7 +930,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </div>
 <div class="tablewrap">
 <table class="data">
-  <caption><strong>Table 5.</strong> CoEval ranks three candidate models on three custom, contamination-free verticals
+  <caption><strong>Table 6.</strong> CoEval ranks three candidate models on three custom, contamination-free verticals
     generated from a task description with no labeled data. Scores are the cross-family ensemble mean ($[0,1]$) with 95%
     bootstrap CI over $40$ generated items. <code>llama-3.2-3b</code> ranks weakest in every vertical; the three judges
     agree unanimously on the full drug-interaction order, unanimously on the weakest clinical model, and two-of-three in legal.</caption>
@@ -952,7 +969,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   ($1.00$), and <code>claude-3.5-haiku</code> tops math word problems ($0.85$). The movement is not confined to the lead:
   <code>gpt-4o-mini</code> falls from first on clinical reasoning to fifth of six on math (where it is top in only
   $0.001$ of bootstrap draws), and <code>claude-3.5-haiku</code> moves the opposite way, from first on math to fifth on
-  code (Table&nbsp;6). The mean cross-domain rank agreement is low (Kendall&nbsp;$\tau = 0.19$ averaged over the six
+  code (Table&nbsp;7). The mean cross-domain rank agreement is low (Kendall&nbsp;$\tau = 0.19$ averaged over the six
   domain pairs); the least-aligned pair, code explanation versus math word problems, has a negative point estimate
   ($\tau = -0.41$).
 </p>
@@ -973,7 +990,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </div>
 <div class="tablewrap">
 <table class="data">
-  <caption><strong>Table 6.</strong> The same six candidate models ranked by the same cross-family panel on four
+  <caption><strong>Table 7.</strong> The same six candidate models ranked by the same cross-family panel on four
     CoEval-generated domains diverge: each cell is the model's rank ($1$ = best) in that domain, rows ordered by the
     generic pooled leaderboard. Three distinct models win the four domains (highlighted), and the pooled-best model
     (<code>gemini-flash</code>) is domain-best in only one. <code>gpt-4o-mini</code> swings from $1$st to $5$th and
@@ -1174,7 +1191,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
   legal analysis. The artifacts below are the <em>actual</em> output CoEval generated for each, from a single one-line
   task description and with no human labels. From that description the teacher inferred the attribute strata, synthesized
   $40$ contamination-free items stratified over them, and wrote a scoring rubric; the vendor-disjoint panel
-  (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) then ranked three candidate models (Table&nbsp;5).
+  (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) then ranked three candidate models (Table&nbsp;6).
 </p>
 <div class="tablewrap">
 <table class="data">
@@ -1219,7 +1236,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
     negligence. Identify the relevant rule and determine if Alice can successfully hold the city liable."</em></li>
 </ul>
 <p>
-  Each item is scored on its rubric by the panel, producing the rankings in Table&nbsp;5. On DDI the three judges are
+  Each item is scored on its rubric by the panel, producing the rankings in Table&nbsp;6. On DDI the three judges are
   unanimous, <code>gpt-4o-mini</code> ($0.770$) &gt; <code>gpt-3.5-turbo</code> ($0.682$) &gt;
   <code>llama-3.2-3b</code> ($0.497$), with non-overlapping confidence intervals; on clinical reasoning the two stronger
   models are statistically close ($0.873$ vs $0.864$), which the overlapping intervals correctly expose. The entire path
