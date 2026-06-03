@@ -87,6 +87,10 @@ def assert_links():
 def build_review():
     html = SRC.read_text(encoding="utf-8")
     ver = "c-" + hashlib.sha1(html.encode("utf-8")).hexdigest()[:8]
+    # Drop the Word download links from the review copy (they stay in the deployed
+    # index.html). They are deploy chrome, irrelevant while annotating.
+    html = re.sub(r'[ \t]*<a\b[^>]*href="CoEval(?:_twocolumn)?\.docx"[^>]*>.*?</a>\n?',
+                  '', html)
     review = HERE / "index.review.html"
     anno_path = str(review).replace("\\", "/")
     meta = ('<meta name="anno-version" content="%s">\n  '
