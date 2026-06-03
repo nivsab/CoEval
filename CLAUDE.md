@@ -295,6 +295,27 @@ provide continuous scores.
 
 ---
 
+## Paper build & deploy: `python docs/paper/build_paper.py` (the ONE command)
+
+Whenever `docs/paper/index.html` changes, regenerate ALL derived artifacts with the
+single command `python docs/paper/build_paper.py` (do NOT hand-run html2doc stages, and
+NEVER write the MathML intermediate to `/tmp` -- it must sit beside `figures/` or images
+silently drop). The script:
+- builds `CoEval.docx` (1-col, camera-ready-generic) AND `CoEval_twocolumn.docx` (2-col,
+  two-column), and verifies all 6 figures embed in each (fails loudly otherwise);
+- asserts both Word download links are present in `index.html`;
+- writes `index.review.html` (local annotatable copy: `anno-version`, `anno-path`,
+  annotate.js include) and registers `docs/paper/` as html2anno served root `coeval`,
+  so the deployed paper's "Annotate (local)" link
+  (`http://127.0.0.1:7800/serve/coeval/index.review.html`) opens the review copy;
+- gitignores `docs/paper/index.review.html` and `.annotations/` (both machine-local).
+
+Annotate two ways, one shared `.annotations/` store: open `index.review.html` via
+`file://`, OR click "Annotate (local)" on the deployed paper (navigates to the
+html2anno-served copy; the localhost service must be running). The annotate link is
+`no-docx`/`no-print`, so it is stripped from the Word versions. Commit `index.html` +
+both `.docx`; do NOT commit `index.review.html` (machine-specific path, gitignored).
+
 ## Paper status (as of 2026-06-01)
 
 - **Published HTML paper**: `docs/paper/index.html` (KaTeX math, 4 data tables, figures

@@ -43,3 +43,7 @@ Runs/EXP008-contamination/adapter/
 Runs/EXP010-scale-ranking-pilot/phase4_responses/
 Runs/EXP010-scale-ranking-pilot/phase5_evaluations/
 Runs/EXP010-scale-ranking-pilot/*.log
+
+# html2anno local review artifacts
+docs/paper/index.review.html
+.annotations/
