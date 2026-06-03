@@ -40,6 +40,13 @@ MML = HERE / "_mathml.html"
 ROOT_ID = "coeval"
 SERVICE = "http://127.0.0.1:7800"
 
+# Cap pandoc's GHC heap so its memory COMMIT fits under a small Windows page file.
+# The conversion needs only a few hundred MB, but GHC over-reserves by default, which
+# overflows the system commit limit (RAM + pagefile) on low-RAM hosts and fails with
+# "VirtualAlloc MEM_COMMIT failed: The paging file is too small". Bounding the heap to
+# 768 MB keeps pandoc's commit request small enough to succeed even under memory pressure.
+os.environ.setdefault("GHCRTS", "-M768m")
+
 
 def _run(cmd, **kw):
     subprocess.run(cmd, check=True, **kw)
@@ -57,7 +64,8 @@ def build_docx(profile, out_name):
     _run([sys.executable, str(SKILL / "scripts/convert_to_docx.py"),
           "--input", str(MML), "--output", str(raw), "--profile", profile])
     _run([sys.executable, str(SKILL / "scripts/apply_academic_style.py"),
-          "--input", str(raw), "--output", str(out), "--profile", profile])
+          "--input", str(raw), "--output", str(out), "--profile", profile,
+          "--font-family", "Georgia"])  # SynSmith serif (Charter -> Georgia fallback, installed on Windows)
     raw.unlink(missing_ok=True)
     return out
 
