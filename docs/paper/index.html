@@ -302,15 +302,15 @@
   <li><strong>(3) Bias-cancelling aggregation.</strong> Consensus aggregation across a vendor-diverse panel cancels
     verbosity bias that individual judges carry with mixed sign, and the vendor-disjoint design structurally precludes
     same-family self-preference.</li>
-  <li><strong>(4) A reusable, open framework, not a one-off benchmark.</strong> CoEval is model-agnostic and
+  <li><strong>(4) A reusable, open framework for per-domain ranking.</strong> CoEval is model-agnostic and
     task-agnostic: any model reachable through a broad range of provider interfaces (cloud, open-weight, or local) can
     serve as teacher, student, or judge, and a task or domain is supplied declaratively at whatever level of detail the
     practitioner has, from a one-line objective that the framework expands into a complete configuration, through a
     minimal task description, to a fully hand-written specification. The <em>same</em> pipeline applies unchanged to any
-    domain and re-runs unchanged on every model release, so a team obtains a renewable, application-specific
-    benchmark rather than a fixed leaderboard. This per-domain ranking is necessary rather than cosmetic: across four
-    de-novo domains three different models take first place (Section&nbsp;5.7), so a single generic leaderboard
-    misdirects most domain practitioners. Ranking candidate models on a custom use case requires only this
+    domain and re-runs on every model release, giving a team a renewable, application-specific
+    benchmark. Per-domain ranking carries real signal: across four de-novo domains three different models take first
+    place (Section&nbsp;5.7), so CoEval directs each practitioner to the best model for their own use case where a
+    single generic leaderboard would not. Ranking candidate models on a custom use case requires only this
     specification, and CoEval recovers the correct ground-truth ranking wherever one exists to check against
     (Section&nbsp;5.1, Table&nbsp;3; the doubly-robust aggregator recovers the true ranking of thirteen models at
     Spearman&nbsp;0.95). The whole pipeline is open-source and reproducible from a single declarative
