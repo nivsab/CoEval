@@ -101,7 +101,10 @@
     color: var(--fg);
   }
   h3 { font-family: var(--font-title); font-size: 11.5pt; font-weight: 700; margin: 1.3rem 0 0.45rem; color: var(--fg); }
-  p { margin: 0.55rem 0; line-height: 1.55; }
+  p { margin: 0; text-indent: 1.4em; line-height: 1.55; }
+  /* Flush-first-paragraph: the first paragraph after a heading / figure / table / finding / equation is flush-left. */
+  h2 + p, h3 + p, h4 + p, figure + p, .tablewrap + p, .keyfinding + p, .katex-display + p { text-indent: 0; }
+  .abstract p, figcaption, table.data caption, ol.refs li, ul.tight li, .authors, .affil, .venue { text-indent: 0; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   sup a { font-size: 0.8em; }
