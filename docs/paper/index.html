@@ -71,6 +71,7 @@
   .authors { font-size: 12pt; color: var(--fg); margin: 0.25rem 0; }
   .authors .name { font-weight: 600; }
   .affil { font-size: 10pt; color: var(--fg-soft); font-style: italic; margin-top: 0.4rem; }
+  .authors sup, .affil sup { font-size: 0.7em; color: var(--muted); font-weight: normal; font-style: normal; vertical-align: super; line-height: 0; }
   .venue { font-size: 9pt; color: var(--muted); margin-top: 0.6rem; font-family: var(--font-mono); letter-spacing: 0.02em; }
   /* Abstract (unboxed, JMLR-style) */
   .abstract { margin: 1.5rem 0 2rem; padding: 0 1.2rem; }
@@ -215,13 +216,9 @@
 <header class="titleblock">
   <h1>CoEval: Ranking Language Models for Custom Tasks<br />Without Labeled Data or Trustworthy Benchmarks</h1>
   <div class="authors">
-    <span class="name">Alexander Apartsin</span>
-    <div class="affil">Holon Institute of Technology, Israel</div>
+    <span class="name">Alexander Apartsin</span><sup>1</sup>, <span class="name">Yehudit Aperstein</span><sup>2</sup>
   </div>
-  <div class="authors" style="margin-top:12px;">
-    <span class="name">Yehudit Aperstein</span>
-    <div class="affil">Afeka Tel Aviv Academic College of Engineering, Israel</div>
-  </div>
+  <div class="affil"><sup>1</sup>Holon Institute of Technology, Israel&nbsp;&nbsp;&middot;&nbsp;&nbsp;<sup>2</sup>Afeka Tel Aviv Academic College of Engineering, Israel</div>
 </header>
 
 <section class="abstract">
