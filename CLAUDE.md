@@ -203,6 +203,39 @@ cnn_dailymail, bigbench_hard/math_dataset (MATH).
 
 ---
 
+## Rank-recovery & benchmark-teacher gotchas (learned 2026-06-02, EXP-010/012)
+
+Three traps when running benchmark-grounded rank-recovery (sciq/arc with gold accuracy):
+
+1. **MCQ gold scoring: use `scripts/v2_gold_rescorer.py`, NOT `score_responses --metric exact_match`.**
+   Students answer MCQ with the option prefix (`"(C) fossilization"`); the bare-text gold is
+   `"fossilization"`, so `exact_match` scores every correct verbose answer as 0. This drove gold
+   accuracy to 0.000 for 12/13 students in EXP-012 and INVERTED the ranking (spurious rho = -0.46,
+   all aggregators identical). `score_responses`'s default metric for sciq/arc is `exact_match` and
+   `--force` does not change it. The fix is `python scripts/v2_gold_rescorer.py Runs/<run>` (the
+   format-robust scorer that credits a response naming the correct option by letter OR text);
+   EXP-010 used `mcq_robust_match`. Sanity-check: per-student gold accuracy must be a sensible
+   capability gradient (e.g. gpt-4o ~1.0 down to llama-3.2-1b ~0.65), not ~0 for everyone.
+
+2. **Benchmark teachers (`interface: benchmark`) are SKIPPED in Phase 3.** Their datapoints must be
+   pre-written. `phase3.py` logs "skipping N benchmark teacher(s) (data already ingested)" and, if
+   nothing was ingested, produces 0 datapoints and the run ends with empty phase 4/5. The `coeval
+   ingest` CLI only covers stdbenchmarks (mmlu/gsm8k/hellaswag/...), and `emit_datapoints.py` only
+   covers 4 summarization sets — NEITHER does sciq/arc. To run new models on sciq/arc, COPY the
+   existing datapoint files (`Runs/EXP010-scale-ranking-pilot/phase3_datapoints/*.jsonl`) into the
+   new run's `phase3_datapoints/`, then `coeval run --config ... --continue` (the same 80 items also
+   make the runs directly comparable). Per-response gold: `python -m benchmark.score_responses`
+   (run as a module from `Public/`) then the rescorer in #1.
+
+3. **OpenRouter probe success != generation availability.** In EXP-012, gemma-2-9b, phi-3.5-mini, and
+   mistral-7b all probed `[OK]` but returned `404 No endpoints found` at Phase 4 generation, silently
+   dropping from the run (16 configured -> 13 ranked). Individual student failures do not abort the
+   run. Over-provision the student list (configure ~20% more models than you need) and verify the
+   final per-student response count before analysis. Note: meta.json `status` can read `failed` from
+   Phase-4 404s while Phase-5 evals are still accumulating on disk; check eval counts, not just status.
+
+---
+
 ## Config validation rules
 
 V-01 through V-19.  `validate_config()` in `Code/runner/config.py`.
