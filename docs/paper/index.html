@@ -224,20 +224,23 @@
 <section class="abstract">
   <h2>Abstract</h2>
     <p>
-    Choosing or ranking language models for a specific application is hardest when <em>no task-specific labeled data</em>
-    exists and <em>standard public benchmarks cannot be trusted</em>, their items having likely leaked into pretraining so
-    scores reflect memorization rather than fitness. We present <strong>CoEval</strong>, an open-source, reusable framework
-    that closes this gap end to end: from only a description of a task or domain, teacher models synthesize a fresh,
-    attribute-controlled benchmark with <em>no human labels</em>, contamination-free because items are generated anew on
-    each run, and a cross-family judge ensemble ranks candidate models with no human raters. Validated where ground truth
-    exists, CoEval recovers the true model ranking and tracks ground-truth correctness at $\rho = 0.86$. The label-free
-    judging needs no human calibration because judge-panel <em>composition</em> (vendor diversity), not <em>size</em>,
-    drives reliability: a small, well-chosen cross-family panel is most reliable, while a single judge can be
-    anti-correlated with ground truth (judge-choice regret $0.35$) and the ensemble never is. Generated items show
-    zero verbatim 13-gram overlap with five major public benchmarks; the panel cancels verbosity bias and precludes
-    same-family self-preference. The same declarative pipeline
-    applies to any domain and is cheap enough to re-run on every model release: a label-free, contamination-free
-    leaderboard any team can regenerate for its own application.
+    Selecting a pretrained language model, or evaluating a fine-tuned one, for a specific application is a high-value
+    decision, yet the public benchmarks used to make it are poorly suited to it: a generic benchmark measures
+    average-case ability and need not reflect performance on a particular <em>sub-domain or sub-task</em>, and its
+    scores are suspect when its items have <em>leaked into pretraining</em> and are recalled rather than solved. We
+    present <strong>CoEval</strong>, an open framework that supplies a task-specific signal from a task or domain
+    description: a teacher model synthesizes a fresh, attribute-stratified benchmark with
+    <em>no human labels</em>, contamination-free because items are generated anew each run, and a vendor-disjoint
+    cross-family judge ensemble ranks candidate models with no human raters. Where ground truth exists, CoEval recovers
+    the true ranking and tracks objective correctness at $
+ho = 0.86$, and a doubly-robust aggregator recovers the
+    gold ranking of thirteen models at Spearman $0.95$. Reliability comes from panel <em>composition</em>, not size:
+    peer agreement is a label-free reliability estimate, so a small cross-family panel zeroes out broken judges, where a
+    single judge can be anti-correlated with ground truth (judge-choice regret $0.35$) and the ensemble never is.
+    Generated items show <em>zero</em> verbatim overlap with five public benchmarks, the panel cancels verbosity bias
+    and precludes same-family self-preference, and rankings are <em>domain-specific</em>: three models win four de-novo
+    domains, so a generic leaderboard misdirects most practitioners. The same pipeline reruns on each model release,
+    giving any team a label-free, contamination-free leaderboard for its own application.
   </p>
 </section>
 
