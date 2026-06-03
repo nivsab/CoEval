@@ -234,8 +234,8 @@
     judging needs no human calibration because judge-panel <em>composition</em> (vendor diversity), not <em>size</em>,
     drives reliability: a small, well-chosen cross-family panel is most reliable, while a single judge can be
     anti-correlated with ground truth (judge-choice regret $0.35$) and the ensemble never is. Generated items show
-    $0.0000$ verbatim 13-gram overlap with five major public benchmarks; the panel cancels verbosity bias and precludes
-    same-family self-preference. A four-task study produced 7,978 evaluations for USD 5.89. The same declarative pipeline
+    zero verbatim 13-gram overlap with five major public benchmarks; the panel cancels verbosity bias and precludes
+    same-family self-preference. The same declarative pipeline
     applies to any domain and is cheap enough to re-run on every model release: a label-free, contamination-free
     leaderboard any team can regenerate for its own application.
   </p>
@@ -310,8 +310,7 @@
     configuration file.</li>
 </ul>
 <p>
-  CoEval requires no human annotation. In a four-task medium-scale study it produced 7,978 valid evaluations for
-  USD 5.89 end-to-end. The remainder of this paper formalizes the framework (Section&nbsp;3), describes the experimental
+  CoEval requires no human annotation. The remainder of this paper formalizes the framework (Section&nbsp;3), describes the experimental
   setup (Section&nbsp;4), and reports our empirical results (Section&nbsp;5): ground-truth correlation, the
   composition-over-size reliability finding, verbosity-bias cancellation, the cross-family self-preference design
   property, rubric generalization, contamination resistance, cost, end-to-end domain case studies on three custom verticals, and a demonstration that model rankings are domain-specific, so a generic leaderboard misdirects three of four domain practitioners.
@@ -785,7 +784,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </figure>
 <div class="keyfinding">
   <strong>Finding (bias cancellation).</strong> The ensemble removes a verbosity bias that no single judge avoids:
-  mean per-judge $|r| = 0.153$ collapses to an ensemble $r = +0.010$ whose 95% CI $[-0.039, +0.057]$ contains zero, a
+  mean per-judge $|r| = 0.153$ falls to an ensemble $r = +0.010$ whose 95% CI $[-0.039, +0.057]$ contains zero, a
   93% reduction.
 </div>
 
@@ -1031,14 +1030,14 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   bias-cancelled, reliable evaluation without human annotation: it removes verbosity bias that no single judge avoids
   (ensemble $r = +0.010$, CI spanning zero; 93% reduction), structurally precludes same-family self-preference, and
   produces task-specialized rubrics with a shared quality core, while also converging
-  to a stable full-panel consensus (Spearman $\rho$ up to $1.00$), all at USD 5.89 for 7,978 evaluations. Our
+  to a stable full-panel consensus (Spearman $\rho$ up to $1.00$). Our
   central finding, that judge-panel <em>composition</em> rather than size is the decisive reliability lever, offers a
   concrete and inexpensive recipe for trustworthy, renewable LLM evaluation. The panel is also self-validating: because a
   judge's agreement with its peers is a label-free reliability estimate, the ensemble detects and zeroes out broken judges
   with no ground truth, a safeguard a single judge cannot provide. Because the same declarative pipeline runs
   unchanged across models and domains and is cheap enough to repeat on every model release, CoEval is a reusable
   instrument a team points at its own application when neither labeled data nor a trustworthy benchmark exists, rather
-  than a single static study. CoEval is open-source, declarative, and fully reproducible.
+  than a single static study. CoEval is open-source and fully reproducible.
 </p>
 
 <!-- ===================== REFERENCES ===================== -->
