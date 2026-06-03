@@ -302,7 +302,8 @@ single command `python docs/paper/build_paper.py` (do NOT hand-run html2doc stag
 NEVER write the MathML intermediate to `/tmp` -- it must sit beside `figures/` or images
 silently drop). The script:
 - builds `CoEval.docx` (1-col, camera-ready-generic) AND `CoEval_twocolumn.docx` (2-col,
-  two-column), and verifies all 6 figures embed in each (fails loudly otherwise);
+  two-column), and verifies all figures embed in each (count is read dynamically from the
+  HTML via `n_figs_in_html()`, currently 5; fails loudly on mismatch);
 - asserts both Word download links are present in `index.html`;
 - writes `index.review.html` (local annotatable copy: `anno-version`, `anno-path`,
   annotate.js include) and registers `docs/paper/` as html2anno served root `coeval`,
@@ -331,9 +332,16 @@ both `.docx`; do NOT commit `index.review.html` (machine-specific path, gitignor
 - **All numbers are REAL** and verified against committed artifacts under
   `Runs/**/reports/*.json` (frontier QA rho=0.86 CI[0.77,0.94]; Table 2 ranking;
   ICC non-monotone 0.70->0.40; verbosity cancellation +0.010; vendor-disjoint shift
-  <=0.015; rubric within 0.342 > cross 0.294; 0.0000 contamination; USD 5.89 / 7,978
-  evals; DDI 3/3 unanimous, clinical, legal verticals). The old `04_results.md`
-  placeholders are superseded.
+  <=0.015; rubric within 0.342 > cross 0.294; 0.0000 contamination; DDI 3/3 unanimous,
+  clinical, legal verticals). The old `04_results.md` placeholders are superseded.
+- **Cost discussion removed from the paper** (2026-06-03): the §5.6 Cost section, Appendix C
+  throughput (old Figure 6 evals-per-dollar), and all USD figures are gone; sections
+  renumbered 5.7->5.6 / 5.8->5.7, appendix D->C, figure count 6->5. The USD 5.89 / 7,978-eval
+  artifacts still exist under `Runs/` but are no longer reported in the manuscript.
+- **Three-role framing** (2026-06-03): the abstract, intro, and conclusion now state that a
+  pool of models rotates through ALL THREE roles (teacher/student/judge); the student role
+  supplies the per-response data that weight questions by discriminative power and judges by
+  consensus. Appendix C also lists the verbatim four-call generation prompt templates.
 - **Style invariants** (re-audit after ANY regeneration): zero em-dashes (use
   commas/colons/semicolons/parentheses); money written "USD X" not "$X" (a literal `$`
   breaks KaTeX auto-render); references validated with the `bibtest` skill (26/26 valid);
