@@ -590,11 +590,14 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   On objective correctness the frontier ensemble reaches $\rho = 0.859$ (datapoint-clustered 95% CI $[0.77, 0.94]$).
   Because correctness is objective, the three frontier judges converge on identical labels, so the ensemble matches its
   strongest member: the experiment establishes that CoEval judges are <em>accurate</em> and that the result is
-  <em>vendor-independent</em>: no single provider drives it. On open-ended summarization scored against a lexical
+  <em>vendor-independent</em>: no single provider drives it.
+</p>
+<p>
+  On open-ended summarization scored against a lexical
   BERTScore reference, the cross-family ensemble ($\rho = 0.227$) tracks ground truth within the confidence interval of a
   single GPT-4o <strong>G-Eval</strong> [<a href="#r2">2</a>] judge using chain-of-thought ($\rho = 0.259$, 95% CI
   $[0.18, 0.33]$, $n=580$): a statistical tie with this strong single-judge baseline, without depending on any one model. A single judge
-  is a gamble one cannot hedge in advance: on this summarization subset ($n=580$) the panel's individual judges range from anti-correlated
+  cannot be chosen safely in advance: on this summarization subset ($n=580$) the panel's individual judges range from anti-correlated
   (<code>gpt-3.5-turbo</code>, $\rho = -0.01$) to $\rho = 0.25$, and which judge is best changes by task, so no fixed
   single-judge choice is safe a priori (Section&nbsp;5.2 quantifies this judge-choice regret across the full
   benchmark-grounded set). The cross-family ensemble is the low-regret alternative: it is never
@@ -649,8 +652,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   The decisive variable is <em>composition</em>. Among the competent judges that CoEval's consensus selection retains,
   average-measures reliability follows the Spearman&ndash;Brown law: a selected two-judge panel already reaches
   $\mathrm{ICC}(3,k) = 0.70$. This is exactly why CoEval makes judge <em>selection</em> a first-class step rather than
-  simply enlarging the panel: indiscriminately adding low-agreement judges lowers the mean inter-rater correlation
-  $\bar{r}$ faster than averaging can compensate, so $R_k$ in the Spearman&ndash;Brown relation can fall. CoEval's
+  simply enlarging the panel: its
   consensus criterion identifies and retains the high-agreement judges, delivering the reliable configuration
   automatically. In other words, the framework converts panel composition from a liability for an unweighted
   ensemble into a reliability <em>gain</em>: the selected ensemble is robust to the inclusion of
@@ -667,7 +669,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
     automatically.</figcaption>
 </figure>
 <p>
-  Composition matters because the <em>wrong single judge can be worse than useless</em>, and which judge is wrong is not
+  Composition matters because the <em>wrong single judge can actively mislead</em>, and which judge is wrong is not
   knowable a priori without the labels CoEval assumes are absent. Across the benchmark-grounded set of Section&nbsp;5.1
   (three tasks, $n = 900$ pooled), the four candidate judges span a correlation range from $-0.04$
   (<code>gpt-3.5-turbo</code>, anti-correlated) through $0.17$ (<code>gemini-flash</code>) and $0.24$
@@ -720,7 +722,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   the items hold near-zero weight) and judges that disagree with the panel. The two signals are complementary, each
   helping on its own (item-weighting alone $0.94$, judge-weighting alone $0.92$) and most on the discriminative items
   where judge reliability matters. The aggregator is robust: injecting a random judge degrades the plain mean to $0.85$
-  but leaves the doubly-robust ranking at $0.95$,   the rogue judge receiving weight $0.00$ (Table&nbsp;4).
+  but leaves the doubly-robust ranking at $0.95$, with the rogue judge receiving weight $0.00$ (Table&nbsp;4).
 </p>
 <div class="tablewrap">
 <table class="data">
@@ -959,7 +961,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   CoEval is designed for a specific, common predicament: ranking models for a task or domain when no labeled data
   exists to build a benchmark and public benchmarks cannot be trusted. The results show it meets that need: its
   label-free scores reproduce the true model ranking and track ground truth, and its generated items are verifiably
-  fresh, and they explain <em>why</em> the label-free judging is trustworthy. The key enabler is a design
+  fresh. The composition-over-size finding explains <em>why</em> this label-free judging can be trusted. The key enabler is a design
   principle that is itself a contribution: the reliability of an LLM-judge panel is governed by its
   <em>composition</em>, not its size. A diverse, cross-family panel cancels the mixed-sign biases (verbosity,
   self-preference) that any individual judge carries, while a same-family panel would only amplify a shared
@@ -995,7 +997,10 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   produces task-specialized rubrics with a shared quality core, while also converging
   to a stable full-panel consensus (Spearman $\rho$ up to $1.00$). Our
   central finding, that judge-panel <em>composition</em> rather than size is the decisive reliability lever, offers a
-  concrete and inexpensive recipe for trustworthy, renewable LLM evaluation. The panel is also self-validating: because a
+  concrete and inexpensive recipe for trustworthy, renewable LLM evaluation.
+</p>
+<p>
+  The panel is also self-validating: because a
   judge's agreement with its peers is a label-free reliability estimate, the ensemble detects and zeroes out broken judges
   with no ground truth, a safeguard a single judge cannot provide; the same weighting down-weights non-discriminative
   challenges, so saturated questions carry no spurious ranking signal. Because model rankings are
