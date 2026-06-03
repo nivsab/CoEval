@@ -103,7 +103,7 @@
   h3 { font-family: var(--font-title); font-size: 11.5pt; font-weight: 700; margin: 1.3rem 0 0.45rem; color: var(--fg); }
   p { margin: 0; text-indent: 1.4em; line-height: 1.55; }
   /* Flush-first-paragraph: the first paragraph after a heading / figure / table / finding / equation is flush-left. */
-  h2 + p, h3 + p, h4 + p, figure + p, .tablewrap + p, .keyfinding + p, .katex-display + p { text-indent: 0; }
+  h2 + p, h3 + p, h4 + p, figure + p, .tablewrap + p, .katex-display + p { text-indent: 0; }
   .abstract p, figcaption, table.data caption, ol.refs li, ul.tight li, .authors, .affil, .venue { text-indent: 0; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -136,6 +136,7 @@
   table.data th { font-weight: 700; background: var(--bg); color: var(--fg); border-bottom: 1px solid var(--fg); border-top: none; }
   table.data td.lbl, table.data th.lbl { text-align: left; }
   table.data tr.highlight td { background: rgba(20, 56, 92, 0.04); font-weight: 600; }
+  table.data tbody tr.group:not(:first-child) td { border-top: 1px solid var(--fg-soft); }
   .tablewrap { overflow-x: auto; margin: 1rem 0 1.2rem; }
   /* Math */
   .katex-display { margin: 1rem 0; overflow-x: auto; overflow-y: hidden; }
@@ -143,9 +144,6 @@
   /* References */
   ol.refs { padding-left: 1.4rem; font-size: 9pt; line-height: 1.45; color: var(--fg); }
   ol.refs li { margin-bottom: 0.45rem; text-align: left; }
-  /* Finding boxes */
-  .keyfinding { border-left: 3px solid var(--accent); background: var(--bg-soft); padding: 0.7rem 1rem; margin: 1rem 0; font-size: 10pt; }
-  .keyfinding strong { color: var(--accent); }
   /* Code */
   code, .mono {
     font-family: var(--font-mono);
@@ -565,9 +563,9 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <div class="tablewrap">
 <table class="data">
   <caption><strong>Table 2.</strong> Spearman correlation of CoEval accuracy scores with ground-truth correctness on
-    exact-match QA (SciQ, ARC-Challenge; $191$ datapoints, $573$ responses; datapoint-clustered 95% bootstrap CI). The
-    frontier cross-family ensemble tracks ground truth at $\rho = 0.86$. The three frontier judges agree on every item;
-    crucially, the weaker auxiliary judges they are contrasted against (Section&nbsp;5.2) disagree on $3$&ndash;$8$
+    exact-match QA (SciQ, ARC-Challenge; 191 datapoints, 573 responses; datapoint-clustered 95% bootstrap CI). The
+    frontier cross-family ensemble tracks ground truth at ρ = 0.86. The three frontier judges agree on every item;
+    crucially, the weaker auxiliary judges they are contrasted against (Section&nbsp;5.2) disagree on 3&ndash;8
     items, confirming this is genuine independent convergence of capable judges on objective correctness, not redundancy
     of identical models.</caption>
   <thead>
@@ -661,17 +659,11 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <figure>
   <img src="figures/f2_icc_curve.png" alt="ICC(3,k) versus number of judges, peaking at the selected strong panel"/>
   <figcaption><strong>Figure 3.</strong> Composition over size. Average-measures reliability ICC(3,&nbsp;<em>k</em>) as
-    judges are added in descending agreement order. A selected strong panel reaches $\mathrm{ICC}=0.70$; indiscriminately
+    judges are added in descending agreement order. A selected strong panel reaches ICC = 0.70; indiscriminately
     adding low-agreement judges lowers the mean inter-rater correlation faster than averaging compensates, so reliability
     falls. CoEval's consensus selection retains the high-agreement judges, delivering the reliable configuration
     automatically.</figcaption>
 </figure>
-<div class="keyfinding">
-  <strong>Finding (composition over size).</strong> Average-measures reliability is non-monotone in panel size:
-  $\mathrm{ICC}(3,k)$ peaks at $0.70$ for a selected strong pair and <em>falls</em> to $0.40$ as low-agreement judges
-  are added, matching the Spearman&ndash;Brown prediction exactly. Ensemble <em>composition</em>, not size, is the
-  decisive reliability lever; CoEval's consensus selection retains the high-agreement judges automatically.
-</div>
 <p>
   Composition matters because the <em>wrong single judge can be worse than useless</em>, and which judge is wrong is not
   knowable a priori without the labels CoEval assumes are absent. Across the benchmark-grounded set of Section&nbsp;5.1
@@ -694,13 +686,6 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   thus turns the panel's own internal agreement, the one signal available without labels, into the strongest aggregate,
   while never selecting the anti-correlated judge.
 </p>
-<div class="keyfinding">
-  <strong>Finding (judge-choice regret).</strong> Choosing a single judge without labels is unsafe: on the
-  benchmark-grounded set the candidate judges range from $-0.04$ (anti-correlated) to $0.31$, a judge-choice regret of
-  $0.35$, and the best judge varies by task. The cross-family ensemble removes this risk (plain mean $0.238$, never
-  anti-correlated), and among label-free aggregators reliability weighting is the strongest ($0.246$, versus $0.222$ for
-  median/trimmed and $0.178$ for Dawid&ndash;Skene), using only the panel's internal agreement.
-</div>
 <p>
   Aggregation does more than average: it lets the evaluator <em>audit its own judges</em> with no labels. A judge's mean
   agreement with the rest of the panel is an unsupervised reliability signal, and it cleanly separates competent judges
@@ -723,12 +708,6 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   independence</em>: judges from distinct model families are unlikely to share a bias coalition. The robustness of the
   aggregator and the cross-family composition principle are two sides of one design.
 </p>
-<div class="keyfinding">
-  <strong>Finding (self-validating panel).</strong> A panel both suppresses and <em>diagnoses</em> bad judges with no
-  labels. Adding three broken judges (random, constant, anti-correlated) to a four-judge panel nearly halves the
-  plain-mean accuracy ($0.238 \to 0.126$); reliability weighting gives each broken judge weight $0.000$ from peer
-  agreement alone and restores $0.228$. A single judge has no internal check to fall back on.
-</div>
 <p>
   The panel's two label-free quality signals, item discriminative power and judge agreement, compose into the
   <em>doubly-robust ranking</em> of Section&nbsp;3.3, which leans on the items that separate models (Section&nbsp;5.7)
@@ -745,7 +724,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <table class="data">
   <caption><strong>Table 4.</strong> Doubly-robust rank-recovery on thirteen candidate models (science QA and
     reasoning; gold = benchmark-native accuracy). Each label-free weight helps on its own, and the two compose into the
-    best recovery; the aggregator is robust to an injected random judge, which it gives weight $0.00$. Values are the
+    best recovery; the aggregator is robust to an injected random judge, which it gives weight 0.00. Values are the
     Spearman and Kendall correlations between the recovered ranking and the gold-accuracy ranking.</caption>
   <thead><tr><th class="lbl">Aggregator</th><th>Spearman</th><th>Kendall</th></tr></thead>
   <tbody>
@@ -803,14 +782,9 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <figure>
   <img src="figures/f3_verbosity_forest.png" alt="Forest plot of per-judge length-bias correlations with the ensemble near zero"/>
   <figcaption><strong>Figure 4.</strong> Verbosity bias by judge. Each judge's Pearson correlation between response
-    length and score (point) with its 95% bootstrap CI; the ensemble (green) sits at $r=+0.010$ with a CI spanning zero.
+    length and score (point) with its 95% bootstrap CI; the ensemble (green) sits at <em>r</em> = +0.010 with a CI spanning zero.
     Mixed-sign per-judge biases cancel under averaging.</figcaption>
 </figure>
-<div class="keyfinding">
-  <strong>Finding (bias cancellation).</strong> The ensemble removes a verbosity bias that no single judge avoids:
-  mean per-judge $|r| = 0.153$ falls to an ensemble $r = +0.010$ whose 95% CI $[-0.039, +0.057]$ contains zero, a
-  93% reduction.
-</div>
 
 <h3>5.4 Cross-family self-preference: a design property</h3>
 <p>
@@ -841,12 +815,6 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   same-family bias. The correction is therefore available as a safeguard, and its null effect here is itself evidence
   that vendor diversity, not a post-hoc adjustment, is doing the work.
 </p>
-<div class="keyfinding">
-  <strong>Finding (self-preference).</strong> CoEval's vendor-disjoint panel structurally precludes a model from judging
-  its own family. The measured residual same-family preference is small and inconsistent in sign across three verticals
-  ($|\text{effect}| \le 0.04$), and vendor-disjoint aggregation leaves every ranking unchanged (scores shift
-  $\le 0.016$): the cross-family design neutralizes self-preference by construction.
-</div>
 
 <h3>5.5 Contamination resistance</h3>
 <p>
@@ -875,12 +843,6 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   leaderboard thus ranks a $0.5$B memorizer ahead of a frontier model, an inversion that CoEval's freshly-generated
   items remove because no candidate can have trained on items synthesized after the fact.
 </p>
-<div class="keyfinding">
-  <strong>Finding (contamination).</strong> A static benchmark of memorized public items ranks a $0.5$B memorizer
-  <em>above</em> <code>gpt-4o-mini</code> ($1.00$ vs $0.845$); on fresh items of the same capability the order inverts to
-  the correct one (<code>gpt-4o-mini</code> $0.81 >$ memorizer $0.74$). CoEval-generated items additionally show
-  $0.0000$ verbatim 13-gram overlap with five major public benchmarks, so they cannot be gamed this way.
-</div>
 
 <h3>5.6 Cost</h3>
 <p>
@@ -929,32 +891,23 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   carry ranking signal, and a non-discriminative benchmark, on which every model scores alike, could not separate the
   candidates no matter how reliable the judges are.
 </p>
-<div class="keyfinding">
-  <strong>Finding (discriminative generation).</strong> A good teacher generates items that separate the models. On the
-  $120$ CoEval-generated vertical items, $71\%$ are discriminative (candidate-score range $\ge 0.15$, mean range $0.33$),
-  and the fraction tracks the true model separation (drug-interaction $78\%$, legal $85\%$, clinical $50\%$ where two
-  models are genuinely close), so the generated benchmark carries the ranking signal a saturated benchmark lacks.
-</div>
 <div class="tablewrap">
 <table class="data">
   <caption><strong>Table 6.</strong> CoEval ranks three candidate models on three custom, contamination-free verticals
-    generated from a task description with no labeled data. Scores are the cross-family ensemble mean ($[0,1]$) with 95%
-    bootstrap CI over $40$ generated items. <code>llama-3.2-3b</code> ranks weakest in every vertical; the three judges
+    generated from a task description with no labeled data. Scores are the cross-family ensemble mean ([0, 1]) with 95%
+    bootstrap CI over 40 generated items. <code>llama-3.2-3b</code> ranks weakest in every vertical; the three judges
     agree unanimously on the full drug-interaction order, unanimously on the weakest clinical model, and two-of-three in legal.</caption>
-  <thead><tr><th class="lbl">Vertical / Model</th><th>CoEval ensemble score [95% CI]</th></tr></thead>
+  <thead><tr><th class="lbl">Vertical</th><th class="lbl">Model</th><th>CoEval score [95% CI]</th></tr></thead>
   <tbody>
-    <tr><td class="lbl"><em>Drug&ndash;drug interaction reasoning</em> (judges unanimous)</td><td></td></tr>
-    <tr class="highlight"><td class="lbl">&nbsp;&nbsp;gpt-4o-mini</td><td>0.770 [0.739, 0.800]</td></tr>
-    <tr><td class="lbl">&nbsp;&nbsp;gpt-3.5-turbo</td><td>0.682 [0.646, 0.717]</td></tr>
-    <tr><td class="lbl">&nbsp;&nbsp;llama-3.2-3b</td><td>0.497 [0.459, 0.532]</td></tr>
-    <tr><td class="lbl"><em>Clinical reasoning</em></td><td></td></tr>
-    <tr class="highlight"><td class="lbl">&nbsp;&nbsp;gpt-3.5-turbo</td><td>0.873 [0.849, 0.895]</td></tr>
-    <tr><td class="lbl">&nbsp;&nbsp;gpt-4o-mini</td><td>0.864 [0.840, 0.885]</td></tr>
-    <tr><td class="lbl">&nbsp;&nbsp;llama-3.2-3b</td><td>0.814 [0.784, 0.844]</td></tr>
-    <tr><td class="lbl"><em>Legal analysis</em></td><td></td></tr>
-    <tr class="highlight"><td class="lbl">&nbsp;&nbsp;gpt-4o-mini</td><td>0.982 [0.973, 0.991]</td></tr>
-    <tr><td class="lbl">&nbsp;&nbsp;gpt-3.5-turbo</td><td>0.740 [0.709, 0.770]</td></tr>
-    <tr><td class="lbl">&nbsp;&nbsp;llama-3.2-3b</td><td>0.709 [0.677, 0.744]</td></tr>
+    <tr class="group"><td class="lbl"><em>Drug&ndash;drug interaction</em></td><td class="lbl">gpt-4o-mini</td><td class="highlight">0.770 [0.739, 0.800]</td></tr>
+    <tr><td class="lbl"></td><td class="lbl">gpt-3.5-turbo</td><td>0.682 [0.646, 0.717]</td></tr>
+    <tr><td class="lbl"></td><td class="lbl">llama-3.2-3b</td><td>0.497 [0.459, 0.532]</td></tr>
+    <tr class="group"><td class="lbl"><em>Clinical reasoning</em></td><td class="lbl">gpt-3.5-turbo</td><td class="highlight">0.873 [0.849, 0.895]</td></tr>
+    <tr><td class="lbl"></td><td class="lbl">gpt-4o-mini</td><td>0.864 [0.840, 0.885]</td></tr>
+    <tr><td class="lbl"></td><td class="lbl">llama-3.2-3b</td><td>0.814 [0.784, 0.844]</td></tr>
+    <tr class="group"><td class="lbl"><em>Legal analysis</em></td><td class="lbl">gpt-4o-mini</td><td class="highlight">0.982 [0.973, 0.991]</td></tr>
+    <tr><td class="lbl"></td><td class="lbl">gpt-3.5-turbo</td><td>0.740 [0.709, 0.770]</td></tr>
+    <tr><td class="lbl"></td><td class="lbl">llama-3.2-3b</td><td>0.709 [0.677, 0.744]</td></tr>
   </tbody>
 </table>
 </div>
@@ -988,20 +941,13 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   leaderboard and deploys its top model is choosing the domain-best model in just one of four cases. CoEval removes the
   guess: it ranks the candidates on the practitioner's own domain, contamination-free, with no labeled data.
 </p>
-<div class="keyfinding">
-  <strong>Finding (domain-specific ranking).</strong> Across four de-novo domains scored by one vendor-disjoint panel
-  ($1{,}800$ evaluations), three different models take first place and the mean cross-domain rank agreement is weak
-  (Kendall&nbsp;$\tau = 0.19$); the winners are bootstrap-stable ($P(\text{top}) = 0.88$&ndash;$1.00$). A generic
-  leaderboard that pools the domains crowns a model that is domain-best in only one of the four, so a single number
-  misdirects three of four domain practitioners. Domain-specific evaluation is the operation CoEval is built to perform.
-</div>
 <div class="tablewrap">
 <table class="data">
   <caption><strong>Table 7.</strong> The same six candidate models ranked by the same cross-family panel on four
-    CoEval-generated domains diverge: each cell is the model's rank ($1$ = best) in that domain, rows ordered by the
+    CoEval-generated domains diverge: each cell is the model's rank (1 = best) in that domain, rows ordered by the
     generic pooled leaderboard. Three distinct models win the four domains (highlighted), and the pooled-best model
-    (<code>gemini-flash</code>) is domain-best in only one. <code>gpt-4o-mini</code> swings from $1$st to $5$th and
-    <code>claude-3.5-haiku</code> from $5$th to $1$st across domains.</caption>
+    (<code>gemini-flash</code>) is domain-best in only one. <code>gpt-4o-mini</code> swings from 1st to 5th and
+    <code>claude-3.5-haiku</code> from 5th to 1st across domains.</caption>
   <thead><tr><th class="lbl">Model</th><th>Pooled</th><th>Clinical</th><th>Code</th><th>Legal</th><th>Math</th></tr></thead>
   <tbody>
     <tr><td class="lbl"><code>gemini-flash</code></td><td>1</td><td>2</td><td>3</td><td class="highlight">1</td><td>2</td></tr>
@@ -1181,8 +1127,8 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <figure>
   <img src="figures/f5_rubric_heatmap.png" alt="Heatmap of pairwise semantic similarity between auto-generated rubric criteria"/>
   <figcaption><strong>Figure 5.</strong> Pairwise semantic similarity of the 22 auto-generated rubric criteria across
-    four tasks. Block structure along the diagonal reflects task specialization (within-task $0.342 >$ cross-task
-    $0.294$), while a recurring &ldquo;completeness&rdquo; dimension forms a cross-task cluster.</figcaption>
+    four tasks. Block structure along the diagonal reflects task specialization (within-task 0.342 &gt; cross-task
+    0.294), while a recurring &ldquo;completeness&rdquo; dimension forms a cross-task cluster.</figcaption>
 </figure>
 
 <h2 id="appC">Appendix C. Evaluation throughput</h2>
@@ -1206,7 +1152,7 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
 <table class="data">
   <caption><strong>Table D1.</strong> From a one-line description to a scored benchmark, for three domains with no
     public labeled data. The attribute strata and rubric criteria are auto-generated by the teacher; each domain yields
-    $40$ stratified, contamination-free items, scored by the cross-family panel.</caption>
+    40 stratified, contamination-free items, scored by the cross-family panel.</caption>
   <thead><tr><th class="lbl">Domain and one-line seed</th><th>Auto-generated attribute strata</th><th>Auto-generated rubric</th></tr></thead>
   <tbody>
     <tr><td class="lbl"><strong>Drug&ndash;drug interaction reasoning</strong><br/>
