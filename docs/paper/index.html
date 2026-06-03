@@ -307,9 +307,9 @@
     serve as teacher, student, or judge, and a task or domain is supplied declaratively at whatever level of detail the
     practitioner has, from a one-line objective that the framework expands into a complete configuration, through a
     minimal task description, to a fully hand-written specification. The <em>same</em> pipeline applies unchanged to any
-    domain and is cheap enough to re-run on every model release, so a team obtains a renewable, application-specific
+    domain and re-runs unchanged on every model release, so a team obtains a renewable, application-specific
     benchmark rather than a fixed leaderboard. This per-domain ranking is necessary rather than cosmetic: across four
-    de-novo domains three different models take first place (Section&nbsp;5.8), so a single generic leaderboard
+    de-novo domains three different models take first place (Section&nbsp;5.7), so a single generic leaderboard
     misdirects most domain practitioners. Ranking candidate models on a custom use case requires only this
     specification, and CoEval recovers the correct ground-truth ranking wherever one exists to check against
     (Section&nbsp;5.1, Table&nbsp;3; the doubly-robust aggregator recovers the true ranking of thirteen models at
@@ -519,14 +519,14 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 <table class="data">
   <caption><strong>Table 1.</strong> Experimental configurations. Judge panels differ by experiment because the
     ground-truth anchor (5.1) uses a frontier cross-family panel while the bias and reliability studies (5.2&ndash;5.3)
-    use a deliberately heterogeneous panel that includes weak open-weight judges; the verticals (5.4, 5.8) reuse one
+    use a deliberately heterogeneous panel that includes weak open-weight judges; the verticals (5.4, 5.7) reuse one
     fixed cross-family panel. All students are gpt-4o-mini, gpt-3.5-turbo, and llama-3.2-3b unless noted.</caption>
   <thead><tr><th class="lbl">Experiment</th><th>Task(s)</th><th>Judge panel</th><th>Size</th></tr></thead>
   <tbody>
     <tr><td class="lbl">5.1 ground truth</td><td>SciQ, ARC (exact-match QA)</td><td>gpt-4o, claude-sonnet-4, gemini-2.5-flash</td><td>191 items / 573 resp.</td></tr>
     <tr><td class="lbl">5.2 reliability (5.1 summ. anchor)</td><td>code (BLEU), news + text summ. (BERTScore)</td><td>gpt-4o-mini, gpt-3.5-turbo, claude-haiku, gemini-flash</td><td>3 tasks / 900 resp.</td></tr>
     <tr><td class="lbl">5.2&ndash;5.3, App. B</td><td>4-task medium study</td><td>gpt-4o-mini, gpt-3.5-turbo, qwen2.5-1.5b, smollm2-1.7b</td><td>7,978 eval.</td></tr>
-    <tr><td class="lbl">5.4, 5.7 verticals</td><td>drug-interaction, clinical, legal</td><td>claude-haiku, gemini-flash, gpt-4o-mini</td><td>40 items each</td></tr>
+    <tr><td class="lbl">5.4, 5.6 verticals</td><td>drug-interaction, clinical, legal</td><td>claude-haiku, gemini-flash, gpt-4o-mini</td><td>40 items each</td></tr>
     <tr><td class="lbl">5.5 contamination</td><td>SciQ memorization</td><td>exact-match (no LLM judge)</td><td>200 memorized / 100 fresh</td></tr>
   </tbody>
 </table>
@@ -543,7 +543,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   governs reliability (5.2), which cancels the verbosity bias every single judge carries (5.3) and structurally avoids
   self-preference (5.4); the auto-generated rubrics are themselves task-specialized with a shared quality core
   (<a href="#appB">Appendix&nbsp;B</a>). Section&nbsp;5.5 verifies the second condition
-  directly, that the generated items are <em>contamination-free</em>, and Section&nbsp;5.6 shows the process is cheap enough to re-run per use case. Section&nbsp;5.7 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data, and Section&nbsp;5.8 shows that rankings are domain-specific: across four de-novo domains three different models take first place, so a generic leaderboard misdirects the practitioner that CoEval's per-domain ranking serves.
+  directly, that the generated items are <em>contamination-free</em>. Section&nbsp;5.6 exercises the complete tool on three custom verticals (drug interaction, clinical, legal) with no labeled data, and Section&nbsp;5.7 shows that rankings are domain-specific: across four de-novo domains three different models take first place, so a generic leaderboard misdirects the practitioner that CoEval's per-domain ranking serves.
 </p>
 
 <h3>5.1 Ground-truth correlation</h3>
@@ -712,7 +712,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </p>
 <p>
   The panel's two label-free quality signals, item discriminative power and judge agreement, compose into the
-  <em>doubly-robust ranking</em> of Section&nbsp;3.3, which leans on the items that separate models (Section&nbsp;5.7)
+  <em>doubly-robust ranking</em> of Section&nbsp;3.3, which leans on the items that separate models (Section&nbsp;5.6)
   and the judges that agree with the panel. On a benchmark-grounded check where gold accuracy is available (thirteen
   models ranked on science QA and reasoning, spanning <code>gpt-4o</code> down to <code>llama-3.2-1b</code>), it improves
   rank-recovery of the true model ordering from the plain mean's Spearman $0.88$ (Kendall $0.76$) to
@@ -799,7 +799,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   aggregate in the first place, regardless of its magnitude on any individual model.
 </p>
 <p>
-  We also measure the residual same-family preference directly. The vertical case studies (Section&nbsp;5.7) include
+  We also measure the residual same-family preference directly. The vertical case studies (Section&nbsp;5.6) include
   <code>gpt-4o-mini</code> as both a judge and a candidate, which lets us isolate self-preference as a
   difference-in-differences that controls for a judge's overall harshness (how much more the same-family judge favors the
   in-family candidate over a rival than the cross-family judges do). Across the three verticals the residual effect is
@@ -846,16 +846,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   items remove because no candidate can have trained on items synthesized after the fact.
 </p>
 
-<h3>5.6 Cost</h3>
-<p>
-  The entire four-task medium-scale study, teacher generation, student response collection, cross-family judging,
-  and analysis, produced <strong>7,978 valid evaluations</strong> for a total cost of <strong>USD 5.89</strong>,
-  fully automated and with no human annotation. At roughly USD 0.00074 per evaluation, contamination-free, domain-targeted,
-  bias-cancelled evaluation is inexpensive enough to re-run on every model release, which is exactly what a renewable,
-  contamination-resistant benchmark requires. At roughly $1{,}350$ evaluations per dollar, CoEval runs two to three
-  orders of magnitude cheaper than typical human annotation (<a href="#appC">Appendix&nbsp;C</a>).
-</p>
-<h3>5.7 Putting it together: domain case studies</h3>
+<h3>5.6 Putting it together: domain case studies</h3>
 <p>
   The preceding sections validate CoEval's components where ground truth is available. We now exercise the complete tool
   in its intended regime on three custom verticals, <em>drug&ndash;drug interaction reasoning</em>, <em>clinical
@@ -867,7 +858,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   vertical, CoEval's teacher generated 40 attribute-stratified items (for drug interactions, stratified over severity,
   mechanism, and patient context), three candidate models answered them, and the cross-family ensemble
   (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) scored every response, all from a single configuration file, with
-  no human labels or raters. <a href="#appD">Appendix&nbsp;D</a> shows the actual generated artifacts for all three
+  no human labels or raters. <a href="#appC">Appendix&nbsp;C</a> shows the actual generated artifacts for all three
   domains: the one-line seed, the auto-generated attribute strata and rubric, and a representative synthesized item.
 </p>
 <p>
@@ -914,7 +905,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 </table>
 </div>
 
-<h3>5.8 Rankings are domain-specific: why a generic leaderboard misleads</h3>
+<h3>5.7 Rankings are domain-specific: why a generic leaderboard misleads</h3>
 <p>
   The case studies above rank models <em>within</em> one domain. The premise of a custom-evaluation tool is that this
   is necessary: the best model for one domain need not be the best for another, so a single public leaderboard, which
@@ -922,7 +913,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   descriptions, <em>math word problems</em>, <em>code explanation</em>, <em>clinical reasoning</em>, and <em>legal
   analysis</em>, CoEval generated $25$ contamination-free items each ($100$ items), six candidate models answered them,
   and the same vendor-disjoint cross-family panel (OpenAI&nbsp;+&nbsp;Anthropic&nbsp;+&nbsp;Google) scored every
-  response: $1{,}800$ evaluations at full coverage, from one configuration file, for USD&nbsp;0.83.
+  response: $1{,}800$ evaluations at full coverage, from one configuration file.
 </p>
 <p>
   The four per-domain rankings <strong>disagree sharply</strong>. Three different models take first place across the four
@@ -987,10 +978,10 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
 
 <p>
   <strong>Scope and limitations.</strong> Our ground-truth validation of the ranking operation uses objective
-  exact-match QA, where labels exist; on subjective custom domains (Section&nbsp;5.7) we rely on the cross-family
+  exact-match QA, where labels exist; on subjective custom domains (Section&nbsp;5.6) we rely on the cross-family
   ensemble and report intervals rather than a held-out gold ranking, because by assumption none exists. We study up to
   thirteen candidate models across four exact-match QA tasks, three custom verticals, a four-domain divergence study
-  (Section&nbsp;5.8), and a thirteen-model rank-recovery check (Section&nbsp;5.2); broader model pools and additional
+  (Section&nbsp;5.7), and a thirteen-model rank-recovery check (Section&nbsp;5.2); broader model pools and additional
   domains would further test generality. The contamination guarantee is structural (fresh per-run synthesis), validated both by zero verbatim
   overlap and by a controlled memorization study (Section&nbsp;5.5); a verbatim n-gram test is not a membership test
   against any model's full pretraining corpus.
@@ -1009,7 +1000,7 @@ $$\bar{s}_i \;=\; \frac{1}{|J|} \sum_{j \in J} s_{ij}.$$
   with no ground truth, a safeguard a single judge cannot provide; the same weighting down-weights non-discriminative
   challenges, so saturated questions carry no spurious ranking signal. Because model rankings are
   <em>domain-specific</em> (three different models top four de-novo domains, so a generic leaderboard misdirects most
-  practitioners) and the same declarative pipeline runs unchanged across models and domains, cheap enough to repeat on
+  practitioners) and the same declarative pipeline runs unchanged across models and domains, re-running on
   every model release, CoEval is a reusable instrument a team points at its own application when neither labeled data nor
   a trustworthy benchmark exists, rather than a single static study. CoEval is open-source and fully reproducible.
 </p>
@@ -1133,17 +1124,9 @@ $$\kappa \;=\; \frac{p_o - p_e}{1 - p_e},$$
     0.294), while a recurring &ldquo;completeness&rdquo; dimension forms a cross-task cluster.</figcaption>
 </figure>
 
-<h2 id="appC">Appendix C. Evaluation throughput</h2>
-<figure>
-  <img src="figures/f6_cost.png" alt="Evaluations per dollar: CoEval versus human annotation"/>
-  <figcaption><strong>Figure 6.</strong> Throughput. CoEval produces roughly 1,350 evaluations per dollar
-    (7,978 evaluations for USD 5.89), two to three orders of magnitude above typical human annotation, enabling
-    re-evaluation on every model release.</figcaption>
-</figure>
-
-<h2 id="appD">Appendix D. Worked examples on data-scarce domains</h2>
+<h2 id="appC">Appendix C. Worked examples on data-scarce domains</h2>
 <p>
-  The three verticals of Section&nbsp;5.7 are domains where a practitioner typically has <em>no</em> labeled
+  The three verticals of Section&nbsp;5.6 are domains where a practitioner typically has <em>no</em> labeled
   benchmark and no trustworthy public one: drug&ndash;drug interaction (DDI) reasoning, clinical decision support, and
   legal analysis. The artifacts below are the <em>actual</em> output CoEval generated for each, from a single one-line
   task description and with no human labels. From that description the teacher inferred the attribute strata, synthesized
