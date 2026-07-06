@@ -1,0 +1,24 @@
+{
+  "mode": "full",
+  "on_fail": "abort",
+  "results": {
+    "teacher-llama-4-scout": "ok",
+    "gpt-4o-mini": "ok",
+    "llama-70b": "ok",
+    "qwen-32b": "ok",
+    "judge-llama-8b": "ok",
+    "judge-gpt-4o-mini": "ok",
+    "gemma4-26b": "ok",
+    "nemotron-120b": "ok"
+  },
+  "probed_models": [
+    "gemma4-26b",
+    "gpt-4o-mini",
+    "judge-gpt-4o-mini",
+    "judge-llama-8b",
+    "llama-70b",
+    "nemotron-120b",
+    "qwen-32b",
+    "teacher-llama-4-scout"
+  ]
+}

@@ -1,0 +1,421 @@
+experiment:
+  generation_retries: 3
+  id: special-ed-slp-v5
+  log_level: INFO
+  phases:
+    attribute_mapping: New
+    data_generation: New
+    evaluation: New
+    response_collection: New
+    rubric_mapping: New
+  storage_folder: ./Runs
+models:
+- interface: groq
+  name: teacher-llama-4-scout
+  parameters:
+    max_tokens: 1024
+    model: meta-llama/llama-4-scout-17b-16e-instruct
+    temperature: 0.8
+  roles:
+  - teacher
+- interface: openai
+  name: gpt-4o-mini
+  parameters:
+    max_tokens: 512
+    model: gpt-4o-mini
+    temperature: 0.5
+  roles:
+  - student
+- interface: groq
+  name: llama-70b
+  parameters:
+    max_tokens: 512
+    model: llama-3.3-70b-versatile
+    temperature: 0.5
+  roles:
+  - student
+- interface: groq
+  name: qwen-32b
+  parameters:
+    max_tokens: 512
+    model: qwen/qwen3-32b
+    temperature: 0.5
+  roles:
+  - student
+- interface: groq
+  name: judge-llama-8b
+  parameters:
+    max_tokens: 256
+    model: llama-3.1-8b-instant
+    temperature: 0.0
+  roles:
+  - judge
+- interface: openai
+  name: judge-gpt-4o-mini
+  parameters:
+    max_tokens: 300
+    model: gpt-4o-mini
+    temperature: 0.0
+  roles:
+  - judge
+# --- OpenRouter free tier (additional families) ---
+- interface: openrouter
+  name: gemma4-26b
+  parameters:
+    max_tokens: 512
+    model: google/gemma-4-26b-a4b-it:free
+    temperature: 0.5
+  roles:
+  - student
+- interface: openrouter
+  name: nemotron-120b
+  parameters:
+    max_tokens: 512
+    model: nvidia/nemotron-3-super-120b-a12b:free
+    temperature: 0.5
+  roles:
+  - student
+quota:
+  qwen-32b:
+    max_calls: 500
+  gpt-4o-mini:
+    max_calls: 200
+  judge-llama-8b:
+    max_calls: 500
+  judge-gpt-4o-mini:
+    max_calls: 500
+
+  gemma4-26b:
+    max_calls: 100
+  nemotron-120b:
+    max_calls: 100
+  llama-70b:
+    max_calls: 500
+  teacher-llama-4-scout:
+    max_calls: 500
+tasks:
+- description: 'A scenario describing a child''''s communicative behavior in a special
+    education framework, requiring identification of the child''''s communication
+    development stage, profile of strengths and gaps, and coherent clinical interpretation.
+    The child''''s age ranges from 2 to school entry. Scenarios are grounded in authentic
+    SLP practice within Israeli special education settings.
+
+    '
+  evaluation_mode: single
+  name: communication_stage_assessment
+  nuanced_attributes:
+    case_type:
+    - standard
+    - adversarial
+    presentation_mode:
+    - behavioral_description
+    - session_report
+  output_description: 'Identify the child''''s communication development stage according
+    to the Communication Matrix (Rowland). Describe the key communicative behaviors
+    that support this identification, noting the consistency of the communication
+    triad. Note the main strengths and gaps in the communication profile. Provide
+    a coherent clinical interpretation. If the profile is ambiguous or contains contradictory
+    indicators, state this explicitly.
+
+    '
+  prompt_library:
+    sample: 'צור נתוני בנצ''מרק ריאליסטיים ומאתגרים עבור הערכת שלב תקשורת של ילד עם
+      צרכים מיוחדים במסגרת חינוך מיוחד ישראלית.
+
+      מאפיינים נדרשים: {target_attributes}. ניואנס: {nuanced_attributes}.
+
+      הנחיות כלליות:
+
+      - כתוב את שאלת התרחיש ותשובת הייחוס בעברית בלבד.
+
+      - כתוב בסגנון דוח קליני של קלינאי תקשורת — גוף שלישי, מדויק, תיאורי-התנהגותי,
+      טרמינולוגיה מקצועית. אין שפה יומיומית.
+
+      - האוכלוסייה: ילדים עם צרכים מיוחדים במסגרות חינוך מיוחד ישראליות (לא "צרכים
+      מורכבים").
+
+      - אל תכלול: מצבי חירום רפואיים, משברים פסיכיאטריים, מצבי הגנה.
+
+      שלבי ה-MATRIX לפי Rowland — השתמש בהגדרות אלה בדיוק:
+
+      - רמה 1 — התנהגות קדם-כוונתית: משקפת מצב כללי (ישנוניות, אי-נוחות); אינה בשליטת
+      הילד; המטפלים מפרשים מתנועות גוף, הבעות פנים, הגאים.
+
+      - רמה 2 — התנהגות כוונתית (טרם תקשורתית): בשליטת הילד, אך אינו מבין שיכול להשפיע
+      על האחר. אין כוונה תקשורתית.
+
+      - רמה 3 — תקשורת קדם-סמלית לא-מוסכמת: מכוונת, ללא סמלים, אמצעים לא מקובלים חברתית
+      (משיכה, דחיפה, הגאים, תנועות גוף לא שגרתיות).
+
+      - רמה 4 — תקשורת קדם-סמלית מוסכמת: מכוונת, ללא סמלים, אמצעים מוסכמים חברתית
+      (הצבעה עם הפניית ראש, הנהון, בכי מכוון).
+
+      - רמה 5 — סמלים קונקרטיים: סמלים הדומים פיזית למייצג — תמונות, חפצי ייחוס, מחוות
+      אייקוניות, צלילים.
+
+      - רמה 6 — סמלים מופשטים: מערכת מופשטת — דיבור, סימנים, ברייל.
+
+      - רמה 7 — שפה: שילוב שני סמלים ומעלה.
+
+      הערה קלינית על פרופיל לפי אבחנה:
+
+      - ילד עם אוטיזם עשוי להגיע לרמה מתקדמת ב-MATRIX אך להציג "חורים" בשלבים מוקדמים
+      יותר — פרופיל לא סדרתי. התרחיש חייב לשקף זאת ולא להניח התפתחות ליניארית.
+
+      - ילד עם מוגבלות שכלית רוכש בדרך כלל לפי הסדר הקלאסי של ה-MATRIX, אך בקצב שאינו
+      תואם את נורמת גילו.
+
+      דרישות חובה לתיאור ההתנהגות:
+
+      1. לכל מחווה (הצבעה, הגעה לחפץ, הושטת יד) — ציין האם הייתה הפניית ראש או מבט
+      לעבר המבוגר לפני, במהלך, או אחרי המחווה. העדר מרכיב זה חייב להיות מצוין במפורש.
+
+      2. טריאדה תקשורתית — ציין לכל התנהגות האם היא עקבית (מופיעה עם כלל האנשים, בכל
+      ההקשרים, ובאופן יציב לאורך זמן) או מצבית (מופיעה רק עם אנשים מוכרים, בהקשרים
+      ספציפיים, בזמנים מסוימים בלבד). חוסר עקביות טריאדית הוא נתון קליני מהותי ואינו
+      ניתן להשמטה.
+
+      3. ציין את תגובת המבוגר ואת תגובת הילד להתעלמות מכוונת.
+
+      למקרים אדברסריאליים (case_type: adversarial): בנה תרחיש שבו התנהגות שטחית עלולה
+      להיחשב בטעות לשלב גבוה יותר — אך קריאה מדוקדקת מגלה שלב נמוך יותר. האלמנט המטעה
+      מוטמע בתיאור ולא מוצהר במפורש.
+
+      החזר JSON בלבד עם המפתחות:
+
+      - "prompt": תרחיש קליני ושאלה למודל הנבדק, בעברית
+
+      - "response": הערכה קלינית מומחית תואמת-שלב לפי MATRIX, בעברית, בפרוז קליני
+      בלבד — לא JSON, לא נקודות, לא כותרות
+
+      דוגמה: {{"prompt": "...", "response": "..."}}'
+    test: 'אתה קלינאי תקשורת המעריך שלב התפתחות תקשורת של ילד במסגרת חינוך מיוחד.
+
+      {output_description}
+
+
+      {input}
+
+
+      ענה בהערכה קלינית בלבד.'
+  rubric:
+    diagnostic_coherence: 'The clinical interpretation is internally consistent. Does
+      not assert a high communication level while simultaneously describing behaviors
+      characteristic of a lower stage. For autism profiles: acknowledges non-sequential
+      development (advanced stage with gaps in earlier stages) if present in the scenario.
+
+      '
+    epistemic_honesty: 'Does not overstate certainty when the profile is ambiguous
+      or misleading. When indicators are contradictory, states the uncertainty explicitly
+      and explains what additional information would resolve the ambiguity.
+
+      '
+    practical_value: 'The assessment output is usable by a clinician — specific enough
+      to inform next steps for planning, not a generic summary. Addresses the consistency
+      of the communication triad (whether behaviors appear consistently across people,
+      contexts, and time or only situationally).
+
+      '
+    profile_specificity: 'The identified profile is specific to the child described,
+      not a generic description of the diagnosed condition. References the particular
+      behaviors mentioned in the scenario. A response that could apply to any child
+      with the same diagnosis without referencing the specific behaviors described
+      scores Low.
+
+      '
+    stage_accuracy: 'Correctly identifies the child''''s communication development
+      stage according to the Communication Matrix (Rowland). Does not confuse pre-intentional
+      with intentional communication based on surface behaviors. For adversarial cases:
+      the scenario contains misleading surface behaviors. Misidentification of stage
+      fails this criterion regardless of how well the rest of the response is written.
+
+      '
+  sampling:
+    nuance:
+    - 1
+    target:
+    - 1
+    total: 20
+  target_attributes:
+    age_group:
+    - 2_to_3
+    - 3_to_5
+    - 5_to_7
+    communication_level:
+    - pre_intentional
+    - intentional_pre_symbolic
+    - symbolic_emerging
+    diagnosis_context:
+    - autism
+    - intellectual_disability
+    - intellectual_developmental_disability
+    - complex_special_needs
+    difficulty:
+    - clear_profile
+    - ambiguous
+    - misleading
+- description: 'A child''''s communication profile and educational framework requiring
+    design of an individualized communication plan with stage-appropriate goals, intervention
+    strategies, and recommended tools, implementable within the stated framework by
+    the designated implementer.
+
+    '
+  evaluation_mode: single
+  name: communication_plan_design
+  nuanced_attributes:
+    case_type:
+    - standard
+    - adversarial
+    implementer:
+    - clinician
+    - classroom_aide
+    - parent
+  output_description: 'Evaluate the proposed individualized communication plan (תת"ח).
+    State clearly whether the plan is appropriate for the child''s profile (yes or
+    no) and provide a detailed clinical justification. For a plan assessed as inappropriate,
+    identify the specific error (wrong tool for the MATRIX stage, goals misaligned
+    with the child''s level, or plan not implementable in the stated framework by
+    the stated implementer) and state what should be done instead. For a plan assessed
+    as appropriate, confirm the key reasons: stage-tool alignment, goal measurability,
+    and ecological validity for the stated framework and implementer.
+
+    '
+  prompt_library:
+    sample: 'צור נתוני בנצ''מרק ריאליסטיים ומאתגרים עבור תכנון תת"ח תקשורתי לילד עם
+      צרכים מיוחדים במסגרת חינוך מיוחד ישראלית.
+
+      מאפיינים נדרשים: {target_attributes}. ניואנס: {nuanced_attributes}.
+
+      הנחיות כלליות:
+
+      - כתוב את שאלת התרחיש ותשובת הייחוס בעברית בלבד.
+
+      - כתוב בסגנון דוח קליני של קלינאי תקשורת — גוף שלישי, מדויק, טרמינולוגיה מקצועית.
+      אין שפה יומיומית.
+
+      - האוכלוסייה: ילדים עם צרכים מיוחדים במסגרות חינוך מיוחד ישראליות.
+
+      - אל תכלול: מצבי חירום רפואיים, משברים פסיכיאטריים, מצבי הגנה.
+
+      שלבי ה-MATRIX לפי Rowland:
+
+      - רמה 1 — קדם-כוונתית: לא בשליטת הילד; המטפלים מפרשים.
+
+      - רמה 2 — כוונתית (טרם תקשורתית): בשליטה אך ללא כוונה תקשורתית.
+
+      - רמה 3 — קדם-סמלית לא-מוסכמת: מכוונת, אמצעים לא מקובלים (משיכה, דחיפה).
+
+      - רמה 4 — קדם-סמלית מוסכמת: מכוונת, אמצעים מוסכמים (הצבעה עם הפניית ראש, הנהון).
+
+      - רמה 5 — סמלים קונקרטיים: תמונות, חפצי ייחוס, מחוות אייקוניות.
+
+      - רמה 6 — סמלים מופשטים: דיבור, סימנים, ברייל.
+
+      - רמה 7 — שפה: שילוב שני סמלים ומעלה.
+
+      הערה קלינית על פרופיל לפי אבחנה:
+
+      - ילד עם אוטיזם עשוי להציג פרופיל לא סדרתי — רמה מתקדמת עם "חורים" בשלבים מוקדמים.
+      יש להתייחס לכך בתכנון היעדים.
+
+      - ילד עם מוגבלות שכלית רוכש לפי הסדר הקלאסי, בקצב שאינו תואם את נורמת גילו.
+
+      הקשרי מסגרות:
+
+      - בית (home): הורים; פשוט, low-tech, משולב בשגרות יום.
+
+      - גן חינוך מיוחד: סייעת בקבוצה; מעשי, עמיד, ניתן לניהול בעומס.
+
+      - כיתת חינוך מיוחד: תמיכה מקצועית מתונה; פורמט מובנה מתאים.
+
+      התאמת כלים לשלב (אכוף בקפדנות):
+
+      - קדם-כוונתי: רמזים חפצניים, תמיכות חושיות — לא תמונות, לא PECS, לא AAC.
+
+      - קדם-סמלי מכוון: חפצי ייחוס, PECS שלבים 1-2 — לא SGD מורכב.
+
+      - סמלי מתהווה: תמונות, SGD פשוט — רק אם פרופיל מנועי-קוגניטיבי תומך במפורש.
+
+      דרישות חובה:
+
+      1. לכל מחווה בפרופיל — ציין האם הייתה הפניית ראש/מבט למבוגר.
+
+      2. טריאדה תקשורתית — ציין האם ההתנהגות עקבית (כלל האנשים, כל ההקשרים, יציבה
+      לאורך זמן) או מצבית. כלול יעד ספציפי לבניית עקביות טריאדית בשגרות הטבעיות.
+
+      למקרים אדברסריאליים: תרחיש שבו כלי ברור לפי תווית האבחנה אינו מתאים לפרופיל
+      הספציפי.
+
+      החזר JSON בלבד:
+
+      - "prompt": פרופיל הילד, המסגרת, המיישם, ומשימת התכנון — בעברית
+
+      - "response": תת"ח מומחה ומפורט — בעברית, פרוז קליני בלבד
+
+      דוגמה: {{"prompt": "...", "response": "..."}}'
+    test: 'אתה קלינאי תקשורת המעריך תוכנית תקשורת (תת"ח) מוצעת במסגרת חינוך מיוחד.
+
+      {output_description}
+
+
+      {input}
+
+
+      ענה בהערכת התת"ח בלבד: האם הוא מתאים (כן/לא) והסבר את הנימוק הקליני.'
+  rubric:
+    judgment_accuracy: 'Correctly determines whether the proposed plan is appropriate
+      (yes) or not (no). For adversarial cases where the plan appears correct but
+      contains a hidden clinical error, identifying the error is required for High.
+      A wrong yes/no verdict fails this criterion regardless of reasoning quality.
+
+      '
+    error_identification: 'For plans assessed as inappropriate: identifies the specific
+      error type (wrong tool for MATRIX stage, goal misaligned with level, or ecological
+      mismatch) and names what should be used instead. A response that says "no" without
+      pinpointing the exact error scores Low. For correct plans: confirms the specific
+      reasons for appropriateness rather than giving a generic endorsement.
+
+      '
+    clinical_reasoning: 'The justification is grounded in the child''''s specific
+      behavioral profile as described, not in the diagnosis label alone. References
+      the particular MATRIX level behaviors and profile constraints. A justification
+      that could apply to any child with the same diagnosis scores Low.
+
+      '
+    stage_tool_alignment: 'Correctly applies MATRIX stage-to-tool mapping: pre-intentional
+      → sensory cues only; intentional pre-communicative → concrete objects; unconventional
+      pre-symbolic → object cues + gesture modeling; conventional pre-symbolic → picture
+      boards + PECS Phase 1-2; concrete symbols → photographic pictures + PECS Phase
+      2-3; abstract symbols → PCS + basic SGD; language → full SGD/app. Misidentifying
+      alignment fails this criterion.
+
+      '
+    ecological_validity: 'Evaluates whether the plan is implementable by the stated
+      implementer in the stated framework. Correctly flags plans that require 1:1
+      clinical sessions when the framework is a busy kindergarten or home setting.
+
+      '
+  sampling:
+    nuance:
+    - 1
+    target:
+    - 1
+    total: 20
+  target_attributes:
+    communication_level:
+    - pre_intentional
+    - intentional_pre_symbolic
+    - symbolic_emerging
+    diagnosis_context:
+    - autism
+    - intellectual_disability
+    - intellectual_developmental_disability
+    - complex_special_needs
+    framework:
+    - home
+    - special_ed_kindergarten
+    - special_ed_class
+    profile_complexity:
+    - straightforward
+    - multi_factor
+    - regression
