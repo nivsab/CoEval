@@ -10,7 +10,7 @@ Requirements:
   - CoEval must be installed:  pip install -e .
 """
 from __future__ import annotations
-import json, os, subprocess, sys, textwrap
+import argparse, json, os, subprocess, sys, textwrap
 import pathlib, shutil, copy
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent   # CoEval root
@@ -175,13 +175,18 @@ def print_summary(run: pathlib.Path, judge_name: str) -> None:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Run a second judge for special-ed-slp-v5")
+    parser.add_argument("--model", choices=["1", "2", "3"], default=None,
+                        help="Judge model: 1=gemma3:27b (16 GB+), 2=phi4:14b (8 GB+), 3=gemma3:12b (8 GB)")
+    args = parser.parse_args()
+
     os.chdir(ROOT)
 
     banner("CoEval — second judge setup")
     print(textwrap.dedent("""\
         This script will:
           1. Check Ollama is running
-          2. Let you choose a judge model
+          2. Choose a judge model
           3. Pull the model if needed
           4. Update keys.yaml and config.yaml
           5. Run the evaluation  (~30-90 min)
@@ -198,16 +203,20 @@ def main() -> None:
     print(f"  Ollama is running. Local models: {available or '(none yet)'}")
 
     # ── 2. Choose model ───────────────────────────────────────────────────────
-    banner("Choose a judge model")
+    banner("Judge model")
     for key, info in MODELS.items():
         already = " ← already downloaded" if info["ollama_name"] in available else ""
         print(f"  {key}.  {info['ollama_name']:20s}  {info['family']:18s}  VRAM: {info['vram']}{already}")
 
-    while True:
-        choice = input("\nEnter 1, 2, or 3: ").strip()
-        if choice in MODELS:
-            break
-        print("  Invalid choice — enter 1, 2, or 3.")
+    if args.model:
+        choice = args.model
+        print(f"\n  Using --model {choice} (pre-selected)")
+    else:
+        while True:
+            choice = input("\nEnter 1, 2, or 3: ").strip()
+            if choice in MODELS:
+                break
+            print("  Invalid choice — enter 1, 2, or 3.")
 
     model_info = MODELS[choice]
     print(f"\n  Selected: {model_info['ollama_name']} ({model_info['family']})")
