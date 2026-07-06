@@ -50,14 +50,27 @@ models:
     temperature: 0.0
   roles:
   - judge
-- interface: openai
-  name: judge-gpt-4o-mini
+# ── שופט שני (Ollama — להרצה ממחשב עם GPU) ────────────────────────────────────
+# בחר אחד לפי הזיכרון הפנוי:
+#   16GB+ VRAM → judge-gemma3-27b  (Google family, vendor-disjoint)
+#    8GB  VRAM → judge-phi4-14b    (Microsoft family, vendor-disjoint)
+# הפעל רק שופט אחד בכל פעם — הסר את ה-# מהמודל שאתה משתמש בו.
+- interface: ollama
+  name: judge-gemma3-27b
   parameters:
-    max_tokens: 300
-    model: gpt-4o-mini
+    model: gemma3:27b
     temperature: 0.0
+    max_tokens: 512
   roles:
   - judge
+# - interface: ollama
+#   name: judge-phi4-14b
+#   parameters:
+#     model: phi4:14b
+#     temperature: 0.0
+#     max_tokens: 512
+#   roles:
+#   - judge
 # --- OpenRouter free tier (additional families) ---
 - interface: openrouter
   name: gemma4-26b
@@ -82,8 +95,10 @@ quota:
     max_calls: 200
   judge-llama-8b:
     max_calls: 500
-  judge-gpt-4o-mini:
+  judge-gemma3-27b:
     max_calls: 500
+  # judge-phi4-14b:
+  #   max_calls: 500
 
   gemma4-26b:
     max_calls: 100
