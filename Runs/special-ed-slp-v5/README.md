@@ -3,6 +3,10 @@
 **Status:** Completed — single judge (llama-8b); second judge pending (ICC not yet computable)
 **Domain:** Speech-Language Pathology / Special Education (Hebrew, Israeli clinical context)
 **Contributor:** Niv Saban
+**Expert validation:** Teacher datapoints (prompts + reference responses) reviewed and approved
+by a certified Israeli SLP practitioner with experience in special education. Reviewer
+confirmed clinical accuracy of MATRIX stage assignments, stage-to-tool mappings, and the
+clinical traps embedded in adversarial cases.
 
 ---
 
@@ -24,6 +28,13 @@ The experiment provides two contributions:
    `resource_appropriateness`, `epistemic_honesty`, etc.) encode clinical knowledge
    (Communication Matrix by Rowland; MATRIX stage-to-tool mapping; triad consistency)
    that generic English benchmarks cannot capture.
+
+3. **Expert-validated teacher data** — All 40 teacher-generated prompts and reference
+   responses (phase 3) were reviewed by a certified Israeli SLP practitioner with
+   special education experience. The reviewer confirmed clinical accuracy of MATRIX stage
+   assignments, stage-to-tool recommendations, and the clinical traps embedded in
+   adversarial cases. This validation step demonstrates CoEval's design principle that
+   the teacher role requires domain authority, not just a large model.
 
 ---
 
